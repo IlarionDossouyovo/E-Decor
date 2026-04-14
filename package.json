@@ -1,0 +1,15 @@
+{
+  "name": "e-decor",
+  "version": "1.0.0",
+  "description": "E-Décor - E-commerce dropshipping pour la decoration d'interieur en partenariat avec ORCA-Décor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": ["decor", "interieur", "ameublement", "ecommerce", "dropshipping", "orcadecor"],
+  "author": "E-Décor Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.2.0"
+  }
+}

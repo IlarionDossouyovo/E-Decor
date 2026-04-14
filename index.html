@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>E-Décor - Meubles & Décoration</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-top">
+      <div class="logo-container">
+        <h1 class="logo">E-Décor <span class="by-electron">by Electron</span></h1>
+        <p class="tagline">Votre partenaire ORCA-Décor pour l'aménagement intérieur</p>
+      </div>
+      <div class="header-actions">
+        <select id="language-selector" class="language-selector">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Rechercher un produit...">
+          <button id="search-btn">🔍</button>
+        </div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <ul class="nav-menu">
+        <li><a href="#" data-page="home" class="nav-link active">Accueil</a></li>
+        <li><a href="#" data-page="catalog" class="nav-link">Catalogue</a></li>
+        <li class="dropdown">
+          <a href="#" class="nav-link">Catégories ▾</a>
+          <ul class="dropdown-menu" id="categories-menu">
+          </ul>
+        </li>
+        <li><a href="#" data-page="blog" class="nav-link">Blog</a></li>
+        <li><a href="#" data-page="about" class="nav-link">À propos</a></li>
+        <li><a href="#" data-page="contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+  </main>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <div class="footer-sections">
+      <div class="footer-section">
+        <h3>E-Décor</h3>
+        <p>Votre partenaire dropshipping spécialisé dans la decoration d'intérieur en partenariat avec ORCA-Décor.</p>
+        <p>Meubles pour salons, bureaux, cuisines, jardins et salles à manger.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Catégories</h3>
+        <ul class="footer-links">
+          <li><a href="#" data-page="category" data-param="salons">Salons</a></li>
+          <li><a href="#" data-page="category" data-param="bureaux">Bureaux</a></li>
+          <li><a href="#" data-page="category" data-param="cuisines">Cuisines</a></li>
+          <li><a href="#" data-page="category" data-param="jardins">Jardins</a></li>
+          <li><a href="#" data-page="category" data-param="salle-a-manger">Salle à manger</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li>Email: contact@e-decor.com</li>
+          <li>Tél: +33 1 23 45 67 89</li>
+          <li>Adresse: Paris, France</li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Suivez-nous</h3>
+        <div class="social-links">
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">Pinterest</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 E-Décor by Electron. Tous droits réservés. Partenaire ORCA-Décor.</p>
+    </div>
+  </footer>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
