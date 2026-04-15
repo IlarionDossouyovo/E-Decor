@@ -6,10 +6,18 @@
   "scripts": {
     "start": "electron ."
   },
-  "keywords": ["decor", "interieur", "ameublement", "ecommerce", "dropshipping", "orcadecor"],
+  "keywords": [
+    "decor",
+    "interieur",
+    "ameublement",
+    "ecommerce",
+    "dropshipping",
+    "orcadecor"
+  ],
   "author": "E-Décor Team",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^41.2.0"
+    "electron": "^41.2.0",
+    "vercel": "^51.3.0"
   }
 }

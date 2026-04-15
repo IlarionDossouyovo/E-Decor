@@ -1,0 +1,87 @@
+{
+  "name": "E-Décor - Gestion Commandes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "minutes", "minutesInterval": 5}]
+        }
+      },
+      "id": "check-orders",
+      "name": "Vérifier nouvelles commandes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "e-decor-orders"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/orders",
+        "options": {}
+      },
+      "id": "fetch-orders",
+      "name": "Récupérer commandes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {"value": "={{ $json.count }}", "operation": "larger", "number2": 0}
+          ]
+        }
+      },
+      "id": "check-new-orders",
+      "name": "Nouvelle commande?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Nouvelle commande E-Décor!",
+        "body": "Une nouvelle commande a été passée sur E-Décor.\n\nDétails:\nCommande ID: {{ $json.orderId }}\nMontant: {{ $json.total }}€\nClient: {{ $json.customer }}\nMode de paiement: {{ $json.paymentMethod }}",
+        "options": {}
+      },
+      "id": "notify-admin",
+      "name": "Notifier admin",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "to": "{{ $json.email }}",
+        "subject": "Confirmation commande E-Décor",
+        "body": "Merci pour votre commande!\n\nCommande: {{ $json.orderId }}\nTotal: {{ $json.total }}€\n\nNous vous contacterons pour le paiement et la livraison.",
+        "options": {}
+      },
+      "id": "notify-customer",
+      "name": "Confirmer au client",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 350]
+    }
+  ],
+  "connections": {
+    "Vérifier nouvelles commandes": {
+      "main": [[{"node": "Récupérer commandes", "type": "main", "index": 0}]]
+    },
+    "Récupérer commandes": {
+      "main": [[{"node": "Nouvelle commande?", "type": "main", "index": 0}]]
+    },
+    "Nouvelle commande?": {
+      "main": [
+        [{"node": "Notifier admin", "type": "main", "index": 0}],
+        [{"node": "Confirmer au client", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "e-decor-orders"
+}

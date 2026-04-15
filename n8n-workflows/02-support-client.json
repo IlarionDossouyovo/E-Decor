@@ -1,0 +1,86 @@
+{
+  "name": "E-Décor - Support Client",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "minutes", "minutesInterval": 10}]
+        }
+      },
+      "id": "check-messages",
+      "name": "Vérifier messages",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/contact",
+        "options": {}
+      },
+      "id": "fetch-messages",
+      "name": "Récupérer messages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {"value": "={{ $json.messages }}", "operation": "larger", "number2": 0}
+          ]
+        }
+      },
+      "id": "has-messages",
+      "name": "Nouveaux messages?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Nouveau message client - E-Décor",
+        "body": "Vous avez un nouveau message:\n\nNom: {{ $json.name }}\nEmail: {{ $json.email }}\nMessage: {{ $json.message }}\n\nConnectez-vous pour répondre.",
+        "options": {}
+      },
+      "id": "notify-admin-support",
+      "name": "Notifier support",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "to": "{{ $json.email }}",
+        "subject": "Reçu - E-Décor",
+        "body": "Bonjour {{ $json.name }},\n\nNous avons bien reçu votre message et vous répondrons sous 24h.\n\nMerci pour votre intérêt envers E-Décor!\n\nL'équipe E-Décor",
+        "options": {}
+      },
+      "id": "auto-reply",
+      "name": "Réponse automatique",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Vérifier messages": {
+      "main": [[{"node": "Récupérer messages", "type": "main", "index": 0}]]
+    },
+    "Récupérer messages": {
+      "main": [[{"node": "Nouveaux messages?", "type": "main", "index": 0}]]
+    },
+    "Nouveaux messages?": {
+      "main": [
+        [{"node": "Notifier support", "type": "main", "index": 0}],
+        [{"node": "Réponse automatique", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-support"
+}

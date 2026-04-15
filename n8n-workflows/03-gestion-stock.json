@@ -1,0 +1,90 @@
+{
+  "name": "E-Décor - Gestion Stock",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "hours", "hoursInterval": 6}]
+        }
+      },
+      "id": "check-stock",
+      "name": "Vérifier stock",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/products",
+        "options": {}
+      },
+      "id": "fetch-products",
+      "name": "Récupérer produits",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {"value": "={{ $json.lowStockCount }}", "operation": "larger", "number2": 0}
+          ]
+        }
+      },
+      "id": "check-low-stock",
+      "name: "Stock bas?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Alerte stock bas - E-Décor",
+        "body": "Attention! Certains produits ont un stock faible:\n\n{{ $json.lowStockProducts }}\n\nPassez commande auprès de votre fournisseur ORCA-Décor.",
+        "options": {}
+      },
+      "id": "alert-low-stock",
+      "name": "Alerter stock",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/notify-low-stock",
+        "options": {},
+        "bodyParameters": {
+          "parameters": [
+            {"name": "products", "value": "{{ $json.lowStockProducts }}"}
+          ]
+        }
+      },
+      "id": "update-frontend",
+      "name": "Mettre à jour site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Vérifier stock": {
+      "main": [[{"node": "Récupérer produits", "type": "main", "index": 0}]]
+    },
+    "Récupérer produits": {
+      "main": [[{"node": "Stock bas?", "type": "main", "index": 0}]]
+    },
+    "Stock bas?": {
+      "main": [
+        [{"node": "Alerter stock", "type": "main", "index": 0}],
+        [{"node": "Mettre à jour site", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-stock"
+}

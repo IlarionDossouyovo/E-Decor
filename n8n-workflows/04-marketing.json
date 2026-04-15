@@ -1,0 +1,53 @@
+{
+  "name": "E-Décor - Marketing Auto",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "days", "daysInterval": 1}]
+        }
+      },
+      "id": "daily-marketing",
+      "name": "Marketing quotidien",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.telegram.org/bot/TOKEN/sendMessage",
+        "options": {}
+      },
+      "id": "fetch-stats",
+      "name": "Statistiques",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Rapport quotidien E-Décor",
+        "body": "Rapport du jour:\n\n- Commandes: {{ $json.orders }}\n- Visiteurs: {{ $json.visitors }}\n- Panier moyen: {{ $json.avgCart }}€\n\nSee you tomorrow!",
+        "options": {}
+      },
+      "id": "daily-report",
+      "name": "Rapport journalier",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Marketing quotidien": {
+      "main": [[{"node": "Statistiques", "type": "main", "index": 0}]]
+    },
+    "Statistiques": {
+      "main": [[{"node": "Rapport journalier", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-marketing"
+}

@@ -1,0 +1,86 @@
+{
+  "name": "E-Décor - Paiements &Payouts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "hours", "hoursInterval": 12}]
+        }
+      },
+      "id": "check-payments",
+      "name": "Vérifier paiements",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/pending-payments",
+        "options": {}
+      },
+      "id": "fetch-payments",
+      "name": "Récupérer paiements",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {"value": "={{ $json.pendingCount }}", "operation": "larger", "number2": 0}
+          ]
+        }
+      },
+      "id": "has-payments",
+      "name": "Paiements en attente?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Action requise - Paiements E-Décor",
+        "body": "Paiements en attente de traitement:\n\n{{ $json.pendingList }}\n\nTotal: {{ $json.totalAmount }}€\n\nVeuillez vérifier et confirmer les transferts.",
+        "options": {}
+      },
+      "id": "payment-alert",
+      "name": "Alerte paiement",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "Rapport hebdomadaire E-Décor",
+        "body": "Résumé de la semaine:\n\n💰 Ventes: {{ $json.weeklySales }}€\n💳 Paiements reçus: {{ $json.paymentsReceived }}€\n📤 Payouts effectués: {{ $json.payoutsDone }}€\n\nSolde actuel: {{ $json.currentBalance }}€",
+        "options": {}
+      },
+      "id": "weekly-report",
+      "name": "Rapport hebdomadaire",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Vérifier paiements": {
+      "main": [[{"node": "Récupérer paiements", "type": "main", "index": 0}]]
+    },
+    "Récupérer paiements": {
+      "main": [[{"node": "Paiements en attente?", "type": "main", "index": 0}]]
+    },
+    "Paiements en attente?": {
+      "main": [
+        [{"node": "Alerte paiement", "type": "main", "index": 0}],
+        [{"node": "Rapport hebdomadaire", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-payments"
+}

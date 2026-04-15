@@ -1,0 +1,109 @@
+{
+  "name": "E-Décor - Notifications Multi-canaux",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "minutes", "minutesInterval": 30}]
+        }
+      },
+      "id": "check-notifications",
+      "name": "Vérifier notifications",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/notifications",
+        "options": {}
+      },
+      "id": "fetch-notifs",
+      "name: "Récupérer notifications",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{ $json.channel }}", "operation": "equal", "value2": "whatsapp"}
+          ]
+        }
+      },
+      "id": "whatsapp-check",
+      "name": "WhatsApp?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.callmebot.com/whatsapp.php",
+        "options": {},
+        "bodyParameters": {
+          "parameters": [
+            {"name": "phone", "value": "{{ $json.phone }}"},
+            {"name": "text", "value": "{{ $json.message }}"}
+          ]
+        }
+      },
+      "id": "send-whatsapp",
+      "name": "Envoyer WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot/TOKEN/sendMessage",
+        "options": {},
+        "bodyParameters": {
+          "parameters": [
+            {"name": "chat_id", "value": "{{ $json.chatId }}"},
+            {"name": "text", "value": "{{ $json.message }}"}
+          ]
+        }
+      },
+      "id": "send-telegram",
+      "name": "Envoyer Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "to": "{{ $json.email }}",
+        "subject": "Notification E-Décor",
+        "body": "{{ $json.message }}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Envoyer Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [850, 550]
+    }
+  ],
+  "connections": {
+    "Vérifier notifications": {
+      "main": [[{"node": "Récupérer notifications", "type": "main", "index": 0}]]
+    },
+    "Récupérer notifications": {
+      "main": [[{"node": "WhatsApp?", "type": "main", "index": 0}]]
+    },
+    "WhatsApp?": {
+      "main": [
+        [{"node": "Envoyer WhatsApp", "type": "main", "index": 0}],
+        [{"node": "Envoyer Telegram", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-notifications"
+}

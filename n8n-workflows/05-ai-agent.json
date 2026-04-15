@@ -1,0 +1,102 @@
+{
+  "name": "E-Décor - AI Agent Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "minutes", "minutesInterval": 15}]
+        }
+      },
+      "id": "ai-trigger",
+      "name": "Vérification AI",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/pending-tasks",
+        "options": {}
+      },
+      "id": "check-tasks",
+      "name": "Vérifier tâches",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {"value1": "={{ $json.taskType }}", "operation": "notEqual", "value2": ""}
+          ]
+        }
+      },
+      "id": "has-tasks",
+      "name": "Tâches en attente?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "expression": "={{ { response: 'Merci pour votre message! Notre équipe va vous répondre sous 24h. E-Décor - Votre partenaire decoration.' } }}",
+        "includeOtherFields": false
+      },
+      "id": "ai-response",
+      "name": "Générer réponse AI",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "to": "{{ $json.customerEmail }}",
+        "subject": "Réponse E-Décor - {{ $json.subject }}",
+        "body": "{{ $json.aiResponse }}",
+        "options": {}
+      },
+      "id": "send-response",
+      "name": "Envoyer réponse",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1050, 250]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "AI Agent - Traitement terminé",
+        "body": "L'AI agent a traité:\n\n- Type: {{ $json.taskType }}\n- Client: {{ $json.customerEmail }}\n- Réponse générée automatiquement\n\nVérifiez la qualité si nécessaire.",
+        "options": {}
+      },
+      "id": "log-action",
+      "name": "Logger action",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "Vérification AI": {
+      "main": [[{"node": "Vérifier tâches", "type": "main", "index": 0}]]
+    },
+    "Vérifier tâches": {
+      "main": [[{"node": "Tâches en attente?", "type": "main", "index": 0}]]
+    },
+    "Tâches en attente?": {
+      "main": [
+        [{"node": "Générer réponse AI", "type": "main", "index": 0}]
+      ]
+    },
+    "Générer réponse AI": {
+      "main": [
+        [{"node": "Envoyer réponse", "type": "main", "index": 0}],
+        [{"node": "Logger action", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "e-decor-ai-agent"
+}
