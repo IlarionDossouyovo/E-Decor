@@ -537,9 +537,9 @@ async function loadContactPage(container) {
 
       <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
         <h3>Autres moyens de nous contacter</h3>
-        <p><strong>Email:</strong> contact@e-decor.com</p>
-        <p><strong>Tél:</strong> +33 1 23 45 67 89</p>
-        <p><strong>Adresse:</strong> Paris, France</p>
+        <p><strong>Email:</strong> electronbusiness07@gmail.com</p>
+        <p><strong>Tél:</strong> +229 01 977 003 47 / 01 411 663 14</p>
+        <p><strong>Adresse:</strong> Cotonou, Benin</p>
       </div>
     </div>
   `;
