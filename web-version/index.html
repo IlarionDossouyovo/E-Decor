@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="E-Décor - E-commerce decoration interieur. Partenaire ORCA-Decor. Meubles salons, bureaux, cuisines, jardins, salle a manger. Cotonou, Benin.">
+  <meta name="keywords" content="meubles, decoration, interieur, amenagement, salon, bureau, cuisine, jardin, salle a manger, ORCA-Decor, Cotonou">
+  <meta name="author" content="E-Décor by OpenHands AI">
+  <title>E-Décor - Meubles & Décoration</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-top">
+      <div class="logo-container">
+        <h1 class="logo">E-Décor</h1>
+        <p class="tagline">Votre partenaire ORCA-Décor pour l'aménagement intérieur</p>
+      </div>
+      <div class="header-actions">
+        <select id="language-selector" class="language-selector" onchange="switchLanguage(this.value)">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Rechercher un produit...">
+          <button id="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <ul class="nav-menu">
+        <li><a href="#" class="nav-link active" data-page="home" onclick="navigate('home')">Accueil</a></li>
+        <li><a href="#" class="nav-link" data-page="catalog" onclick="navigate('catalog')">Catalogue</a></li>
+        <li class="dropdown">
+          <a href="#" class="nav-link">Catégories ▾</a>
+          <ul class="dropdown-menu" id="categories-menu"></ul>
+        </li>
+        <li><a href="#" class="nav-link" data-page="blog" onclick="navigate('blog')">Blog</a></li>
+        <li><a href="#" class="nav-link" data-page="cart" onclick="navigate('cart')">Panier <span id="cart-count">(0)</span></a></li>
+        <li><a href="#" class="nav-link" data-page="contact" onclick="navigate('contact')">Contact</a></li>
+        <li><a href="#" class="nav-link" data-page="about" onclick="navigate('about')">À propos</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content"></main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" onclick="closeModalOutside(event)">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-sections">
+      <div class="footer-section">
+        <h3>E-Décor</h3>
+        <p>Votre partenaire dropshipping spécialisé dans la decoration d'intérieur en partenariat avec ORCA-Décor.</p>
+        <p><strong>Cotonou, Benin</strong></p>
+      </div>
+      <div class="footer-section">
+        <h3>Catégories</h3>
+        <ul class="footer-links">
+          <li><a href="#" onclick="navigateToCategory('salons')">Salons</a></li>
+          <li><a href="#" onclick="navigateToCategory('bureaux')">Bureaux</a></li>
+          <li><a href="#" onclick="navigateToCategory('cuisines')">Cuisines</a></li>
+          <li><a href="#" onclick="navigateToCategory('jardins')">Jardins</a></li>
+          <li><a href="#" onclick="navigateToCategory('salle-a-manger')">Salle à manger</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li>📧 electronbusiness07@gmail.com</li>
+          <li>📞 +229 01 977 003 47</li>
+          <li>📞 +229 01 411 663 14</li>
+          <li>📍 Cotonou, Benin</li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Suivez-nous</h3>
+        <div class="social-links">
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">Pinterest</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 E-Décor. Tous droits réservés. Partenaire ORCA-Décor. | Créé par AI OpenHands</p>
+    </div>
+  </footer>
+
+  <script>
+/* ============= DONNÉES ============= */
+const categories = [
+  {
+    id: 'salons', name: 'Salons', name_en: 'Living Rooms', icon: '🛋️',
+    description: 'Meubles pour salons modernes et classiques',
+    products: [
+      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', image: 'salon1.jpg', description: 'Canapé 3 places modulable en tissu gris' },
+      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', image: 'salon2.jpg', description: 'Fauteuil relax avec relève-pieds électrique' },
+      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', image: 'salon3.jpg', description: 'Table basse en chêne massif 90x90cm' },
+      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', image: 'salon4.jpg', description: 'Meuble TV 160cm avec rangements' },
+      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', image: 'salon5.jpg', description: 'Étagère 5 modules ajustables' }
+    ]
+  },
+  {
+    id: 'bureaux', name: 'Bureaux', name_en: 'Offices', icon: '💼',
+    description: 'Mobilier de bureau professionnel et domestique',
+    products: [
+      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', image: 'bureau1.jpg', description: 'Bureau 160cm en chêne avec tiroirs' },
+      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', image: 'bureau2.jpg', description: 'Fauteuil ergonomique Mesh' },
+      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', image: 'bureau3.jpg', description: 'Caisson sur roulettes mélaminé' },
+      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', image: 'bureau4.jpg', description: 'Bureau debout électrique hauteur variable' }
+    ]
+  },
+  {
+    id: 'cuisines', name: 'Cuisines', name_en: 'Kitchens', icon: '🍳',
+    description: 'Équipements et meubles de cuisine',
+    products: [
+      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', image: 'cuisine1.jpg', description: 'Îlot 180cm avec plan de travail stratifié' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', image: 'cuisine2.jpg', description: 'Meuble 60cm avec porte et tiroir' },
+      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', image: 'cuisine3.jpg', description: 'Étagère 90cm polyvalente' }
+    ]
+  },
+  {
+    id: 'jardins', name: 'Jardins', name_en: 'Gardens', icon: '🌳',
+    description: 'Mobilier d\'extérieur et de jardin',
+    products: [
+      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', image: 'jardin1.jpg', description: 'Table + 4 fauteuilles + 2 bancs en résine' },
+      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', image: 'jardin2.jpg', description: 'Transat en bois d\'acacia avec toile' },
+      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', image: 'jardin3.jpg', description: 'Parasol déporté avec socle' },
+      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', image: 'jardin4.jpg', description: 'Barbecue à charbon 57cm' }
+    ]
+  },
+  {
+    id: 'salle-a-manger', name: 'Salle à manger', name_en: 'Dining Rooms', icon: '🍽️',
+    description: 'Tables, chaises et meubles de salle à manger',
+    products: [
+      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', image: 'salle1.jpg', description: 'Table 6-10 personnes extensible' },
+      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', image: 'salle2.jpg', description: 'Chaise upholstrée avec pieds bois' },
+      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', image: 'salle3.jpg', description: 'Buffet 180cm en bois massif' },
+      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', image: 'salle4.jpg', description: 'Vaisselier 2 tiroirs + niches' }
+    ]
+  }
+];
+
+// Blog par catégorie
+const blogArticlesSalons = [
+  { id: 'salon-trend-2024', title: 'Tendances salon 2024: Le minimalisme scandinave', title_en: 'Living Room Trends 2024: Scandinavian Minimalism', excerpt: 'Découvrez comment intégrer le style scandinave dans votre salon.', content: '- Couleurs neutres: Blanc cassé, gris\n- Bois naturel\n- Lumière maximisée\n- Fonctionnalité' },
+  { id: 'salon-open-space', title: 'Salon open space: Comment créer des zones', title_en: 'Open Space Living', excerpt: 'Délimitez visuellement les espaces sans cloisons.', content: '- Variation de niveau\n- Changement de sol\n- Mobilier séparateur\n- Éclairage zoning' },
+  { id: 'salon-canape', title: 'Bien choisir son canapé', title_en: 'Choosing Your Sofa', excerpt: 'Guide pour choisir le canapé idéal.', content: '- Taille adaptée\n- Tissu résistant\n- Confort optimal\n- Style intemporel' }
+];
+
+const blogArticlesBureaux = [
+  { id: 'bureau-prod', title: '10 conseils pour un bureau productif', title_en: '10 Tips for Productive Office', excerpt: 'Optimisez votre espace de travail.', content: '- Lumière naturelle\n- Ergonomie\n- Organisation\n- Plantes' },
+  { id: 'bureau-domo', title: 'Créer un bureau à domicile', title_en: 'Creating Home Office', excerpt: 'Espace de travail inspirationnel.', content: '- Emplacement près fenêtre\n- Éliminer distractions\n- Chaise ergonomique\n- Personnalisation' },
+  { id: 'bureau-stdng', title: 'Bureau debout: Bienfaits', title_en: 'Standing Desk Benefits', excerpt: 'Pourquoi adopter un bureau debout.', content: '- Meilleure posture\n- Plus d\'énergie\n- Productivité\n- Santé' }
+];
+
+const blogArticlesCuisines = [
+  { id: 'cuisine-erreurs', title: 'Cuisine moderne: Les erreurs à éviter', title_en: 'Modern Kitchen Mistakes', excerpt: 'Erreurs courantes lors de l\'aménagement.', content: '- Triangle d\'activité\n- Espace de travail\n- Éclairage\n- Rangement' },
+  { id: 'cuisine-ustens', title: 'Les ustensiles indispensables', title_en: 'Essential Kitchen Utensils', excerpt: 'Liste des essentiels.', content: '- Couteau chef\n- Casserole\n- Maryse\n- Balance' },
+  { id: 'cuisine-ilot', title: 'L\'ilot central', title_en: 'Kitchen Island', excerpt: 'Pourquoi adopter un îlot central.', content: '- Espace de préparation\n- Coin repas\n- Rangement\n- Design moderne' }
+];
+
+const blogArticlesJardins = [
+  { id: 'jardin-convi', title: 'Créer un espace extérieur convivial', title_en: 'Creating Welcoming Outdoor Space', excerpt: 'Transformez votre jardin.', content: '- Définir zones\n- Mobilier résistant\n- Parasol\n- Éclairage' },
+  { id: 'jardin-balcon', title: 'Aménagements pour petit balcon', title_en: 'Small Balcony Solutions', excerpt: 'Optimiser un petit espace.', content: '- Meubles rabattables\n- Utiliser hauteur\n- Solution verticale\n- Ambiance' },
+  { id: 'jardin-entre', title: 'Entretien du mobilier extérieur', title_en: 'Outdoor Furniture Care', excerpt: 'Conseils d\'entretien.', content: '- Nettoyage régulier\n- Hivernage\n- Protection\n- Réparations' }
+];
+
+const blogArticlesSalleManger = [
+  { id: 'salle-dim', title: 'Salle à manger: Les bonnes dimensions', title_en: 'Dining Room Dimensions', excerpt: 'Choisir la bonne taille.', content: '- 4 personnes: 160cm\n- 6 personnes: 240cm\n- 8 personnes: 280cm\n- Hauteur table: 75cm' },
+  { id: 'salle-style', title: 'Styles de salle à manger', title_en: 'Dining Room Styles', excerpt: 'Trouvez votre style.', content: '- Scandinave\n- Industriel\n- Classique\n- Japandi' },
+  { id: 'salle-famille', title: 'Salle à manger familiale', title_en: 'Family Dining Room', excerpt: 'L\'endroit préférée de la maison.', content: '- Table robuste\n- Chaises confort\n- Éclairage chaud\n- Souvenirs' }
+];
+
+// Blog global
+const blogArticles = [
+  { id: 'tendances', title: 'Tendances décoration 2024', title_en: 'Decor Trends 2024', excerpt: 'Découvrez les tendances qui marqueront la decoration cette année.', content: '- Japandi: Fusion japonais-scandinave\n- Cottage core: Style campagne\n- Maximalisme: Oser les motifs\n\nCouleurs:\n- Terres cuites\n- Verts profonds\n- Crèmes' },
+  { id: 'bien-choisir', title: 'Comment bien choisir ses meubles', title_en: 'How to Choose Furniture Well', excerpt: 'Guide complet pour choisir des meubles de qualité.', content: '- Structure solide\n- Finitions impeccables\n- Stabilité testée\n- Bois massif preferable' },
+  { id: 'durable', title: 'Meubles durables: Investissement Malin', title_en: 'Sustainable Furniture', excerpt: 'Pourquoi choisir des meubles durables.', content: '- Meuble qualité: 10-20 ans\n- Faible coût annuel\n- Moins de déchets\n- Écologique' }
+];
+
+/* ============= ÉTAT ============= */
+let cart = [];
+let currentLang = 'fr';
+let currentPage = 'home';
+
+/* ============= TRADUCTIONS ============= */
+const translations = {
+  fr: { home_title: 'Bienvenue chez E-Décor', home_subtitle: 'Votre partenaire ORCA-Décor pour l\'aménagement intérieur', home_cta: 'Découvrir le catalogue',
+    catalog_title: 'Notre Catalogue', catalog_subtitle: 'Parcourez toutes nos catégories de produits', blog_title: 'Blog Deco', blog_subtitle: 'Conseils et inspirations',
+    about_title: 'À propos d\'E-Décor', about_subtitle: 'En partenariat avec ORCA-Décor', contact_title: 'Contactez-nous', contact_subtitle: 'Nous sommes à votre écoute',
+    categories_title: 'Nos Catégories', voir_details: 'Voir les détails', ajouter_panier: 'Ajouter au panier', panier: 'Panier', commander: 'Commander',
+    paiement: 'Paiement', Total: 'Total', confirmation: 'Commande confirmée!', search_placeholder: 'Rechercher un produit...' },
+  en: { home_title: 'Welcome to E-Décor', home_subtitle: 'Your ORCA-Décor partner for interior design', home_cta: 'Discover the catalog',
+    catalog_title: 'Our Catalog', catalog_subtitle: 'Browse all our product categories', blog_title: 'Decoration Blog', blog_subtitle: 'Tips and inspirations',
+    about_title: 'About E-Décor', about_subtitle: 'In partnership with ORCA-Décor', contact_title: 'Contact Us', contact_subtitle: 'We are here to listen',
+    categories_title: 'Our Categories', voir_details: 'View details', ajouter_panier: 'Add to cart', panier: 'Cart', commander: 'Checkout',
+    paiement: 'Payment', Total: 'Total', confirmation: 'Order Confirmed!', search_placeholder: 'Search for a product...' }
+};
+
+function t(key) { return translations[currentLang][key] || key; }
+
+/* ============= INITIALISATION ============= */
+function init() {
+  populateCategoriesMenu();
+  navigate('home');
+  setupEventListeners();
+}
+
+function setupEventListeners() {
+  document.getElementById('search-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') handleSearch();
+  });
+}
+
+function populateCategoriesMenu() {
+  const menu = document.getElementById('categories-menu');
+  menu.innerHTML = categories.map(cat => 
+    `<li><a href="#" onclick="navigateToCategory('${cat.id}')">${currentLang === 'fr' ? cat.name : cat.name_en}</a></li>`
+  ).join('');
+}
+
+function switchLanguage(lang) {
+  currentLang = lang;
+  document.getElementById('search-input').placeholder = t('search_placeholder');
+  populateCategoriesMenu();
+  navigate(currentPage);
+}
+
+/* ============= NAVIGATION ============= */
+function navigate(page) {
+  currentPage = page;
+  updateActiveNav();
+  const main = document.getElementById('main-content');
+  const lang = currentLang === 'fr';
+  
+  switch(page) {
+    case 'home':
+      main.innerHTML = `
+        <section class="hero-section">
+          <h2>${t('home_title')}</h2>
+          <p>${t('home_subtitle')}</p>
+          <button class="cta-button" onclick="navigate('catalog')">${t('home_cta')}</button>
+        </section>
+        <h2 class="page-title">${t('categories_title')}</h2>
+        <div class="categories-grid">
+          ${categories.map(cat => `
+            <div class="category-card" onclick="navigateToCategory('${cat.id}')">
+              <div class="category-image" style="display:flex;align-items:center;justify-content:center;font-size:4rem;">${cat.icon}</div>
+              <div class="category-info">
+                <h3>${lang ? cat.name : cat.name_en}</h3>
+                <p>${cat.description}</p>
+                <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <h2 class="page-title">${t('blog_title')}</h2>
+        <div class="blog-grid">
+          ${blogArticles.slice(0, 3).map(article => `
+            <div class="blog-card" onclick="showBlog('${article.id}')">
+              <div class="blog-image">📝</div>
+              <div class="blog-content">
+                <h3>${lang ? article.title : article.title_en}</h3>
+                <p class="excerpt">${article.excerpt}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      break;
+      
+    case 'catalog':
+      main.innerHTML = `
+        <div class="page-title">
+          <h1>${t('catalog_title')}</h1>
+          <p>${t('catalog_subtitle')}</p>
+        </div>
+        <div class="categories-grid">
+          ${categories.map(cat => `
+            <div class="category-card" onclick="navigateToCategory('${cat.id}')">
+              <div class="category-image" style="display:flex;align-items:center;justify-content:center;font-size:4rem;">${cat.icon}</div>
+              <div class="category-info">
+                <h3>${lang ? cat.name : cat.name_en}</h3>
+                <p>${cat.description}</p>
+                <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      break;
+      
+    case 'blog':
+      main.innerHTML = `
+        <div class="blog-hero">
+          <h1>${t('blog_title')}</h1>
+          <p>${t('blog_subtitle')}</p>
+        </div>
+        <div class="blog-grid">
+          ${blogArticles.map(article => `
+            <div class="blog-card" onclick="showBlog('${article.id}')">
+              <div class="blog-image">📝</div>
+              <div class="blog-content">
+                <h3>${lang ? article.title : article.title_en}</h3>
+                <p class="excerpt">${article.excerpt}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      break;
+      
+    case 'cart':
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      main.innerHTML = `
+        <div class="page-title">
+          <h1>${t('panier')}</h1>
+          <p>${cart.length} ${cart.length === 1 ? 'article' : 'articles'}</p>
+        </div>
+        ${cart.length === 0 ? '<div class="no-results"><p>Votre panier est vide</p><button class="cta-button" onclick="navigate(\'catalog\')">Voir le catalogue</button></div>' : `
+          <div class="products-grid">
+            ${cart.map((item, index) => `
+              <div class="product-card">
+                <div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">${categories.find(c => c.id === item.categoryId)?.icon || '📦'}</div>
+                <div class="product-info">
+                  <h4>${item.name}</h4>
+                  <p class="price">${item.price} ${item.currency}</p>
+                  <button class="product-button" onclick="removeFromCart(${index})">Supprimer</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="cart-summary" style="max-width:400px;margin:30px auto;padding:25px;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+            <h3>${t('Total')}: <span style="color:#e74c3c;">${total} €</span></h3>
+            <button class="cta-button" style="width:100%;margin-top:20px;" onclick="showCheckout()">${t('commander')}</button>
+          </div>
+        `}
+      `;
+      break;
+      
+    case 'contact':
+      main.innerHTML = `
+        <div class="page-title">
+          <h1>${t('contact_title')}</h1>
+          <p>${t('contact_subtitle')}</p>
+        </div>
+        <div class="contact-form" style="max-width:600px;margin:0 auto;padding:40px;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+          <div style="text-align:center;margin-bottom:30px;">
+            <p style="font-size:1.2rem;margin:15px 0;">📧 <strong>electronbusiness07@gmail.com</strong></p>
+            <p style="font-size:1.2rem;margin:15px 0;">📞 <strong>+229 01 977 003 47</strong></p>
+            <p style="font-size:1.2rem;margin:15px 0;">📞 <strong>+229 01 411 663 14</strong></p>
+            <p style="font-size:1.2rem;margin:15px 0;">📍 <strong>Cotonou, Benin</strong></p>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case 'about':
+      main.innerHTML = `
+        <div class="page-title">
+          <h1>${t('about_title')}</h1>
+          <p>${t('about_subtitle')}</p>
+        </div>
+        <div class="about-section">
+          <h2>Notre Histoire</h2>
+          <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec ORCA-Décor, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
+          <br>
+          <h2>Nos Catégories</h2>
+          <ul>
+            <li><strong>Salons</strong>: Canapés, fauteuils, tables basses, meubles TV</li>
+            <li><strong>Bureaux</strong>: Bureaux exécutifs, fauteuils de direction</li>
+            <li><strong>Cuisines</strong>: Îlots centraux, meubles bas, étageres</li>
+            <li><strong>Jardins</strong>: Salons d'extérieur, transats, barbecues</li>
+            <li><strong>Salles à manger</strong>: Tables, chaises, buffets</li>
+          </ul>
+        </div>
+      `;
+      break;
+  }
+}
+
+function navigateToCategory(categoryId) {
+  const category = categories.find(c => c.id === categoryId);
+  if (!category) return;
+  
+  // Blog pour cette catégorie
+  const categoryBlogs = {
+    salons: blogArticlesSalons,
+    bureaux: blogArticlesBureaux,
+    cuisines: blogArticlesCuisines,
+    jardins: blogArticlesJardins,
+    'salle-a-manger': blogArticlesSalleManger
+  }[categoryId] || [];
+  
+  const main = document.getElementById('main-content');
+  const lang = currentLang === 'fr';
+  
+  main.innerHTML = `
+    <div class="page-title">
+      <h1>${lang ? category.name : category.name_en}</h1>
+      <p>${category.description}</p>
+    </div>
+    
+    <h2 class="page-title" style="margin-top:40px;">${lang ? 'Produits' : 'Products'}</h2>
+    <div class="products-grid">
+      ${category.products.map(product => `
+        <div class="product-card">
+          <div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">${category.icon}</div>
+          <div class="product-info">
+            <h4>${product.name}</h4>
+            <p class="price">${product.price} ${product.currency}</p>
+            <p class="description">${product.description}</p>
+            <button class="product-button" onclick="showProductDetails('${category.id}', '${product.id}')">${t('voir_details')}</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    ${categoryBlogs.length > 0 ? `
+      <h2 class="page-title" style="margin-top:60px;">📝 ${lang ? 'Articles Blog' : 'Blog Articles'}</h2>
+      <div class="blog-grid">
+        ${categoryBlogs.map(article => `
+          <div class="blog-card" onclick="showCategoryBlog('${category.id}', '${article.id}')">
+            <div class="blog-image">📝</div>
+            <div class="blog-content">
+              <h3>${lang ? article.title : article.title_en}</h3>
+              <p class="excerpt">${article.excerpt}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
+  currentPage = 'category';
+  updateActiveNav();
+}
+
+// Afficher blog par catégorie
+function showCategoryBlog(categoryId, articleId) {
+  const categoryBlogs = {
+    salons: blogArticlesSalons,
+    bureaux: blogArticlesBureaux,
+    cuisines: blogArticlesCuisines,
+    jardins: blogArticlesJardins,
+    'salle-a-manger': blogArticlesSalleManger
+  }[categoryId] || [];
+  
+  const article = categoryBlogs.find(a => a.id === articleId);
+  if (!article) return;
+  
+  const category = categories.find(c => c.id === categoryId);
+  const main = document.getElementById('main-content');
+  const lang = currentLang === 'fr';
+  
+  main.innerHTML = `
+    <a href="#" onclick="navigateToCategory('${categoryId}')" style="display:inline-block;margin-bottom:20px;color:#2c3e50;font-size:1.1rem;">← ${lang ? 'Retour aux produits' : 'Back to products'}</a>
+    <div class="blog-full-content">
+      <h1>${lang ? article.title : article.title_en}</h1>
+      <div style="color:#666;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid #ddd;">${article.excerpt}</div>
+      <div style="line-height:2.2;font-size:1.1rem;color:#333;">${article.content.replace(/\n/g, '<br>')}</div>
+    </div>
+  `;
+}
+
+function showProductDetails(categoryId, productId) {
+  const category = categories.find(c => c.id === categoryId);
+  const product = category?.products.find(p => p.id === productId);
+  if (!product) return;
+  
+  const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = `
+    <div style="text-align:center;padding:20px;">
+      <div style="font-size:6rem;margin:20px 0;">${category.icon}</div>
+      <h2 style="color:#2c3e50;margin:20px 0;">${product.name}</h2>
+      <p style="font-size:2rem;color:#e74c3c;font-weight:bold;margin:20px 0;">${product.price} ${product.currency}</p>
+      <p style="margin:20px 0;line-height:1.8;">${product.description}</p>
+      <button class="product-button" style="max-width:300px;padding:15px;font-size:1.1rem;margin-top:20px;" onclick="addToCart('${category.id}', '${product.id}')">${t('ajouter_panier')}</button>
+    </div>
+  `;
+  openModal();
+}
+
+function addToCart(categoryId, productId) {
+  const category = categories.find(c => c.id === categoryId);
+  const product = category?.products.find(p => p.id === productId);
+  if (product) {
+    cart.push({ ...product, categoryId: categoryId });
+    updateCartCount();
+    closeModal();
+    showNotification(currentLang === 'fr' ? 'Produit ajouté au panier!' : 'Product added to cart!');
+  }
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCartCount();
+  navigate('cart');
+}
+
+function updateCartCount() {
+  document.getElementById('cart-count').innerText = `(${cart.length})`;
+}
+
+function showCheckout() {
+  const main = document.getElementById('main-content');
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  
+  main.innerHTML = `
+    <div class="page-title">
+      <h1>${t('paiement')}</h1>
+    </div>
+    <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+      <div style="background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <h3>Mode de paiement</h3>
+        <label style="display:block;margin:15px 0;padding:15px;background:#f8f9fa;border:2px solid #ddd;border-radius:10px;cursor:pointer;">
+          <input type="radio" name="payment" value="mtn" checked> 📱 MTN Mobile Money
+        </label>
+        <label style="display:block;margin:15px 0;padding:15px;background:#f8f9fa;border:2px solid #ddd;border-radius:10px;cursor:pointer;">
+          <input type="radio" name="payment" value="moov"> 📱 Moov Money
+        </label>
+        <label style="display:block;margin:15px 0;padding:15px;background:#f8f9fa;border:2px solid #ddd;border-radius:10px;cursor:pointer;">
+          <input type="radio" name="payment" value="card"> 💳 Carte bancaire
+        </label>
+        <label style="display:block;margin:15px 0;padding:15px;background:#f8f9fa;border:2px solid #ddd;border-radius:10px;cursor:pointer;">
+          <input type="radio" name="payment" value="bank"> 🏦 Virement
+        </label>
+      </div>
+      <div style="background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+        <h3>Informations de livraison</h3>
+        <form onsubmit="processOrder(event)">
+          <div class="form-group"><label>Nom complet</label><input type="text" id="name" required></div>
+          <div class="form-group"><label>Email</label><input type="email" id="email" required></div>
+          <div class="form-group"><label>Téléphone</label><input type="tel" id="phone" required></div>
+          <div class="form-group"><label>Adresse</label><textarea id="address" required></textarea></div>
+          <div class="form-group"><label>Ville</label><input type="text" id="city" required></div>
+          <div class="form-group"><label>Pays</label><select id="country"><option value="BJ">Benin</option><option value="FR">France</option><option value="OTHER">Autre</option></select></div>
+          <h3 style="margin-top:20px;">Total: <span style="color:#e74c3c;">${total} €</span></h3>
+          <button type="submit" class="cta-button" style="width:100%;margin-top:20px;">Confirmer</button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+function processOrder(event) {
+  event.preventDefault();
+  const orderId = 'ED-' + Date.now();
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const main = document.getElementById('main-content');
+  
+  main.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:5rem;">✅</div>
+      <h1 style="color:#2c3e50;margin:20px 0;">${t('confirmation')}</h1>
+      <p style="font-size:1.5rem;margin:20px 0;">Numéro: <strong>${orderId}</strong></p>
+      <p style="font-size:1.2rem;margin:20px 0;">Total: <strong>${total} €</strong></p>
+      <p style="margin:20px 0;">Nous vous contactons pour le paiement.</p>
+      <button class="cta-button" onclick="cart=[];updateCartCount();navigate('home')">Retour à l'accueil</button>
+    </div>
+  `;
+  cart = [];
+  updateCartCount();
+}
+
+function showBlog(articleId) {
+  const article = blogArticles.find(a => a.id === articleId);
+  if (!article) return;
+  
+  const main = document.getElementById('main-content');
+  const lang = currentLang === 'fr';
+  
+  main.innerHTML = `
+    <a href="#" onclick="navigate('blog')" style="display:inline-block;margin-bottom:20px;color:#2c3e50;">← Retour au blog</a>
+    <div class="blog-full-content">
+      <h1>${lang ? article.title : article.title_en}</h1>
+      <div style="color:#666;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid #ddd;">${article.excerpt}</div>
+      <div style="line-height:2;">${article.content.replace(/\n/g, '<br>').replace(/^- /gm, '• ')}</div>
+    </div>
+  `;
+}
+
+function handleSearch() {
+  const query = document.getElementById('search-input').value.trim().toLowerCase();
+  if (!query) return;
+  
+  const results = [];
+  categories.forEach(category => {
+    category.products.forEach(product => {
+      if (product.name.toLowerCase().includes(query) || product.description.toLowerCase().includes(query)) {
+        results.push({ ...product, categoryName: category.name, categoryIcon: category.icon, categoryId: category.id });
+      }
+    });
+  });
+  
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <div class="page-title">
+      <h1>Résultats pour "${query}"</h1>
+      <p>${results.length} ${results.length === 1 ? 'résultat' : 'résultats'}</p>
+    </div>
+    ${results.length === 0 ? '<div class="no-results"><p>Aucun résultat trouvé</p></div>' : `
+      <div class="products-grid">
+        ${results.map(product => `
+          <div class="product-card">
+            <div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">${product.categoryIcon}</div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="category-tag">${product.categoryName}</p>
+              <p class="price">${product.price} ${product.currency}</p>
+              <p class="description">${product.description}</p>
+              <button class="product-button" onclick="showProductDetails('${product.categoryId}', '${product.id}')">${t('voir_details')}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `}
+  `;
+}
+
+function updateActiveNav() {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.dataset.page === currentPage) link.classList.add('active');
+  });
+}
+
+/* ============= MODAL ============= */
+function openModal() {
+  document.getElementById('modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+function closeModalOutside(event) {
+  if (event.target.classList.contains('modal')) {
+    closeModal();
+  }
+}
+
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#e74c3c;color:white;padding:15px 25px;border-radius:5px;z-index:3000;';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 3000);
+}
+
+/* ============= INIT ============= */
+document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
