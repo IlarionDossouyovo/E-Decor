@@ -18,6 +18,9 @@ const translations = {
     contact_title: 'Contactez-nous',
     contact_subtitle: 'Nous sommes à votre écoute',
     search_placeholder: 'Rechercher un produit...',
+    cart_title: 'Mon Panier',
+    panier: 'Panier',
+    checkout: 'Paiement',
     categories_title: 'Nos Catégories',
     productos_title: 'Nos Produits',
     voir_details: 'Voir les détails',
@@ -221,6 +224,9 @@ async function loadPage(page) {
     case 'contact':
       await loadContactPage(mainContent);
       break;
+    case 'cart':
+      await loadCartPage(mainContent);
+      break;
     default:
       mainContent.innerHTML = '<p>Page not found</p>';
   }
@@ -359,6 +365,7 @@ async function showProductDetails(categoryId, productId) {
   const product = await window.api.getProduct(categoryId, productId);
   if (!product) return;
 
+  const category = categoriesData.find(c => c.id === categoryId);
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = `
     <div class="product-detail">
@@ -366,11 +373,20 @@ async function showProductDetails(categoryId, productId) {
       <h2 style="color: var(--primary-color); margin: 20px 0;">${product.name}</h2>
       <p class="price" style="font-size: 2rem; color: var(--secondary-color); font-weight: bold;">${formatPrice(product.price, product.currency)}</p>
       <p style="margin: 20px 0; line-height: 1.8;">${product.description}</p>
-      <button class="product-button" style="max-width: 300px; padding: 15px; font-size: 1.1rem;">${t('ajouter_panier')}</button>
+      <button class="product-button" style="max-width: 300px; padding: 15px; font-size: 1.1rem;" onclick="addToCartFromModal('${categoryId}', '${product.id}')">${t('ajouter_panier')}</button>
     </div>
   `;
 
   openModal();
+}
+
+// Add to cart from modal
+function addToCartFromModal(categoryId, productId) {
+  const product = categoriesData.find(c => c.id === categoryId)?.products.find(p => p.id === productId);
+  if (product) {
+    addToCart(product, categoryId, categoriesData.find(c => c.id === categoryId).name);
+    closeModal();
+  }
 }
 
 // Load Blog Page
@@ -544,6 +560,307 @@ async function loadContactPage(container) {
     </div>
   `;
 }
+
+// ============= PAYMENT SYSTEM =============
+
+// Cart state
+let cart = {
+  items: [],
+  total: 0,
+  currency: '€'
+};
+
+// Add to cart
+function addToCart(product, categoryId, categoryName) {
+  const existing = cart.items.find(i => i.id === product.id);
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.items.push({
+      ...product,
+      categoryId,
+      categoryName,
+      quantity: 1
+    });
+  }
+  updateCartTotal();
+  showNotification(currentLanguage === 'fr' ? 'Produit ajouté au panier!' : 'Product added to cart!');
+}
+
+// Remove from cart  
+function removeFromCart(productId) {
+  cart.items = cart.items.filter(i => i.id !== productId);
+  updateCartTotal();
+  loadCartPage();
+}
+
+// Update cart total
+function updateCartTotal() {
+  cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+
+// Show cart page
+async function loadCartPage() {
+  const container = document.getElementById('main-content');
+  const t = currentLanguage === 'fr';
+  
+  if (cart.items.length === 0) {
+    container.innerHTML = `
+      <div class="page-title">
+        <h1>${t ? 'Panier vide' : 'Empty Cart'}</h1>
+        <p>${t ? 'Ajoutez des produits pour commander' : 'Add products to order'}</p>
+        <a href="#" class="cta-button" onclick="loadPage('catalog'); return false;">${t ? 'Voir le catalogue' : 'View Catalog'}</a>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = `
+    <div class="page-title">
+      <h1>${t ? 'Mon Panier' : 'My Cart'}</h1>
+    </div>
+    <div class="cart-container">
+      <div class="cart-items">
+        ${cart.items.map(item => `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <h4>${item.name}</h4>
+              <p class="cart-item-category">${item.categoryName}</p>
+              <p class="cart-item-price">${item.price} ${item.currency} × ${item.quantity}</p>
+            </div>
+            <div class="cart-item-actions">
+              <button class="btn-remove" onclick="removeFromCart('${item.id}')">${t ? 'Supprimer' : 'Remove'}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="cart-summary">
+        <h3>${t ? 'Résumé de commande' : 'Order Summary'}</h3>
+        <div class="cart-total">
+          <span>${t ? 'Total' : 'Total'}:</span>
+          <span class="total-amount">${cart.total} ${cart.currency}</span>
+        </div>
+        <button class="checkout-button" onclick="loadCheckoutPage()">${t ? 'Passer la commande' : 'Checkout'}</button>
+      </div>
+    </div>
+  `;
+}
+
+// Checkout page with payment methods
+async function loadCheckoutPage() {
+  const container = document.getElementById('main-content');
+  const t = currentLanguage === 'fr';
+  
+  container.innerHTML = `
+    <div class="page-title">
+      <h1>${t ? 'Paiement' : 'Payment'}</h1>
+    </div>
+    <div class="checkout-container">
+      <div class="payment-methods">
+        <h3>${t ? 'Mode de paiement' : 'Payment Method'}</h3>
+        
+        <label class="payment-option">
+          <input type="radio" name="payment" value="card" checked>
+          <div class="payment-card">
+            <span class="pm-icon">💳</span>
+            <span class="pm-name">${t ? 'Carte bancaire' : 'Credit/Debit Card'}</span>
+            <span class="pm-desc">Visa, Mastercard, Verve</span>
+          </div>
+        </label>
+        
+        <label class="payment-option">
+          <input type="radio" name="payment" value="mtn">
+          <div class="payment-card">
+            <span class="pm-icon">📱</span>
+            <span class="pm-name">MTN Mobile Money</span>
+            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
+          </div>
+        </label>
+        
+        <label class="payment-option">
+          <input type="radio" name="payment" value="moov">
+          <div class="payment-card">
+            <span class="pm-icon">📱</span>
+            <span class="pm-name">Moov Money</span>
+            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
+          </div>
+        </label>
+        
+        <label class="payment-option">
+          <input type="radio" name="payment" value="paypal">
+          <div class="payment-card">
+            <span class="pm-icon">🅿️</span>
+            <span class="pm-name">PayPal</span>
+            <span class="pm-desc">${t ? 'International' : 'International'}</span>
+          </div>
+        </label>
+        
+        <label class="payment-option">
+          <input type="radio" name="payment" value="bank">
+          <div class="payment-card">
+            <span class="pm-icon">🏦</span>
+            <span class="pm-name">${t ? 'Virement bancaire' : 'Bank Transfer'}</span>
+            <span class="pm-desc">${t ? 'Europe/International' : 'Europe/International'}</span>
+          </div>
+        </label>
+      </div>
+      
+      <div class="checkout-form">
+        <h3>${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
+        <form onsubmit="processPayment(event)">
+          <div class="form-group">
+            <label>${t ? 'Nom complet' : 'Full Name'}</label>
+            <input type="text" id="delivery-name" required>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Email' : 'Email'}</label>
+            <input type="email" id="delivery-email" required>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Téléphone' : 'Phone'}</label>
+            <input type="tel" id="delivery-phone" required>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Adresse de livraison' : 'Delivery Address'}</label>
+            <textarea id="delivery-address" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Ville' : 'City'}</label>
+            <input type="text" id="delivery-city" required>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Pays' : 'Country'}</label>
+            <select id="delivery-country" required>
+              <option value="BJ">Benin</option>
+              <option value="FR">France</option>
+              <option value="US">United States</option>
+              <option value="DE">Germany</option>
+              <option value="GB">United Kingdom</option>
+              <option value="CA">Canada</option>
+              <option value="SN">Senegal</option>
+              <option value="CI">Cote d'Ivoire</option>
+              <option value="TG">Togo</option>
+              <option value="NG">Nigeria</option>
+              <option value="OTHER">${t ? 'Autre' : 'Other'}</option>
+            </select>
+          </div>
+          
+          <div class="order-summary">
+            <h4>${t ? 'Commande' : 'Order'}</h4>
+            <p>${cart.items.length} ${t ? 'articles' : 'items'}</p>
+            <p class="order-total">${t ? 'Total' : 'Total'}: <strong>${cart.total} ${cart.currency}</strong></p>
+          </div>
+          
+          <button type="submit" class="submit-button">${t ? 'Confirmer le paiement' : 'Confirm Payment'}</button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+// Process payment (demo - requires real integration)
+function processPayment(event) {
+  event.preventDefault();
+  
+  const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+  const name = document.getElementById('delivery-name').value;
+  const email = document.getElementById('delivery-email').value;
+  const phone = document.getElementById('delivery-phone').value;
+  const address = document.getElementById('delivery-address').value;
+  const city = document.getElementById('delivery-city').value;
+  const country = document.getElementById('delivery-country').value;
+  
+  // Generate order ID
+  const orderId = 'ED-' + Date.now();
+  
+  // In production, integrate with real payment processor:
+  // - Stripe (cards, PayPal)
+  // - MTN/Moov API (mobile money Benin)
+  // - Bank transfer (SEPA/SWIFT)
+  
+  showPaymentConfirmation(orderId, paymentMethod, {
+    name, email, phone, address, city, country
+  });
+}
+
+// Show payment confirmation
+function showPaymentConfirmation(orderId, paymentMethod, delivery) {
+  const t = currentLanguage === 'fr';
+  const methodNames = {
+    card: t ? 'Carte bancaire' : 'Credit Card',
+    mtn: 'MTN Mobile Money',
+    moov: 'Moov Money',
+    paypal: 'PayPal',
+    bank: t ? 'Virement bancaire' : 'Bank Transfer'
+  };
+  
+  const container = document.getElementById('main-content');
+  container.innerHTML = `
+    <div class="confirmation-page">
+      <div class="confirmation-icon">✅</div>
+      <h1>${t ? 'Commande confirmée!' : 'Order Confirmed!'}</h1>
+      <p class="order-id">${t ? 'Numéro de commande' : 'Order ID'}: <strong>${orderId}</strong></p>
+      
+      <div class="confirmation-details">
+        <h3>${t ? 'Détails' : 'Details'}</h3>
+        <p><strong>${t ? 'Mode de paiement' : 'Payment Method'}:</strong> ${methodNames[paymentMethod]}</p>
+        <p><strong>${t ? 'Total' : 'Total'}:</strong> ${cart.total} ${cart.currency}</p>
+        <p><strong>${t ? 'Client' : 'Customer'}:</strong> ${delivery.name}</p>
+        <p><strong>${t ? 'Livraison' : 'Delivery'}:</strong> ${delivery.city}, ${delivery.country}</p>
+      </div>
+      
+      <div class="payment-instructions">
+        <h3>${t ? 'Instructions de paiement' : 'Payment Instructions'}</h3>
+        ${getPaymentInstructions(paymentMethod, delivery)}
+      </div>
+      
+      <a href="#" class="cta-button" onclick="clearCart(); loadPage('home'); return false;">${t ? 'Retour à l\'accueil' : 'Back to Home'}</a>
+    </div>
+  `;
+}
+
+// Get payment instructions by method
+function getPaymentInstructions(method, delivery) {
+  const t = currentLanguage === 'fr';
+  
+  const instructions = {
+    card: `
+      <p>${t ? 'Vous allez être redirigé vers notre partenaire de paiement sécurisé.' : 'You will be redirected to our secure payment partner.'}</p>
+      <p class="note"><strong>${t ? 'Note:' : 'Note:'} Stripe ${t ? 'intégration requise.' : 'integration required.'}</p>`,
+    mtn: `
+      <p>${t ? 'Envoyez' : 'Send'} ${cart.total} XOF ${t ? 'au' : 'to'} <strong>+229 97 00 00 00</strong></p>
+      <p>${t ? 'Numéro de transaction:' : 'Transaction ID'}: ${delivery.phone}</p>`,
+    moov: `
+      <p>${t ? 'Envoyez' : 'Send'} ${cart.total} XOF ${t ? 'au' : 'to'} <strong>+229 97 00 00 00</strong></p>
+      <p>${t ? 'Numéro de transaction:' : 'Transaction ID'}: ${delivery.phone}</p>`,
+    paypal: `
+      <p>${t ? 'Vous allez être redirigé vers PayPal pour le paiement.' : 'You will be redirected to PayPal for payment.'}</p>
+      <p class="note"><strong>${t ? 'Note:' : 'Note:'} PayPal ${t ? 'intégration requise.' : 'integration required.'}</p>`,
+    bank: `
+      <p><strong>${t ? 'Virement bancaire' : 'Bank Transfer'}:</strong></p>
+      <p>Banque: ${t ? 'À configurer' : 'To be configured'}</p>
+      <p>IBAN: ${t ? 'À configurer' : 'To be configured'}</p>
+      <p>SWIFT: ${t ? 'À configurer' : 'To be configured'}</p>`
+  };
+  
+  return instructions[method] || '';
+}
+
+// Clear cart
+function clearCart() {
+  cart = { items: [], total: 0, currency: '€' };
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 3000);
+}
+
+// ============= END PAYMENT SYSTEM =============
 
 // Submit contact form
 function submitContactForm(event) {
