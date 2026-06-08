@@ -2,6 +2,57 @@
 let currentLanguage = 'fr';
 let currentPage = 'home';
 let categoriesData = [];
+let aiStatus = { available: false };
+let aiConversations = [];
+
+// Vérifier le statut AI au chargement
+async function checkAIStatus() {
+  if (window.api && window.api.ai) {
+    try {
+      aiStatus = await window.api.ai.checkStatus();
+      console.log('[AI] Statut:', aiStatus);
+      return aiStatus.available;
+    } catch (e) {
+      console.log('[AI] Erreur:', e);
+      return false;
+    }
+  }
+  return false;
+}
+
+// Envoyer un message au chat AI
+async function sendAIMessage(message, context = {}) {
+  if (!aiStatus.available) {
+    return { error: 'AI non disponible. Démarrez Ollama localement.' };
+  }
+  try {
+    return await window.api.ai.chat(message, context);
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// Obtenir des recommandations AI
+async function getAIRecommendations(preferences) {
+  if (!aiStatus.available) {
+    return { error: 'AI non disponible' };
+  }
+  try {
+    return await window.api.ai.recommendations(preferences);
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// Lister les modèles disponibles
+async function listAIModels() {
+  if (!window.api || !window.api.ai) return { models: [] };
+  try {
+    return await window.api.ai.listModels();
+  } catch (e) {
+    return { models: [], error: e.message };
+  }
+}
 
 // Translations
 const translations = {

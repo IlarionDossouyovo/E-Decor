@@ -821,7 +821,70 @@ ipcMain.handle('search-products', (event, query) => {
   return results;
 });
 
-app.whenReady().then(createWindow);
+// Intégration AI - Ollama
+let ollamaClient = null;
+
+function initAI() {
+  try {
+    ollamaClient = require('./ai-integration/ollama-client');
+    console.log('[AI] Ollama client chargé');
+  } catch (e) {
+    console.log('[AI] Ollama non disponible:', e.message);
+  }
+}
+
+// IPC Handlers pour l'AI
+ipcMain.handle('ai-check-status', async () => {
+  if (!ollamaClient) return { available: false };
+  try {
+    const status = await ollamaClient.checkOllamaStatus();
+    return { available: status };
+  } catch (e) {
+    return { available: false, error: e.message };
+  }
+});
+
+ipcMain.handle('ai-chat', async (event, message, context = {}) => {
+  if (!ollamaClient) {
+    return { error: 'AI non disponible' };
+  }
+  try {
+    const response = await ollamaClient.generateSupportResponse(message, context);
+    return { response, model: 'llama3.2' };
+  } catch (e) {
+    return { error: e.message };
+  }
+});
+
+ipcMain.handle('ai-recommendations', async (event, preferences) => {
+  if (!ollamaClient) {
+    return { error: 'AI non disponible' };
+  }
+  try {
+    const recommendations = await ollamaClient.generateRecommendations(preferences);
+    return { recommendations };
+  } catch (e) {
+    return { error: e.message };
+  }
+});
+
+ipcMain.handle('ai-list-models', async () => {
+  if (!ollamaClient) {
+    return { models: [], available: false };
+  }
+  try {
+    const models = await ollamaClient.listModels();
+    return { models, available: true };
+  } catch (e) {
+    return { models: [], available: false, error: e.message };
+  }
+});
+
+// Démarrer l'app
+app.whenReady().then(() => {
+  initAI();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

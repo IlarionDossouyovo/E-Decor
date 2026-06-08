@@ -1,5 +1,5 @@
 {
-  "name": "E-Décor - AI Agent Assistant",
+  "name": "E-Décor - AI Agent avec Ollama (360°)",
   "nodes": [
     {
       "parameters": {
@@ -8,7 +8,7 @@
         }
       },
       "id": "ai-trigger",
-      "name": "Vérification AI",
+      "name": "Trigger AI (cron 15min)",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
       "position": [250, 300]
@@ -16,11 +16,11 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "https://web-version-mmbcbxtvs-electrons-projects-7ac943c4.vercel.app/api/pending-tasks",
+        "url": "http://localhost:3000/api/pending-tasks",
         "options": {}
       },
       "id": "check-tasks",
-      "name": "Vérifier tâches",
+      "name": "Vérifier tâches en attente",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [450, 300]
@@ -34,69 +34,171 @@
         }
       },
       "id": "has-tasks",
-      "name": "Tâches en attente?",
+      "name": "Des tâches?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [650, 300]
     },
     {
       "parameters": {
-        "expression": "={{ { response: 'Merci pour votre message! Notre équipe va vous répondre sous 24h. E-Décor - Votre partenaire decoration.' } }}",
-        "includeOtherFields": false
+        "method": "POST",
+        "url": "http://localhost:11434/api/generate",
+        "body": {
+          "model": "llama3.2",
+          "prompt": "Tu es un assistant E-Décor expert en decoration. Réponds de manière professionnelle à: {{ $json.clientMessage }}. Contexte: {{ $json.context }}",
+          "stream": false
+        },
+        "options": {}
       },
-      "id": "ai-response",
-      "name": "Générer réponse AI",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
+      "id": "ollama-call",
+      "name": "Appel Ollama (LLM local)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "position": [850, 250]
     },
     {
       "parameters": {
-        "to": "{{ $json.customerEmail }}",
-        "subject": "Réponse E-Décor - {{ $json.subject }}",
-        "body": "{{ $json.aiResponse }}",
-        "options": {}
+        "expressions": {
+          "aiResponse": "={{ $json.response }}"
+        },
+        "includeOtherFields": true
       },
-      "id": "send-response",
-      "name": "Envoyer réponse",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 1,
+      "id": "format-response",
+      "name": "Formater réponse AI",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
       "position": [1050, 250]
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/tasks/{{ $json.taskId }}/respond",
+        "body": {
+          "response": "{{ $json.aiResponse }}",
+          "aiGenerated": true,
+          "model": "llama3.2"
+        },
+        "options": {}
+      },
+      "id": "save-response",
+      "name": "Sauvegarder réponse",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 250]
+    },
+    {
+      "parameters": {
         "to": "electronbusiness07@gmail.com",
-        "subject": "AI Agent - Traitement terminé",
-        "body": "L'AI agent a traité:\n\n- Type: {{ $json.taskType }}\n- Client: {{ $json.customerEmail }}\n- Réponse générée automatiquement\n\nVérifiez la qualité si nécessaire.",
+        "subject": "🤖 AI Agent - Tâche traitée",
+        "body": "L'AI Agent Ollama a traité une tâche:\n\n- Type: {{ $json.taskType }}\n- Client: {{ $json.customerEmail }}\n- Message: {{ $json.clientMessage }}\n- Réponse: {{ $json.aiResponse }}\n\n---",
         "options": {}
       },
       "id": "log-action",
-      "name": "Logger action",
+      "name": "Notifier équipe",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 1,
-      "position": [1050, 400]
+      "position": [1450, 250]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook/ai-support",
+        "body": {
+          "event": "ai-response",
+          "taskId": "{{ $json.taskId }}",
+          "response": "{{ $json.aiResponse }}",
+          "timestamp": "{{ $now }}"
+        },
+        "options": {}
+      },
+      "id": "webhook-notify",
+      "name": "Notifier webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1450, 400]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://localhost:11434/api/tags",
+        "options": {}
+      },
+      "id": "check-ollama",
+      "name": "Vérif Ollama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 450]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "leftValue": "{{ $json.models }}",
+            "rightValue": ""
+          },
+          "string": [
+            {"value1": "={{ $json.models }}", "operation": "exists"}
+          ]
+        }
+      },
+      "id": "ollama-up",
+      "name": "Ollama OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 450]
+    },
+    {
+      "parameters": {
+        "to": "electronbusiness07@gmail.com",
+        "subject": "⚠️ AI Agent - Ollama indisponible",
+        "body": "Ollama n'est pas disponible sur localhost:11434.\n\nVérifiez que Ollama est démarré.",
+        "options": {}
+      },
+      "id": "alert-down",
+      "name": "Alerter si down",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1250, 450]
     }
   ],
   "connections": {
-    "Vérification AI": {
-      "main": [[{"node": "Vérifier tâches", "type": "main", "index": 0}]]
+    "Trigger AI (cron 15min)": {
+      "main": [[{"node": "Vérifier tâches en attente", "type": "main", "index": 0}]]
     },
-    "Vérifier tâches": {
-      "main": [[{"node": "Tâches en attente?", "type": "main", "index": 0}]]
+    "Vérifier tâches en attente": {
+      "main": [[{"node": "Des tâches?", "type": "main", "index": 0}]]
     },
-    "Tâches en attente?": {
+    "Des tâches?": {
       "main": [
-        [{"node": "Générer réponse AI", "type": "main", "index": 0}]
+        [{"node": "Appel Ollama (LLM local)", "type": "main", "index": 0}],
+        [{"node": "Vérif Ollama", "type": "main", "index": 0}]
       ]
     },
-    "Générer réponse AI": {
+    "Appel Ollama (LLM local)": {
+      "main": [[{"node": "Formater réponse AI", "type": "main", "index": 0}]]
+    },
+    "Formater réponse AI": {
       "main": [
-        [{"node": "Envoyer réponse", "type": "main", "index": 0}],
-        [{"node": "Logger action", "type": "main", "index": 0}]
+        [{"node": "Sauvegarder réponse", "type": "main", "index": 0}]
+      ]
+    },
+    "Sauvegarder réponse": {
+      "main": [
+        [{"node": "Notifier équipe", "type": "main", "index": 0}],
+        [{"node": "Notifier webhook", "type": "main", "index": 0}]
+      ]
+    },
+    "Vérif Ollama": {
+      "main": [[{"node": "Ollama OK?", "type": "main", "index": 0}]]
+    },
+    "Ollama OK?": {
+      "main": [
+        []
       ]
     }
-  },
+  ],
   "active": false,
   "settings": {},
-  "id": "e-decor-ai-agent"
+  "id": "e-decor-ai-agent-360",
+  "tags": ["ai", "ollama", "support-client", "automation"]
 }
