@@ -13,20 +13,23 @@ const OLLAMA_PORT = 11434;
 const OLLAMA_MODEL = 'codellama:7b';
 
 /**
- * Appelle Ollama pour générer une réponse
+ * Appelle Ollama pour générer une réponse (API chat)
  */
 function callOllama(prompt) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       model: OLLAMA_MODEL,
-      prompt: prompt,
+      messages: [
+        { role: 'system', content: 'Tu es un assistant expert en décoration et meubles. Réponds de manière professionnelle et concise en français.' },
+        { role: 'user', content: prompt }
+      ],
       stream: false
     });
     
     const options = {
       hostname: OLLAMA_HOST,
       port: OLLAMA_PORT,
-      path: '/api/generate',
+      path: '/api/chat',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +43,14 @@ function callOllama(prompt) {
       res.on('end', () => {
         try {
           const json = JSON.parse(body);
-          resolve(json.response || 'Pas de réponse');
+          // Handle chat API response format
+          if (json.message && json.message.content) {
+            resolve(json.message.content);
+          } else if (json.response) {
+            resolve(json.response);
+          } else {
+            resolve('Pas de réponse - modèle: ' + OLLAMA_MODEL);
+          }
         } catch (e) {
           reject(e);
         }
