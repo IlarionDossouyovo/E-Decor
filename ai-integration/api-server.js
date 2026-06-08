@@ -20,10 +20,14 @@ function callOllama(prompt) {
     const data = JSON.stringify({
       model: OLLAMA_MODEL,
       messages: [
-        { role: 'system', content: 'Tu es un assistant expert en décoration et meubles. Réponds de manière professionnelle et concise en français.' },
+        { role: 'system', content: 'Tu es un assistant expert en décoration et meubles. Réponds de manière concise en français.' },
         { role: 'user', content: prompt }
       ],
-      stream: false
+      stream: false,
+      options: {
+        temperature: 0.7,
+        num_predict: 200
+      }
     });
     
     const options = {
@@ -34,13 +38,15 @@ function callOllama(prompt) {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': data.length
-      }
+      },
+      timeout: 30000
     };
     
     const req = http.request(options, (res) => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
+        console.log('[Ollama raw response]:', body.substring(0, 200));
         try {
           const json = JSON.parse(body);
           // Handle chat API response format
@@ -48,8 +54,10 @@ function callOllama(prompt) {
             resolve(json.message.content);
           } else if (json.response) {
             resolve(json.response);
+          } else if (json.done) {
+            resolve('Modèle en cours de chargement. Veuillez réessayer dans quelques secondes.');
           } else {
-            resolve('Pas de réponse - modèle: ' + OLLAMA_MODEL);
+            resolve('Réponse vide. Vérifiez qu\'Ollama est bien démarré avec le modèle: ' + OLLAMA_MODEL);
           }
         } catch (e) {
           reject(e);
@@ -57,9 +65,19 @@ function callOllama(prompt) {
       });
     });
     
-    req.on('error', reject);
+    req.on('error', (e) => {
+      console.error('[Ollama error]:', e.message);
+      reject(e);
+    });
+    
     req.write(data);
     req.end();
+    
+    // Timeout après 30 secondes
+    setTimeout(() => {
+      req.destroy();
+      resolve('Délai d\'attente dépassé. Ollama met peut-être du temps à charger.');
+    }, 30000);
   });
 }
 
