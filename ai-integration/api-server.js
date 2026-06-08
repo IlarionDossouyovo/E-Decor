@@ -14,33 +14,48 @@ const OLLAMA_MODEL = 'llama3:latest';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
- * Appelle Ollama - simple version
+ * Appelle Ollama via spawn (sans shell)
  */
 function callOllama(prompt) {
   return new Promise((resolve) => {
-    const { exec } = require('child_process');
+    const { spawn } = require('child_process');
     
-    // Simple prompt without complex instructions
-    const simplePrompt = prompt.replace(/[^a-zA-Z0-9\séèàùçâäöüîïôêë\-']/g, '').substring(0, 50);
+    // Simple prompt without special chars
+    const simplePrompt = prompt.replace(/[^a-zA-Z0-9\s]/g, ' ').substring(0, 30).trim();
     
     console.log('[Ollama] Prompt:', simplePrompt);
     
-    const cmd = `"${OLLAMA_PATH}" run ${OLLAMA_MODEL} ${simplePrompt}`;
+    const args = ['run', OLLAMA_MODEL, simplePrompt];
+    const ollama = spawn(OLLAMA_PATH, args);
     
-    exec(cmd, { timeout: 45000 }, (error, stdout, stderr) => {
-      if (error) {
-        console.error('[Ollama] Error:', error.message);
-        resolve('Erreur: ' + error.message);
-        return;
-      }
-      
-      const output = stdout || stderr;
+    let output = '';
+    
+    ollama.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    ollama.stderr.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    ollama.on('close', (code) => {
+      console.log('[Ollama] Code:', code);
       if (output && output.trim()) {
-        resolve(output.trim().split('\n')[0].substring(0, 200));
+        resolve(output.trim().split('\n')[0].substring(0, 150));
       } else {
         resolve('Pas de réponse');
       }
     });
+    
+    ollama.on('error', (e) => {
+      console.error('[Ollama] Error:', e.message);
+      resolve('Erreur: ' + e.message);
+    });
+    
+    setTimeout(() => {
+      ollama.kill();
+      resolve('Timeout');
+    }, 30000);
   });
 }
 
