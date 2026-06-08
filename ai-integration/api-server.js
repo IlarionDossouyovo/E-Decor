@@ -14,49 +14,32 @@ const OLLAMA_MODEL = 'llama3:latest';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
- * Appelle Ollama via ollama run (plus stable)
+ * Appelle Ollama via exec (plus simple)
  */
 function callOllama(prompt) {
   return new Promise((resolve) => {
-    const { spawn } = require('child_process');
+    const { exec } = require('child_process');
     
-    console.log('[Ollama] Running ollama with model:', OLLAMA_MODEL);
+    console.log('[Ollama] Running with model:', OLLAMA_MODEL);
     
-    const args = ['run', OLLAMA_MODEL, prompt];
-    const ollama = spawn(OLLAMA_PATH, args, { shell: true });
+    const cmd = `"${OLLAMA_PATH}" run ${OLLAMA_MODEL} "${prompt}"`;
     
-    let output = '';
-    let errorOutput = '';
-    
-    ollama.stdout.on('data', (data) => {
-      output += data.toString();
-    });
-    
-    ollama.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-    
-    ollama.on('close', (code) => {
-      console.log('[Ollama] Code:', code);
+    exec(cmd, { timeout: 90000 }, (error, stdout, stderr) => {
+      if (error) {
+        console.error('[Ollama] Error:', error.message);
+        resolve('Erreur: ' + error.message);
+        return;
+      }
+      
+      const output = stdout || stderr;
+      console.log('[Ollama] Output length:', output.length);
+      
       if (output && output.trim()) {
         resolve(output.trim());
-      } else if (errorOutput) {
-        resolve(errorOutput.trim());
       } else {
-        resolve('Pas de réponse du modèle');
+        resolve('Pas de réponse');
       }
     });
-    
-    ollama.on('error', (e) => {
-      console.error('[Ollama] Error:', e.message);
-      resolve('Erreur: ' + e.message);
-    });
-    
-    // Timeout après 60 secondes
-    setTimeout(() => {
-      ollama.kill();
-      resolve('Timeout - le modèle met trop de temps');
-    }, 60000);
   });
 }
 
