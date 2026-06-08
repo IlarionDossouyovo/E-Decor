@@ -13,69 +13,49 @@ const OLLAMA_PORT = 11434;
 const OLLAMA_MODEL = 'llama3:latest';
 
 /**
- * Appelle Ollama pour générer une réponse (API generate)
+ * Appelle Ollama via ollama run (plus stable)
  */
 function callOllama(prompt) {
-  return new Promise((resolve, reject) => {
-    const fullPrompt = 'Tu es un assistant expert en décoration et meubles. Réponds en français de manière concise.\n\nQuestion: ' + prompt + '\n\nRéponse:';
+  return new Promise((resolve) => {
+    const { spawn } = require('child_process');
     
-    const data = JSON.stringify({
-      model: OLLAMA_MODEL,
-      prompt: fullPrompt,
-      stream: false,
-      options: {
-        temperature: 0.7,
-        num_predict: 150
+    console.log('[Ollama] Running ollama with model:', OLLAMA_MODEL);
+    
+    const args = ['run', OLLAMA_MODEL, prompt];
+    const ollama = spawn('ollama', args, { shell: true });
+    
+    let output = '';
+    let errorOutput = '';
+    
+    ollama.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    ollama.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+    
+    ollama.on('close', (code) => {
+      console.log('[Ollama] Code:', code);
+      if (output && output.trim()) {
+        resolve(output.trim());
+      } else if (errorOutput) {
+        resolve(errorOutput.trim());
+      } else {
+        resolve('Pas de réponse du modèle');
       }
     });
     
-    const options = {
-      hostname: OLLAMA_HOST,
-      port: OLLAMA_PORT,
-      path: '/api/generate',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': data.length
-      },
-      timeout: 45000
-    };
-    
-    console.log('[Ollama] Calling with model:', OLLAMA_MODEL);
-    
-    const req = http.request(options, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        console.log('[Ollama response length]:', body.length);
-        try {
-          const json = JSON.parse(body);
-          if (json.response) {
-            resolve(json.response.trim());
-          } else if (json.error) {
-            resolve('Erreur Ollama: ' + json.error);
-          } else {
-            resolve('Réponse vide du modèle: ' + OLLAMA_MODEL);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
+    ollama.on('error', (e) => {
+      console.error('[Ollama] Error:', e.message);
+      resolve('Erreur: ' + e.message);
     });
     
-    req.on('error', (e) => {
-      console.error('[Ollama error]:', e.message);
-      reject(e);
-    });
-    
-    req.write(data);
-    req.end();
-    
-    // Timeout après 45 secondes
+    // Timeout après 60 secondes
     setTimeout(() => {
-      req.destroy();
-      resolve('Timeout. Ollama met du temps à charger. Essayez: ollama run ' + OLLAMA_MODEL);
-    }, 45000);
+      ollama.kill();
+      resolve('Timeout - le modèle met trop de temps');
+    }, 60000);
   });
 }
 
