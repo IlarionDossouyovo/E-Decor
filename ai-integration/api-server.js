@@ -13,51 +13,49 @@ const OLLAMA_PORT = 11434;
 const OLLAMA_MODEL = 'phi3:latest';
 
 /**
- * Appelle Ollama pour générer une réponse (API chat)
+ * Appelle Ollama pour générer une réponse (API generate)
  */
 function callOllama(prompt) {
   return new Promise((resolve, reject) => {
+    const fullPrompt = 'Tu es un assistant expert en décoration et meubles. Réponds en français de manière concise.\n\nQuestion: ' + prompt + '\n\nRéponse:';
+    
     const data = JSON.stringify({
       model: OLLAMA_MODEL,
-      messages: [
-        { role: 'system', content: 'Tu es un assistant expert en décoration et meubles. Réponds de manière concise en français.' },
-        { role: 'user', content: prompt }
-      ],
+      prompt: fullPrompt,
       stream: false,
       options: {
         temperature: 0.7,
-        num_predict: 200
+        num_predict: 150
       }
     });
     
     const options = {
       hostname: OLLAMA_HOST,
       port: OLLAMA_PORT,
-      path: '/api/chat',
+      path: '/api/generate',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': data.length
       },
-      timeout: 30000
+      timeout: 45000
     };
+    
+    console.log('[Ollama] Calling with model:', OLLAMA_MODEL);
     
     const req = http.request(options, (res) => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
-        console.log('[Ollama raw response]:', body.substring(0, 200));
+        console.log('[Ollama response length]:', body.length);
         try {
           const json = JSON.parse(body);
-          // Handle chat API response format
-          if (json.message && json.message.content) {
-            resolve(json.message.content);
-          } else if (json.response) {
-            resolve(json.response);
-          } else if (json.done) {
-            resolve('Modèle en cours de chargement. Veuillez réessayer dans quelques secondes.');
+          if (json.response) {
+            resolve(json.response.trim());
+          } else if (json.error) {
+            resolve('Erreur Ollama: ' + json.error);
           } else {
-            resolve('Réponse vide. Vérifiez qu\'Ollama est bien démarré avec le modèle: ' + OLLAMA_MODEL);
+            resolve('Réponse vide du modèle: ' + OLLAMA_MODEL);
           }
         } catch (e) {
           reject(e);
@@ -73,11 +71,11 @@ function callOllama(prompt) {
     req.write(data);
     req.end();
     
-    // Timeout après 30 secondes
+    // Timeout après 45 secondes
     setTimeout(() => {
       req.destroy();
-      resolve('Délai d\'attente dépassé. Ollama met peut-être du temps à charger.');
-    }, 30000);
+      resolve('Timeout. Ollama met du temps à charger. Essayez: ollama run ' + OLLAMA_MODEL);
+    }, 45000);
   });
 }
 
