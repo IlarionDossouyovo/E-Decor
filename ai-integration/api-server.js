@@ -182,10 +182,11 @@ async function router(req, res) {
   }
 }
 
-// Démarrer le serveur
+// Démarrer le serveur sur toutes les interfaces
 const server = http.createServer(router);
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
+  console.log('E-Décor AI Server démarré sur http://0.0.0.0:' + PORT);
   console.log('E-Décor AI Server démarré sur http://localhost:' + PORT);
 });
 
