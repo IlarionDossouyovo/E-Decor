@@ -1,10 +1,57 @@
 /**
  * E-Décor - API Server pour AI Integration
  * Endpoints pour le workflow n8n et l'automation 360°
+ * Avec support Ollama!
  */
 
 const http = require('http');
 const url = require('url');
+
+// Configuration Ollama
+const OLLAMA_HOST = 'localhost';
+const OLLAMA_PORT = 11434;
+const OLLAMA_MODEL = 'codellama:7b';
+
+/**
+ * Appelle Ollama pour générer une réponse
+ */
+function callOllama(prompt) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      model: OLLAMA_MODEL,
+      prompt: prompt,
+      stream: false
+    });
+    
+    const options = {
+      hostname: OLLAMA_HOST,
+      port: OLLAMA_PORT,
+      path: '/api/generate',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    };
+    
+    const req = http.request(options, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          resolve(json.response || 'Pas de réponse');
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+    
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
 
 // Configuration serveur
 const PORT = process.env.PORT || 3000;
@@ -102,9 +149,17 @@ async function handleChat(req, res) {
   if (!body.message) {
     return sendJson(res, 400, { error: 'Message requis' });
   }
-  // Note: Ollama sera appelé ici en production
-  const response = 'Message reçu: ' + body.message + ' - (Connectez Ollama pour générer une vraie réponse)';
-  sendJson(res, 200, { response: response });
+  
+  // Appeler Ollama pour générer une réponse
+  const systemPrompt = 'Tu es un assistant expert E-Décor pour la decoration et meubles. Réponds de manière professionnelle et concise.';
+  const fullPrompt = systemPrompt + '\n\nQuestion: ' + body.message + '\n\nRéponse:';
+  
+  try {
+    const response = await callOllama(fullPrompt);
+    sendJson(res, 200, { response: response, model: OLLAMA_MODEL });
+  } catch (e) {
+    sendJson(res, 200, { response: 'Erreur Ollama: ' + e.message, model: OLLAMA_MODEL });
+  }
 }
 
 /**
@@ -123,7 +178,7 @@ async function handleRecommendations(req, res) {
  * Route: GET /api/models
  */
 async function handleModels(req, res) {
-  sendJson(res, 200, { models: [{ name: 'llama3.2' }] });
+  sendJson(res, 200, { models: [{ name: OLLAMA_MODEL }] });
 }
 
 /**
