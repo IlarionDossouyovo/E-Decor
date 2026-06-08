@@ -11,6 +11,7 @@ const url = require('url');
 const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
 const OLLAMA_MODEL = 'llama3:latest';
+const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
  * Appelle Ollama via ollama run (plus stable)
@@ -22,7 +23,7 @@ function callOllama(prompt) {
     console.log('[Ollama] Running ollama with model:', OLLAMA_MODEL);
     
     const args = ['run', OLLAMA_MODEL, prompt];
-    const ollama = spawn('ollama', args, { shell: true });
+    const ollama = spawn(OLLAMA_PATH, args, { shell: true });
     
     let output = '';
     let errorOutput = '';
