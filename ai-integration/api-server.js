@@ -14,17 +14,20 @@ const OLLAMA_MODEL = 'llama3:latest';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
- * Appelle Ollama via cmd.exe (Windows-compatible)
+ * Appelle Ollama - simple version
  */
 function callOllama(prompt) {
   return new Promise((resolve) => {
     const { exec } = require('child_process');
     
-    console.log('[Ollama] Running via cmd...');
+    // Simple prompt without complex instructions
+    const simplePrompt = prompt.replace(/[^a-zA-Z0-9\séèàùçâäöüîïôêë\-']/g, '').substring(0, 50);
     
-    const cmd = `cmd /c "${OLLAMA_PATH}" run ${OLLAMA_MODEL} "${prompt}"`;
+    console.log('[Ollama] Prompt:', simplePrompt);
     
-    exec(cmd, { timeout: 60000, maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+    const cmd = `"${OLLAMA_PATH}" run ${OLLAMA_MODEL} ${simplePrompt}`;
+    
+    exec(cmd, { timeout: 45000 }, (error, stdout, stderr) => {
       if (error) {
         console.error('[Ollama] Error:', error.message);
         resolve('Erreur: ' + error.message);
@@ -32,10 +35,8 @@ function callOllama(prompt) {
       }
       
       const output = stdout || stderr;
-      console.log('[Ollama] Output:', output.substring(0, 100));
-      
       if (output && output.trim()) {
-        resolve(output.trim());
+        resolve(output.trim().split('\n')[0].substring(0, 200));
       } else {
         resolve('Pas de réponse');
       }
