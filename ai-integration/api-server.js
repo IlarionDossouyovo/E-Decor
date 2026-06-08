@@ -10,7 +10,7 @@ const url = require('url');
 // Configuration Ollama
 const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
-const OLLAMA_MODEL = 'phi3:latest';
+const OLLAMA_MODEL = 'llama3:latest';
 
 /**
  * Appelle Ollama pour générer une réponse (API generate)
