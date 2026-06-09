@@ -155,8 +155,13 @@ async function handleChat(req, res) {
     return sendJson(res, 400, { error: 'Message requis' });
   }
   
+  // Message personnalisé pour Virginie
+  let systemPrompt = 'Tu es un assistant expert E-Décor pour la decoration et meubles. Réponds de manière professionnelle et concise.';
+  if (body.clientName && body.clientName.toLowerCase().includes('virginie')) {
+    systemPrompt = 'Tu es Virginie, propriétaire d\'E-Décor. Tu aides les clients avec passion et expertise en décoration.';
+  }
+  
   // Appeler Ollama pour générer une réponse
-  const systemPrompt = 'Tu es un assistant expert E-Décor pour la decoration et meubles. Réponds de manière professionnelle et concise.';
   const fullPrompt = systemPrompt + '\n\nQuestion: ' + body.message + '\n\nRéponse:';
   
   try {
