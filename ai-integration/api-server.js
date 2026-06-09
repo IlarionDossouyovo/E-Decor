@@ -201,6 +201,27 @@ async function handleWebhook(req, res) {
 }
 
 /**
+ * Route: POST /api/speak - Synthèse vocale (Windows SAPI)
+ */
+async function handleSpeak(req, res) {
+  const body = await parseBody(req);
+  if (!body.text) {
+    return sendJson(res, 400, { error: 'Texte requis' });
+  }
+  
+  const { exec } = require('child_process');
+  // PowerShell TTS command
+  const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('${body.text.replace(/'/g, "''")}')`;
+  
+  exec(`powershell -Command "${ps}"`, (err) => {
+    if (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+    sendJson(res, 200, { spoken: true, text: body.text });
+  });
+}
+
+/**
  * Router principal
  */
 async function router(req, res) {
@@ -236,6 +257,9 @@ async function router(req, res) {
     }
     if (pathname === '/api/webhook/ai-support' && req.method === 'POST') {
       return handleWebhook(req, res);
+    }
+    if (pathname === '/api/speak' && req.method === 'POST') {
+      return handleSpeak(req, res);
     }
     if (pathname.startsWith('/api/tasks/') && pathname.endsWith('/respond') && req.method === 'POST') {
       return handleRespondTask(req, res);
