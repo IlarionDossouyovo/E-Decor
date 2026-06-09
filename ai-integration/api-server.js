@@ -209,19 +209,14 @@ function handleSpeak(req, res) {
       return sendJson(res, 400, { error: 'Texte requis' });
     }
     
+    // Respond immediately, then speak
+    sendJson(res, 200, { spoken: true, text: body.text });
+    
+    // Spawn detached PowerShell
     const { spawn } = require('child_process');
-    const text = body.text.replace(/"/g, '\\"');
-    const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak("${text}")`;
-    
-    const child = spawn('powershell', ['-Command', ps], { shell: false, detached: true });
-    
-    child.on('close', () => {
-      sendJson(res, 200, { spoken: true, text: body.text });
-    });
-    
-    child.on('error', (e) => {
-      sendJson(res, 500, { error: e.message });
-    });
+    const text = body.text.replace(/"/g, '`"');
+    const cmd = `powershell -WindowStyle Hidden -Command "Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('${text}')"`;
+    spawn(cmd, [], { shell: true, detached: true });
   }).catch((e) => {
     sendJson(res, 500, { error: e.message });
   });
