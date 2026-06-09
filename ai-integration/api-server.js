@@ -212,10 +212,11 @@ function handleSpeak(req, res) {
     // Respond immediately, then speak
     sendJson(res, 200, { spoken: true, text: body.text });
     
-    // Speak using cmd.exe (more reliable on Windows)
+    // Speak using full PowerShell path
     const { exec } = require('child_process');
     const text = body.text.replace(/'/g, "''");
-    exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Speak('${text}')"`, (err) => {
+    const psPath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+    exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Speak('${text}')"`, (err) => {
       if (err) console.log('[TTS] Error:', err.message);
     });
   }).catch((e) => {
