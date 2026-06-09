@@ -216,7 +216,7 @@ function handleSpeak(req, res) {
     const { exec } = require('child_process');
     const text = body.text.replace(/'/g, "''");
     const psPath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
-    const cmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.SelectVoiceByHints('Female'); $s.Rate = -1; $s.Volume = 100; $s.Speak('${text}')`;
+    const cmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.SelectVoiceByHints('Female'); $s.Rate = -2; $s.Volume = 100; $s.Speak('${text}')`;
     exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "${cmd}"`, (err) => {
       if (err) console.log('[TTS] Error:', err.message);
     });
