@@ -14,15 +14,16 @@ const OLLAMA_MODEL = 'llama3:latest';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
- * Appelle Ollama via HTTP API (sans keepAlive)
+ * Appelle Ollama via HTTP API (simple)
  */
 function callOllama(prompt) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const http = require('http');
     const data = JSON.stringify({
       model: OLLAMA_MODEL,
-      prompt: prompt.substring(0, 100),
-      stream: false
+      prompt: prompt.substring(0, 80),
+      stream: false,
+      options: { num_predict: 50 }
     });
     
     const options = {
@@ -32,12 +33,11 @@ function callOllama(prompt) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data),
-        'Connection': 'close'
+        'Content-Length': Buffer.byteLength(data)
       }
     };
     
-    console.log('[Ollama] Calling API...');
+    console.log('[Ollama] API call...');
     
     const req = http.request(options, (res) => {
       let body = '';
@@ -45,30 +45,16 @@ function callOllama(prompt) {
       res.on('end', () => {
         try {
           const json = JSON.parse(body);
-          if (json.response) {
-            resolve(json.response.trim().substring(0, 150));
-          } else if (json.error) {
-            resolve('Erreur: ' + json.error);
-          } else {
-            resolve('Pas de réponse');
-          }
+          resolve(json.response ? json.response.trim().substring(0, 100) : 'Pas de réponse');
         } catch (e) {
           resolve('Erreur: ' + e.message);
         }
       });
     });
     
-    req.on('error', (e) => {
-      resolve('Erreur: ' + e.message);
-    });
-    
+    req.on('error', (e) => resolve('Erreur: ' + e.message));
     req.write(data);
     req.end();
-    
-    setTimeout(() => {
-      req.destroy();
-      resolve('Timeout');
-    }, 25000);
   });
 }
 
