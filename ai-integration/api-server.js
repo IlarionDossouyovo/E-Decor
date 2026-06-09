@@ -23,7 +23,7 @@ function callOllama(prompt) {
       model: OLLAMA_MODEL,
       prompt: prompt.substring(0, 80),
       stream: false,
-      options: { num_predict: 50 }
+      options: { num_predict: 150 }
     });
     
     const options = {
@@ -45,7 +45,7 @@ function callOllama(prompt) {
       res.on('end', () => {
         try {
           const json = JSON.parse(body);
-          resolve(json.response ? json.response.trim().substring(0, 100) : 'Pas de réponse');
+          resolve(json.response ? json.response.trim().substring(0, 300) : 'Pas de réponse');
         } catch (e) {
           resolve('Erreur: ' + e.message);
         }
