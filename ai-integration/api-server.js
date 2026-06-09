@@ -212,11 +212,12 @@ function handleSpeak(req, res) {
     // Respond immediately, then speak
     sendJson(res, 200, { spoken: true, text: body.text });
     
-    // Speak using full PowerShell path
+    // Speak with better voice - select Zira, adjust rate and volume
     const { exec } = require('child_process');
     const text = body.text.replace(/'/g, "''");
     const psPath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
-    exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Speak('${text}')"`, (err) => {
+    const cmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.SelectVoiceByHints('Female'); $s.Rate = 1; $s.Volume = 100; $s.Speak('${text}')`;
+    exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "${cmd}"`, (err) => {
       if (err) console.log('[TTS] Error:', err.message);
     });
   }).catch((e) => {
