@@ -203,30 +203,26 @@ async function handleWebhook(req, res) {
 /**
  * Route: POST /api/speak - Synthèse vocale (Windows SAPI)
  */
-async function handleSpeak(req, res) {
-  const body = await parseBody(req);
-  if (!body.text) {
-    return sendJson(res, 400, { error: 'Texte requis' });
-  }
-  
-  const { spawn } = require('child_process');
-  // PowerShell TTS - escaped properly
-  const text = body.text.replace(/"/g, '\\"');
-  const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak("${text}")`;
-  
-  const child = spawn('powershell', ['-Command', ps], { shell: false });
-  
-  let err = '';
-  child.stderr.on('data', (d) => { err += d.toString(); });
-  
-  child.on('close', (code) => {
-    if (code !== 0 && err) {
-      return sendJson(res, 500, { error: err });
+function handleSpeak(req, res) {
+  parseBody(req).then((body) => {
+    if (!body.text) {
+      return sendJson(res, 400, { error: 'Texte requis' });
     }
-    sendJson(res, 200, { spoken: true, text: body.text });
-  });
-  
-  child.on('error', (e) => {
+    
+    const { spawn } = require('child_process');
+    const text = body.text.replace(/"/g, '\\"');
+    const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak("${text}")`;
+    
+    const child = spawn('powershell', ['-Command', ps], { shell: false, detached: true });
+    
+    child.on('close', () => {
+      sendJson(res, 200, { spoken: true, text: body.text });
+    });
+    
+    child.on('error', (e) => {
+      sendJson(res, 500, { error: e.message });
+    });
+  }).catch((e) => {
     sendJson(res, 500, { error: e.message });
   });
 }
