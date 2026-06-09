@@ -212,14 +212,12 @@ function handleSpeak(req, res) {
     // Respond immediately, then speak
     sendJson(res, 200, { spoken: true, text: body.text });
     
-    // Speak using PowerShell - direct execution
-    const { execSync } = require('child_process');
+    // Speak using cmd.exe (more reliable on Windows)
+    const { exec } = require('child_process');
     const text = body.text.replace(/'/g, "''");
-    try {
-      execSync(`powershell -Command "Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('${text}')"`, { stdio: 'ignore', windowsHide: true });
-    } catch (e) {
-      console.log('[TTS] Error:', e.message);
-    }
+    exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Speak('${text}')"`, (err) => {
+      if (err) console.log('[TTS] Error:', err.message);
+    });
   }).catch((e) => {
     sendJson(res, 500, { error: e.message });
   });
