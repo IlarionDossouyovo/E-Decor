@@ -14,48 +14,61 @@ const OLLAMA_MODEL = 'llama3:latest';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
- * Appelle Ollama via spawn (sans shell)
+ * Appelle Ollama via HTTP API (sans keepAlive)
  */
 function callOllama(prompt) {
-  return new Promise((resolve) => {
-    const { spawn } = require('child_process');
-    
-    // Simple prompt without special chars
-    const simplePrompt = prompt.replace(/[^a-zA-Z0-9\s]/g, ' ').substring(0, 30).trim();
-    
-    console.log('[Ollama] Prompt:', simplePrompt);
-    
-    const args = ['run', OLLAMA_MODEL, simplePrompt];
-    const ollama = spawn(OLLAMA_PATH, args);
-    
-    let output = '';
-    
-    ollama.stdout.on('data', (data) => {
-      output += data.toString();
+  return new Promise((resolve, reject) => {
+    const http = require('http');
+    const data = JSON.stringify({
+      model: OLLAMA_MODEL,
+      prompt: prompt.substring(0, 100),
+      stream: false
     });
     
-    ollama.stderr.on('data', (data) => {
-      output += data.toString();
-    });
-    
-    ollama.on('close', (code) => {
-      console.log('[Ollama] Code:', code);
-      if (output && output.trim()) {
-        resolve(output.trim().split('\n')[0].substring(0, 150));
-      } else {
-        resolve('Pas de réponse');
+    const options = {
+      hostname: '127.0.0.1',
+      port: 11434,
+      path: '/api/generate',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data),
+        'Connection': 'close'
       }
+    };
+    
+    console.log('[Ollama] Calling API...');
+    
+    const req = http.request(options, (res) => {
+      let body = '';
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          if (json.response) {
+            resolve(json.response.trim().substring(0, 150));
+          } else if (json.error) {
+            resolve('Erreur: ' + json.error);
+          } else {
+            resolve('Pas de réponse');
+          }
+        } catch (e) {
+          resolve('Erreur: ' + e.message);
+        }
+      });
     });
     
-    ollama.on('error', (e) => {
-      console.error('[Ollama] Error:', e.message);
+    req.on('error', (e) => {
       resolve('Erreur: ' + e.message);
     });
     
+    req.write(data);
+    req.end();
+    
     setTimeout(() => {
-      ollama.kill();
+      req.destroy();
       resolve('Timeout');
-    }, 30000);
+    }, 25000);
   });
 }
 
