@@ -209,15 +209,25 @@ async function handleSpeak(req, res) {
     return sendJson(res, 400, { error: 'Texte requis' });
   }
   
-  const { exec } = require('child_process');
-  // PowerShell TTS command
-  const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('${body.text.replace(/'/g, "''")}')`;
+  const { spawn } = require('child_process');
+  // PowerShell TTS - escaped properly
+  const text = body.text.replace(/"/g, '\\"');
+  const ps = `Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak("${text}")`;
   
-  exec(`powershell -Command "${ps}"`, (err) => {
-    if (err) {
-      return sendJson(res, 500, { error: err.message });
+  const child = spawn('powershell', ['-Command', ps], { shell: false });
+  
+  let err = '';
+  child.stderr.on('data', (d) => { err += d.toString(); });
+  
+  child.on('close', (code) => {
+    if (code !== 0 && err) {
+      return sendJson(res, 500, { error: err });
     }
     sendJson(res, 200, { spoken: true, text: body.text });
+  });
+  
+  child.on('error', (e) => {
+    sendJson(res, 500, { error: e.message });
   });
 }
 
