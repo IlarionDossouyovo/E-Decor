@@ -5,11 +5,120 @@ let categoriesData = [];
 let aiStatus = { available: false };
 let aiConversations = [];
 
+// Données intégrées pour la version web (sans Electron)
+const builtInCategories = [
+  {
+    id: 'salons',
+    name: 'Salons',
+    name_en: 'Living Rooms',
+    description: 'Meubles pour salons modernes et classiques',
+    products: [
+      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', description: 'Canapé 3 places modulable en tissu gris' },
+      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', description: 'Fauteuil relax avec relève-pieds électrique' },
+      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', description: 'Table basse en chêne massif 90x90cm' },
+      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', description: 'Meuble TV 160cm avec rangements' },
+      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', description: 'Étagère 5 modules ajustables' }
+    ]
+  },
+  {
+    id: 'bureaux',
+    name: 'Bureaux',
+    name_en: 'Offices',
+    description: 'Mobilier de bureau professionnel et domestique',
+    products: [
+      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', description: 'Bureau 160cm en chêne avec tiroirs' },
+      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', description: 'Fauteuil ergonomique Mesh' },
+      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', description: 'Caisson sur roulettes mélaminé' },
+      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', description: 'Bureau debout électrique hauteur variable' }
+    ]
+  },
+  {
+    id: 'cuisines',
+    name: 'Cuisines',
+    name_en: 'Kitchens',
+    description: 'Équipements et meubles de cuisine',
+    products: [
+      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', description: 'Îlot 180cm avec plan de travail stratifié' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', description: 'Meuble 60cm avec porte et tiroir' },
+      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', description: 'Étagère 90cm polyvalente' }
+    ]
+  },
+  {
+    id: 'jardins',
+    name: 'Jardins',
+    name_en: 'Gardens',
+    description: 'Mobilier d\'extérieur et de jardin',
+    products: [
+      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', description: 'Table + 4 fauteuilles + 2 bancs' },
+      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', description: 'Transat en bois d\'acacia avec toile' },
+      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', description: 'Parasol déporté avec socle' },
+      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', description: 'Barbecue à charbon 57cm' }
+    ]
+  },
+  {
+    id: 'salle-a-manger',
+    name: 'Salle à manger',
+    name_en: 'Dining Rooms',
+    description: 'Tables, chaises et meubles de salle à manger',
+    products: [
+      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', description: 'Table 6-10 personnes extensible' },
+      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', description: 'Chaise upholstrée avec pieds bois' },
+      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', description: 'Buffet 180cm en bois massif' },
+      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', description: 'Vaisselier 2 tiroirs + niches' }
+    ]
+  }
+];
+
+// Blog posts intégrés
+const builtInBlogPosts = [
+  { id: 'tendances-2024', title: 'Tendances décoration 2024', title_en: 'Decor Trends 2024', excerpt: 'Découvrez les tendances de l\'année', author: 'Marie Dupont', date: '2024-01-10', content: 'Les tendances 2024...' },
+  { id: 'salon-design', title: 'Aménager son salon', title_en: 'Design your living room', excerpt: 'Conseils pour un salon parfait', author: 'Jean Martin', date: '2024-02-15', content: 'Un beau salon...' },
+  { id: 'bureau-productif', title: '10 conseils productivité', title_en: '10 productivity tips', excerpt: 'Optimisez votre espace de travail', author: 'Sophie Bernard', date: '2024-03-01', content: 'Productivité...' }
+];
+
+// API simulée pour le web
+const webAPI = {
+  getCategories: async () => builtInCategories,
+  getProducts: async (categoryId) => {
+    const cat = builtInCategories.find(c => c.id === categoryId);
+    return cat ? cat.products : [];
+  },
+  getProduct: async (categoryId, productId) => {
+    const cat = builtInCategories.find(c => c.id === categoryId);
+    return cat ? cat.products.find(p => p.id === productId) : null;
+  },
+  getGlobalBlog: async () => builtInBlogPosts,
+  getBlogPost: async (postId) => builtInBlogPosts.find(p => p.id === postId),
+  searchProducts: async (query) => {
+    const results = [];
+    const lowerQuery = query.toLowerCase();
+    builtInCategories.forEach(cat => {
+      cat.products.forEach(p => {
+        if (p.name.toLowerCase().includes(lowerQuery) || p.description.toLowerCase().includes(lowerQuery)) {
+          results.push({ ...p, categoryId: cat.id, categoryName: cat.name });
+        }
+      });
+    });
+    return results;
+  },
+  onNavigate: (callback) => {},
+  onShowAbout: (callback) => {},
+  ai: {
+    checkStatus: async () => ({ available: false }),
+    chat: async () => ({ error: 'AI non disponible' }),
+    recommendations: async () => ({ error: 'AI non disponible' }),
+    listModels: async () => ({ models: [] })
+  }
+};
+
+// Vérifier si on est en mode Electron ou Web
+const api = typeof window !== 'undefined' && api ? api : webAPI;
+
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
-  if (window.api && window.api.ai) {
+  if (api && api.ai) {
     try {
-      aiStatus = await window.api.ai.checkStatus();
+      aiStatus = await api.ai.checkStatus();
       console.log('[AI] Statut:', aiStatus);
       return aiStatus.available;
     } catch (e) {
@@ -26,7 +135,7 @@ async function sendAIMessage(message, context = {}) {
     return { error: 'AI non disponible. Démarrez Ollama localement.' };
   }
   try {
-    return await window.api.ai.chat(message, context);
+    return await api.ai.chat(message, context);
   } catch (e) {
     return { error: e.message };
   }
@@ -38,7 +147,7 @@ async function getAIRecommendations(preferences) {
     return { error: 'AI non disponible' };
   }
   try {
-    return await window.api.ai.recommendations(preferences);
+    return await api.ai.recommendations(preferences);
   } catch (e) {
     return { error: e.message };
   }
@@ -46,9 +155,9 @@ async function getAIRecommendations(preferences) {
 
 // Lister les modèles disponibles
 async function listAIModels() {
-  if (!window.api || !window.api.ai) return { models: [] };
+  if (!api || !api.ai) return { models: [] };
   try {
-    return await window.api.ai.listModels();
+    return await api.ai.listModels();
   } catch (e) {
     return { models: [], error: e.message };
   }
@@ -118,7 +227,7 @@ const categoryIcons = {
 // Initialize the app
 async function init() {
   try {
-    categoriesData = await window.api.getCategories();
+    categoriesData = await api.getCategories();
     populateCategoriesMenu();
     setupEventListeners();
     setupIPCListeners();
@@ -201,7 +310,7 @@ function setupEventListeners() {
 
 // Setup IPC listeners for menu navigation
 function setupIPCListeners() {
-  window.api.onNavigate((page, param) => {
+  api.onNavigate((page, param) => {
     if (page === 'category' && param) {
       loadCategory(param);
     } else if (page === 'blog-category' && param) {
@@ -211,7 +320,7 @@ function setupIPCListeners() {
     }
   });
 
-  window.api.onShowAbout(() => {
+  api.onShowAbout(() => {
     loadPage('about');
   });
 }
@@ -221,7 +330,7 @@ async function handleSearch() {
   const query = document.getElementById('search-input').value.trim();
   if (!query) return;
 
-  const results = await window.api.searchProducts(query);
+  const results = await api.searchProducts(query);
   displaySearchResults(query, results);
 }
 
@@ -367,7 +476,7 @@ async function loadHomePage(container) {
 
 // Get recent blog posts
 async function getRecentBlogPosts(count) {
-  const posts = await window.api.getGlobalBlog();
+  const posts = await api.getGlobalBlog();
   return posts.slice(0, count).map(post => `
     <div class="blog-card" onclick="loadBlogPost('${post.id}')">
       <div class="blog-image">📝</div>
@@ -407,7 +516,7 @@ async function loadCategory(categoryId) {
   const category = categoriesData.find(c => c.id === categoryId);
   if (!category) return;
 
-  const products = await window.api.getProducts(categoryId);
+  const products = await api.getProducts(categoryId);
   const container = document.getElementById('main-content');
 
   container.innerHTML = `
@@ -439,7 +548,7 @@ async function loadCategory(categoryId) {
 
 // Show product details in modal
 async function showProductDetails(categoryId, productId) {
-  const product = await window.api.getProduct(categoryId, productId);
+  const product = await api.getProduct(categoryId, productId);
   if (!product) return;
 
   const category = categoriesData.find(c => c.id === categoryId);
@@ -488,7 +597,7 @@ function addToCartFromModal(categoryId, productId) {
 
 // Load Blog Page
 async function loadBlogPage(container) {
-  const globalPosts = await window.api.getGlobalBlog();
+  const globalPosts = await api.getGlobalBlog();
   
   container.innerHTML = `
     <div class="blog-hero">
@@ -526,7 +635,7 @@ async function loadBlogPage(container) {
 
 // Load blog posts by category
 async function loadBlogCategory(categoryId) {
-  const posts = await window.api.getBlogArticles(categoryId);
+  const posts = await api.getBlogArticles(categoryId);
   const category = categoriesData.find(c => c.id === categoryId);
   const container = document.getElementById('main-content');
 
@@ -555,7 +664,7 @@ async function loadBlogCategory(categoryId) {
 
 // Load single blog post
 async function loadBlogPost(postId) {
-  const post = await window.api.getBlogPost(postId);
+  const post = await api.getBlogPost(postId);
   if (!post) return;
 
   const container = document.getElementById('main-content');
