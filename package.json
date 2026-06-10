@@ -1,10 +1,13 @@
 {
   "name": "e-decor",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "E-Décor - E-commerce dropshipping pour la decoration d'interieur en partenariat avec ORCA-Décor",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
   },
   "keywords": [
     "decor",
@@ -16,8 +19,36 @@
   ],
   "author": "E-Décor Team",
   "license": "MIT",
+  "build": {
+    "appId": "com.electron.EDecor",
+    "productName": "E-Décor",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "styles.css",
+      "renderer.js",
+      "assets/**/*",
+      "ai-integration/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
   "devDependencies": {
     "electron": "^41.2.0",
+    "electron-builder": "^24.9.1",
     "vercel": "^51.3.0"
   }
 }

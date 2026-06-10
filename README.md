@@ -1,4 +1,4 @@
-# E-Décor by Electron
+# E-Décor by Electron v1.1.0
 
 Développé par OpenHands AI pour E-Décor - Entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur en partenariat avec ORCA-Décor.
 
@@ -32,15 +32,18 @@ npm start
 
 ```
 E-Decor/
-├── main.js        # Processus principal Electron
-├── preload.js    # API bridge securise
-├── index.html    # Interface utilisateur
-├── styles.css   # Styles CSS
-├── renderer.js  # Logique frontend
-└── package.json # Configuration
+├── main.js              # Processus principal Electron
+├── preload.js          # API bridge securise
+├── index.html         # Interface utilisateur
+├── styles.css       # Styles CSS
+├── renderer.js      # Logique frontend
+├── package.json   # Configuration
+├── ai-integration/  # Integration AI (Ollama)
+├── n8n-workflows/  # 7 workflows automation
+└── web-version/    # Version web Vercel
 ```
 
-## 🌐 Fonctionnalites
+## 🌐 Fonctionnalites (v1.1.0)
 
 - Catalogue produits par categorie
 - Articles de blog pour chaque categorie
@@ -48,6 +51,21 @@ E-Decor/
 - Support multilingue (FR/EN)
 - Design responsive
 - Menu natif Electron
+- **Panier avec persistence localStorage**
+- **Gestion des quantites**
+- **Animations et transitions UI**
+- **Systeme de paiement (demo)**
+- **Integration AI Ollama**
+- **7 workflows n8n**
+
+## 🛠️ Commandes
+
+```bash
+npm start          # Lancer l'application
+npm run build       # Compiler pour Windows
+npm run build:linux # Compiler pour Linux
+npm run build:mac   # Compiler pour Mac
+```
 
 ## 📝 license
 
