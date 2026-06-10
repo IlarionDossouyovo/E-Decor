@@ -4,7 +4,8 @@
   "description": "E-Décor - E-commerce dropshipping pour la decoration d'interieur en partenariat avec ORCA-Décor",
   "main": "main.js",
   "scripts": {
-    "start": "npx electron .",
+    "start": "node node_modules/electron/cli.js .",
+    "postinstall": "electron-builder install-app-deps",
     "build": "electron-builder --win --x64",
     "build:linux": "electron-builder --linux",
     "build:mac": "electron-builder --mac"
