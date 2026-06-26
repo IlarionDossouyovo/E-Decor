@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Décor - Stack Decor Chat AI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Segoe UI,system-ui;background:#0f0f1a;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+    .header{background:#16213e;padding:20px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2a4a}
+    .header h1{font-size:22px;display:flex;align-items:center;gap:10px}
+    .badge{background:#e94560;padding:5px 14px;border-radius:18px;font-size:12px}
+    .status{color:#00d9a5;font-size:14px;display:flex;align-items:center;gap:8px}
+    .dot{width:10px;height:10px;background:#00d9a5;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+    .container{display:flex;flex:1;overflow:hidden}
+    .sidebar{width:280px;background:#16213e;border-right:1px solid #2a2a4a;padding:20px;overflow-y:auto}
+    .sidebar h3{font-size:14px;color:#888;margin-bottom:15px;text-transform:uppercase}
+    .agent-item{padding:14px;background:#1f1f3a;border-radius:10px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px}
+    .agent-item:hover,.agent-item.active{background:#e94560}
+    .agent-item .icon{font-size:20px}
+    .main{flex:1;display:flex;flex-direction:column}
+    .messages{flex:1;padding:30px;overflow-y:auto}
+    .message{max-width:70%;padding:15px 20px;border-radius:18px;margin-bottom:15px;line-height:1.5}
+    .message.user{background:#e94560;margin-left:auto;border-bottom-right-radius:3px}
+    .message.ai{background:#1f1f3a;border-bottom-left-radius:3px}
+    .message.system{background:#16213e;color:#888;font-size:14px;text-align:center;max-width:100%}
+    .input-area{padding:20px 30px;background:#16213e;border-top:1px solid #2a2a4a;display:flex;gap:15px}
+    .input-area input{flex:1;padding:16px 20px;background:#1f1f3a;border:2px solid #2a2a4a;border-radius:12px;color:#fff;font-size:16px}
+    .input-area input:focus{outline:none;border-color:#e94560}
+    .input-area button{padding:16px 30px;background:#e94560;border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+    .input-area button:disabled{opacity:0.5;cursor:not-allowed}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Stack Decor Chat <span class="badge">AI</span></h1>
+    <div class="status"><span class="dot"></span>● Ollama Connecté</div>
+  </div>
+  <div class="container">
+    <div class="sidebar">
+      <h3>🤖 Agents Disponibles</h3>
+      <div id="agentList"></div>
+    </div>
+    <div class="main">
+      <div class="messages" id="messages">
+        <div class="message system">Bienvenue sur Stack Decor Chat! Sélectionnez un agent et commencez la conversation.</div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="userInput" placeholder="Tapez votre message...">
+        <button id="sendBtn" onclick="sendMessage()">Envoyer</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const OLLAMA_URL = 'http://localhost:11434';
+    const agents = [
+      {id:'stack',name:'Stack Decor',icon:'🎯',system:'Tu es Stack Decor, agent principal de coordination E-Décor. Entreprise: E-Décor, partenaire ORCA-Décor. Contact: electronbusiness07@gmail.com'},
+      {id:'ventes',name:'Agent Ventes',icon:'💼',system:'Tu es Agent Ventes E-Décor. Tu aides les clients avec les achats de meubles et décoration. Produits: Salons, Bureaux, Cuisines, Jardins.'},
+      {id:'support',name:'Agent Support',icon:'🎧',system:'Tu es Agent Support E-Décor. Tu réponds aux questions des clients. Conditions: Retour 30 jours, livraison 5-10 jours.'},
+      {id:'stock',name:'Agent Stock',icon:'📦',system:'Tu es Agent Stock E-Décor. Tu gères l\'inventaire et les alertes stock.'},
+      {id:'marketing',name:'Agent Marketing',icon:'📢',system:'Tu es Agent Marketing E-Décor. Tu crées des contenus et gères les campagnes.'},
+      {id:'compta',name:'Agent Comptabilité',icon:'💰',system:'Tu es Agent Comptabilité E-Décor. Tu gères les factures et paiements.'},
+      {id:'analytics',name:'Agent Analytics',icon:'📊',system:'Tu es Agent Analytics E-Décor. Tu analises les données et génères des rapports.'}
+    ];
+    let currentAgent = agents[0];
+    let conversation = [];
+    
+    document.getElementById('agentList').innerHTML = agents.map(a => 
+      '<div class="agent-item" onclick="selectAgent(\''+a.id+'\')" id="agent-'+a.id+'"><span class="icon">'+a.icon+'</span><span>'+a.name+'</span></div>'
+    ).join('');
+    
+    function selectAgent(id) {
+      currentAgent = agents.find(a => a.id === id);
+      document.querySelectorAll('.agent-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('agent-' + id).classList.add('active');
+      addMessage('system', 'Agent changé: ' + currentAgent.name);
+    }
+    
+    function addMessage(type, content) {
+      const div = document.createElement('div');
+      div.className = 'message ' + type;
+      div.textContent = content;
+      document.getElementById('messages').appendChild(div);
+      document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      addMessage('user', text);
+      input.value = '';
+      conversation.push({role:'user', content:text});
+      
+      document.getElementById('sendBtn').disabled = true;
+      document.getElementById('sendBtn').textContent = '⏳...';
+      
+      try {
+        const response = await fetch(OLLAMA_URL + '/api/generate', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            model: 'llama3.2:latest',
+            prompt: currentAgent.system + '\n\nConversation:\n' + conversation.map(c => c.role + ': ' + c.content).join('\n') + '\n\nRéponse:',
+            stream: false
+          })
+        });
+        const data = await response.json();
+        const reply = data.response || 'Erreur de réponse';
+        addMessage('ai', reply);
+        conversation.push({role:'assistant', content:reply});
+      } catch(e) {
+        addMessage('ai', 'Erreur: Ollama non connecté. Lancez: ollama serve');
+      }
+      
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('sendBtn').textContent = 'Envoyer';
+    }
+    
+    document.getElementById('userInput').addEventListener('keypress', e => {
+      if(e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>

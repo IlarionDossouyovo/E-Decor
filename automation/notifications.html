@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>E-Décor - Notifications</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Segoe UI;background:#0f0f1a;color:#fff;min-height:100vh}
+    .header{background:#16213e;padding:20px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2a4a}
+    .header h1{font-size:22px}
+    .badge{background:#e94560;padding:5px 14px;border-radius:18px;font-size:12px}
+    .notif-count{background:#fff;color:#e94560;padding:2px 8px;border-radius:10px;font-size:12px;margin-left:5px}
+    .container{padding:30px;max-width:800px;margin:0 auto}
+    .section{margin-bottom:30px}
+    .section h2{font-size:18px;color:#888;margin-bottom:15px}
+    .notif{background:#1f1f3a;padding:20px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;gap:15px;border:1px solid #2a2a4a}
+    .notif.unread{border-left:4px solid #e94560}
+    .notif-icon{font-size:24px}
+    .notif-content{flex:1}
+    .notif-title{font-weight:bold;margin-bottom:5px}
+    .notif-msg{color:#aaa;font-size:14px}
+    .notif-time{color:#666;font-size:12px}
+    .notif-new{background:#e94560;padding:4px 10px;border-radius:12px;font-size:12px}
+    .actions{display:flex;gap:15px;margin-top:20px}
+    .action-btn{padding:12px 24px;background:#16213e;border:none;border-radius:10px;color:#fff;cursor:pointer}
+    .action-btn:hover{background:#e94560}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔔 Notifications <span class="badge"><span id="count">3</span> nouvelles</span></h1>
+  </div>
+  <div class="container">
+    <div class="section">
+      <h2>📢 Notifications en attente</h2>
+      <div id="notifications"></div>
+    </div>
+    <div class="actions">
+      <button class="action-btn" onclick="markAllRead()">✓ Tout marquer comme lu</button>
+      <button class="action-btn" onclick="clearAll()">🗑️ Tout effacer</button>
+    </div>
+  </div>
+  <script>
+    const notifications = [
+      {id:1, icon:'📦', title:'Stock bas', msg:'Canapé LINO: 3 unités restantes', time:'Il y a 2h', new:true},
+      {id:2, icon:'💰', title:'Nouveau paiement', msg:'Commande #1234 - 1299€ reçu', time:'Il y a 4h', new:true},
+      {id:3, icon:'🎧', title:'Nouveau message', msg:'Client: Question sur la livraison', time:'Il y a 5h', new:true},
+      {id:4, icon:'📢', title:'Marketing', msg:'Campagne email envoyée', time:'Hier', new:false},
+      {id:5, icon:'🔒', title:'Sécurité', msg:'Connexion inhabituelle détectée', time:'Hier', new:false}
+    ];
+    
+    function render() {
+      document.getElementById('notifications').innerHTML = notifications.map(n => 
+        '<div class="notif' + (n.unread ? ' unread' : '') + '">' +
+        '<div class="notif-icon">' + n.icon + '</div>' +
+        '<div class="notif-content">' +
+        '<div class="notif-title">' + n.title + (n.new ? ' <span class="notif-new">Nouveau</span>' : '') + '</div>' +
+        '<div class="notif-msg">' + n.msg + '</div>' +
+        '<div class="notif-time">' + n.time + '</div>' +
+        '</div></div>'
+      ).join('');
+      document.getElementById('count').textContent = notifications.filter(n => n.new).length;
+    }
+    
+    function markAllRead() {
+      notifications.forEach(n => n.new = false);
+      render();
+    }
+    
+    function clearAll() {
+      notifications.length = 0;
+      render();
+    }
+    
+    render();
+  </script>
+</body>
+</html>

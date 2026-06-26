@@ -12,9 +12,12 @@
     .login-box h1{text-align:center;font-size:32px;margin-bottom:8px}
     .login-box h1 span{color:#e94560}
     .subtitle{text-align:center;color:#888;margin-bottom:35px}
-    .login-box input{width:100%;padding:18px;margin-bottom:18px;border:2px solid #2a2a4a;border-radius:12px;background:#16213e;color:#fff;font-size:16px}
+    .input-group{position:relative;margin-bottom:18px}
+    .login-box input{width:100%;padding:18px 50px 18px 18px;border:2px solid #2a2a4a;border-radius:12px;background:#16213e;color:#fff;font-size:16px;transition:border 0.3s}
     .login-box input:focus{outline:none;border-color:#e94560}
-    .login-box button{width:100%;padding:18px;background:linear-gradient(135deg,#e94560,#ff6b6b);color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer}
+    .toggle-pass{position:absolute;right:15px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;opacity:0.7}
+    .toggle-pass:hover{opacity:1}
+    .login-box button{width:100%;padding:18px;background:linear-gradient(135deg,#e94560,#ff6b6b);color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;transition:transform 0.2s}
     .login-box button:hover{transform:translateY(-2px)}
     .error{color:#e94560;text-align:center;margin-top:15px;display:none}
     .dashboard{display:none}
@@ -54,16 +57,22 @@
   </style>
 </head>
 <body>
+  <!-- LOGIN -->
   <div class="login" id="login">
     <div class="login-box">
       <h1>🤖 <span>Stack Decor</span></h1>
       <p class="subtitle">Dashboard Administrateur - E-Décor</p>
       <input type="email" id="email" value="electronbusiness07@gmail.com">
-      <input type="password" id="password" placeholder="Mot de passe">
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <span class="toggle-pass" onclick="togglePassword()">👁️</span>
+      </div>
       <button onclick="login()">Se connecter</button>
       <p class="error" id="error">Mot de passe incorrect</p>
     </div>
   </div>
+
+  <!-- DASHBOARD -->
   <div class="dashboard" id="dashboard">
     <div class="header">
       <h1>🤖 Stack Decor <span class="badge">Dashboard Fondateur</span></h1>
@@ -98,6 +107,7 @@
       </div>
     </div>
   </div>
+
   <script>
     const CONFIG = {email:'electronbusiness07@gmail.com',password:'EDecor2024'};
     const agents = [
@@ -119,17 +129,54 @@
       {id:'produit',name:'Agent Produit',role:'Catalogue',icon:'🛋️',desc:'Gestion produits',caps:['Catalogue','Inventaire']},
       {id:'rapports',name:'Agent Rapports',role:'Rapports',icon:'📑',desc:'Génération rapports',caps:['PDF','Export']}
     ];
-    function login() {
-      if(document.getElementById('email').value===CONFIG.email&&document.getElementById('password').value===CONFIG.password){
-        document.getElementById('login').style.display='none';
-        document.getElementById('dashboard').style.display='block';
-        renderAgents();
-      }else{document.getElementById('error').style.display='block';}
+    
+    // Toggle password visibility
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon = document.querySelector('.toggle-pass');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+      }
     }
-    function logout(){document.getElementById('dashboard').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('password').value='';}
-    function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('section-'+id).classList.add('active');event.target.classList.add('active');}
-    function renderAgents(){document.getElementById('agentsGrid').innerHTML=agents.map(a=>`<div class="agent"><div class="agent-header"><div class="agent-icon">${a.icon}</div><h3>${a.name}</h3><span class="agent-status active">●</span></div><div class="agent-body"><p class="agent-desc">${a.desc}</p><div class="capabilities">${a.caps.map(c=>`<span class="cap">${c}</span>`).join('')}</div><div class="agent-actions"><button class="agent-btn primary">💬</button><button class="agent-btn secondary">⚡</button></div></div></div>`).join('');}
-    document.getElementById('password').addEventListener('keypress',e=>{if(e.key==='Enter')login()});
+    
+    function login() {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      if(email === CONFIG.email && pass === CONFIG.password) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        renderAgents();
+      } else {
+        document.getElementById('error').style.display = 'block';
+      }
+    }
+    
+    function logout() {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login').style.display = 'flex';
+      document.getElementById('password').value = '';
+    }
+    
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('section-' + id).classList.add('active');
+      event.target.classList.add('active');
+    }
+    
+    function renderAgents() {
+      document.getElementById('agentsGrid').innerHTML = agents.map(a => 
+        '<div class="agent"><div class="agent-header"><div class="agent-icon">'+a.icon+'</div><h3>'+a.name+'</h3><span class="agent-status active">●</span></div><div class="agent-body"><p class="agent-desc">'+a.desc+'</p><div class="capabilities">'+a.caps.map(c=>'<span class="cap">'+c+'</span>').join('')+'</div><div class="agent-actions"><button class="agent-btn primary">💬 Chat</button><button class="agent-btn secondary">⚡ Tester</button></div></div></div>'
+      ).join('');
+    }
+    
+    document.getElementById('password').addEventListener('keypress', e => {
+      if(e.key === 'Enter') login();
+    });
   </script>
 </body>
 </html>
