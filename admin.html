@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Décor Admin - AI 360°</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --primary: #2c3e50; --secondary: #3498db; --accent: #e74c3c; --success: #27ae60; --light: #ecf0f1; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+    .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; }
+    .login-box h1 { color: var(--primary); margin-bottom: 10px; }
+    .login-box input { width: 100%; padding: 15px; border: 2px solid var(--light); border-radius: 10px; font-size: 16px; margin-bottom: 15px; }
+    .login-box button { width: 100%; padding: 15px; background: var(--secondary); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
+    .admin-container { display: none; }
+    .admin-container.active { display: block; }
+    .admin-header { background: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+    .admin-header h1 { color: var(--primary); }
+    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 30px 40px; }
+    .stat-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    .stat-card .value { font-size: 36px; font-weight: bold; color: var(--primary); }
+    .section { padding: 0 40px 40px; }
+    .section-title { color: white; font-size: 28px; margin-bottom: 20px; }
+    .departments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .department-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    .department-card h3 { color: var(--primary); }
+    .capability-tag { background: var(--light); padding: 5px 12px; border-radius: 20px; font-size: 12px; margin: 5px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="login-container" id="loginScreen">
+    <div class="login-box">
+      <h1>E-Décor Admin</h1>
+      <p>Système AI 360° - Connexion sécurisée</p>
+      <input type="password" id="adminKey" placeholder="Clé d'administration" />
+      <button onclick="login()">Se connecter</button>
+    </div>
+  </div>
+  <div class="admin-container" id="adminContainer">
+    <header class="admin-header">
+      <h1>E-Décor Admin - AI 360°</h1>
+      <button onclick="logout()">Déconnexion</button>
+    </header>
+    <div class="stats-bar">
+      <div class="stat-card"><div class="value">7</div><div>Départements IA</div></div>
+      <div class="stat-card"><div class="value">3</div><div>Services</div></div>
+      <div class="stat-card"><div class="value">5</div><div>Catégories</div></div>
+      <div class="stat-card"><div class="value">7</div><div>Automations</div></div>
+    </div>
+    <section class="section">
+      <h2 class="section-title">Départements AI 360°</h2>
+      <div class="departments-grid" id="departmentsGrid"></div>
+    </section>
+  </div>
+  <script>
+    const API_URL = 'http://localhost:3001/api';
+    const ADMIN_KEY = 'edecor_admin_secret_key_2024';
+    const departments = [
+      { id: 'vente', name: 'Ventes', icon: '💰', description: 'Gestion des ventes, recommandations produits', capabilities: ['Recommandations', 'Analyse tendances', 'Support avant-vente'] },
+      { id: 'support', name: 'Support Client', icon: '🎧', description: 'Assistance technique, SAV', capabilities: ['Réponses techniques', 'Suivi commandes', 'Gestion retours'] },
+      { id: 'stock', name: 'Gestion Stock', icon: '📦', description: 'Suivi inventaires, alertes', capabilities: ['Suivi niveaux', 'Alertes stock', 'Commandes'] },
+      { id: 'marketing', name: 'Marketing', icon: '📣', description: 'Campagnes pub, réseaux sociaux', capabilities: ['Contenu', 'Campagnes', 'SEO'] },
+      { id: 'finance', name: 'Finance', icon: '💰', description: 'Comptabilité, facturation', capabilities: ['Revenus', 'Factures', 'Rapports'] },
+      { id: 'rh', name: 'Ressources Humaines', icon: '👥', description: 'Recrutement, formation', capabilities: ['Recrutement', 'Formation', 'Évaluations'] },
+      { id: 'ia', name: 'Intelligence Artificielle', icon: '🧠', description: 'Chef d''orchestre AI', capabilities: ['Coordination', 'Analyse', 'Décisions'] }
+    ];
+    function login() {
+      if (document.getElementById('adminKey').value === ADMIN_KEY) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminContainer').classList.add('active');
+        loadDepartments();
+      }
+    }
+    function logout() {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('adminContainer').classList.remove('active');
+    }
+    function loadDepartments() {
+      document.getElementById('departmentsGrid').innerHTML = departments.map(d => 
+        '<div class="department-card"><h3>' + d.icon + ' ' + d.name + '</h3><p>' + d.description + '</p><div>' + 
+        d.capabilities.map(c => '<span class="capability-tag">' + c + '</span>').join('') + '</div></div>'
+      ).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Décor - Stack Decor Dashboard</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Segoe UI,system-ui;background:#0f0f1a;color:#fff;min-height:100vh}
+    .login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0f1a,#1a1a2e)}
+    .login-box{background:#1f1f3a;padding:50px;border-radius:24px;width:100%;max-width:420px;border:1px solid #2a2a4a;box-shadow:0 25px 80px rgba(0,0,0,0.5)}
+    .login-box h1{text-align:center;font-size:32px;margin-bottom:8px}
+    .login-box h1 span{color:#e94560}
+    .subtitle{text-align:center;color:#888;margin-bottom:35px}
+    .login-box input{width:100%;padding:18px;margin-bottom:18px;border:2px solid #2a2a4a;border-radius:12px;background:#16213e;color:#fff;font-size:16px}
+    .login-box input:focus{outline:none;border-color:#e94560}
+    .login-box button{width:100%;padding:18px;background:linear-gradient(135deg,#e94560,#ff6b6b);color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer}
+    .login-box button:hover{transform:translateY(-2px)}
+    .error{color:#e94560;text-align:center;margin-top:15px;display:none}
+    .dashboard{display:none}
+    .header{background:#16213e;padding:25px 50px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2a4a}
+    .header h1{font-size:24px;display:flex;align-items:center;gap:12px}
+    .badge{background:#e94560;padding:6px 16px;border-radius:20px;font-size:12px}
+    .header-right{display:flex;align-items:center;gap:25px}
+    .status{color:#00d9a5;font-size:14px}
+    .logout{background:transparent;border:2px solid #e94560;color:#e94560;padding:10px 20px;border-radius:10px;cursor:pointer}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:25px;padding:40px 50px;background:#0f0f1a}
+    .stat{background:#1f1f3a;padding:30px;border-radius:20px;text-align:center;border:1px solid #2a2a4a}
+    .stat .n{font-size:40px;font-weight:bold;color:#e94560}
+    .stat .l{color:#888;font-size:14px;margin-top:8px}
+    .nav-bar{background:#1f1f3a;padding:15px 50px;display:flex;gap:15px}
+    .nav-btn{padding:12px 25px;background:#16213e;border:none;border-radius:10px;color:#fff;cursor:pointer}
+    .nav-btn:hover,.nav-btn.active{background:#e94560}
+    .content{padding:40px 50px}
+    .section{display:none}
+    .section.active{display:block}
+    .section h2{font-size:24px;margin-bottom:30px}
+    .agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px}
+    .agent{background:#1f1f3a;border-radius:20px;overflow:hidden;border:1px solid #2a2a4a;transition:transform 0.3s}
+    .agent:hover{transform:translateY(-5px)}
+    .agent-header{background:linear-gradient(135deg,#e94560,#ff6b6b);padding:20px;display:flex;align-items:center;gap:15px}
+    .agent-icon{width:50px;height:50px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+    .agent-header h3{font-size:18px;flex:1}
+    .agent-status{padding:5px 12px;background:rgba(255,255,255,0.2);border-radius:20px;font-size:11px}
+    .agent-status.active{background:#00d9a5;color:#0f0f1a}
+    .agent-body{padding:20px}
+    .agent-desc{color:#aaa;margin-bottom:15px;line-height:1.5}
+    .capabilities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .cap{background:#16213e;padding:6px 12px;border-radius:15px;font-size:12px}
+    .agent-actions{display:flex;gap:10px}
+    .agent-btn{flex:1;padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+    .agent-btn.primary{background:#e94560;color:#fff}
+    .agent-btn.secondary{background:#16213e;color:#fff}
+  </style>
+</head>
+<body>
+  <div class="login" id="login">
+    <div class="login-box">
+      <h1>🤖 <span>Stack Decor</span></h1>
+      <p class="subtitle">Dashboard Administrateur - E-Décor</p>
+      <input type="email" id="email" value="electronbusiness07@gmail.com">
+      <input type="password" id="password" placeholder="Mot de passe">
+      <button onclick="login()">Se connecter</button>
+      <p class="error" id="error">Mot de passe incorrect</p>
+    </div>
+  </div>
+  <div class="dashboard" id="dashboard">
+    <div class="header">
+      <h1>🤖 Stack Decor <span class="badge">Dashboard Fondateur</span></h1>
+      <div class="header-right">
+        <span class="status">● AI Actif</span>
+        <button class="logout" onclick="logout()">Déconnexion</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">17</div><div class="l">Agents AI</div></div>
+      <div class="stat"><div class="n">24/7</div><div class="l">Disponibilité</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">Automatisé</div></div>
+      <div class="stat"><div class="n">360°</div><div class="l">Couverture</div></div>
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn active" onclick="showSection('home')">🏠 Accueil</button>
+      <button class="nav-btn" onclick="showSection('agents')">🤖 Agents</button>
+      <button class="nav-btn" onclick="showSection('app')">🏠 App</button>
+    </div>
+    <div class="content">
+      <div class="section active" id="section-home">
+        <h2>Bienvenue sur Stack Decor</h2>
+        <p style="color:#888">Votre système d'automatisation AI 360° pour E-Décor</p>
+      </div>
+      <div class="section" id="section-agents">
+        <h2>🤖 Stack Decor - 17 Agents AI</h2>
+        <div class="agents-grid" id="agentsGrid"></div>
+      </div>
+      <div class="section" id="section-app">
+        <h2>🏠 Application E-Décor</h2>
+        <button class="agent-btn primary" onclick="alert('Lancez: npm start')">🚀 Lancer E-Décor</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const CONFIG = {email:'electronbusiness07@gmail.com',password:'EDecor2024'};
+    const agents = [
+      {id:'stack',name:'Stack Decor',role:'Principal',icon:'🎯',desc:'Agent central de coordination',caps:['Coordination','Décisions','Rapports']},
+      {id:'ventes',name:'Agent Ventes',role:'Commercial',icon:'💼',desc:'Support commercial',caps:['Ventes','Devis','Conseils']},
+      {id:'support',name:'Agent Support',role:'Client',icon:'🎧',desc:'Support 24/7',caps:['Réponses','Réclamations']},
+      {id:'stock',name:'Agent Stock',role:'Inventaire',icon:'📦',desc:'Gestion stock',caps:['Alertes','Commandes']},
+      {id:'marketing',name:'Agent Marketing',role:'Marketing',icon:'📢',desc:'Campagnes marketing',caps:['Contenu','Réseaux']},
+      {id:'compta',name:'Agent Comptabilité',role:'Finance',icon:'💰',desc:'Facturation',caps:['Factures','Paiements']},
+      {id:'rh',name:'Agent RH',role:'RH',icon:'👥',desc:'Ressources humaines',caps:['Congés','Formations']},
+      {id:'analytics',name:'Agent Analytics',role:'BI',icon:'📊',desc:'Statistiques',caps:['KPIs','Tableaux']},
+      {id:'security',name:'Agent Security',role:'Sécurité',icon:'🔒',desc:'Surveillance',caps:['Monitoring','Alertes']},
+      {id:'logistique',name:'Agent Logistique',role:'Livraison',icon:'🚚',desc:'Suivi livraisons',caps:['Tracking','Livraisons']},
+      {id:'qa',name:'Agent QA',role:'Qualité',icon:'✅',desc:'Contrôle qualité',caps:['Inspection','Tests']},
+      {id:'it',name:'Agent IT',role:'Technique',icon:'💻',desc:'Support technique',caps:['Maintenance','Dépannage']},
+      {id:'data',name:'Agent Data',role:'Données',icon:'🗄️',desc:'Gestion données',caps:['Backup','Analytics']},
+      {id:'seo',name:'Agent SEO',role:'Référencement',icon:'🔍',desc:'Optimisation SEO',caps:['Ranking','Mots-clés']},
+      {id:'crm',name:'Agent CRM',role:'Relations',icon:'🤝',desc:'Gestion CRM',caps:['Clients','Fidélité']},
+      {id:'produit',name:'Agent Produit',role:'Catalogue',icon:'🛋️',desc:'Gestion produits',caps:['Catalogue','Inventaire']},
+      {id:'rapports',name:'Agent Rapports',role:'Rapports',icon:'📑',desc:'Génération rapports',caps:['PDF','Export']}
+    ];
+    function login() {
+      if(document.getElementById('email').value===CONFIG.email&&document.getElementById('password').value===CONFIG.password){
+        document.getElementById('login').style.display='none';
+        document.getElementById('dashboard').style.display='block';
+        renderAgents();
+      }else{document.getElementById('error').style.display='block';}
+    }
+    function logout(){document.getElementById('dashboard').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('password').value='';}
+    function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('section-'+id).classList.add('active');event.target.classList.add('active');}
+    function renderAgents(){document.getElementById('agentsGrid').innerHTML=agents.map(a=>`<div class="agent"><div class="agent-header"><div class="agent-icon">${a.icon}</div><h3>${a.name}</h3><span class="agent-status active">●</span></div><div class="agent-body"><p class="agent-desc">${a.desc}</p><div class="capabilities">${a.caps.map(c=>`<span class="cap">${c}</span>`).join('')}</div><div class="agent-actions"><button class="agent-btn primary">💬</button><button class="agent-btn secondary">⚡</button></div></div></div>`).join('');}
+    document.getElementById('password').addEventListener('keypress',e=>{if(e.key==='Enter')login()});
+  </script>
+</body>
+</html>

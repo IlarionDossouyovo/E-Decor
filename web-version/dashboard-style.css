@@ -1,0 +1,219 @@
+/* ========================================
+   E-DÉCOR - N8N WORKFLOWS DASHBOARD
+   Design: #2c3e50 (Primary) | #e74c3c (Secondary)
+   ======================================== */
+
+:root {
+  --primary: #2c3e50;
+  --secondary: #e74c3c;
+  --accent: #3498db;
+  --light: #ecf0f1;
+  --dark: #1a252f;
+  --success: #27ae60;
+  --warning: #f39c12;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.workflow-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  padding: 40px 0;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.header .subtitle {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+.workflows-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.workflow-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.workflow-card:hover {
+  transform: translateY(-5px);
+}
+
+.workflow-header {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  padding: 20px;
+  color: white;
+  position: relative;
+}
+
+.workflow-header .number {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #e74c3c;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.workflow-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.workflow-header .icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.workflow-body {
+  padding: 20px;
+}
+
+.workflow-body .description {
+  color: #555;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.workflow-meta {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.meta-item {
+  text-align: center;
+}
+
+.meta-item .label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.meta-item .value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.status-active {
+  color: #27ae60;
+}
+
+.status-inactive {
+  color: #95a5a6;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+/* Actions */
+.actions {
+  text-align: center;
+  margin-top: 40px;
+  padding: 30px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 15px 40px;
+  background: #e74c3c;
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+  box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+}
+
+.btn:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.stat-card .number {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.stat-card .label {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>E-Décor - Stack Decor Dashboard</title>
+  <style>
+    body{font-family:Segoe UI;background:#1a1a2e;color:#fff;margin:0;padding:20px}
+    .login{background:#1f1f3a;padding:40px;border-radius:20px;max-width:400px;margin:100px auto;text-align:center}
+    input{width:90%;padding:15px;margin:10px 0;border-radius:10px;border:2px solid #2a2a4a;background:#16213e;color:#fff}
+    button{width:100%;padding:15px;background:#e94560;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:16px}
+    .dashboard{display:none}
+    .header{background:#16213e;padding:20px;display:flex;justify-content:space-between;border-bottom:1px solid #2a2a4a}
+    .badge{background:#e94560;padding:5px 15px;border-radius:20px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:30px;background:#16213e}
+    .stat{background:#1f1f3a;padding:20px;border-radius:15px;text-align:center}
+    .stat .n{font-size:32px;color:#e94560}
+    .agents{padding:40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px}
+    .agent{background:#1f1f3a;border-radius:20px;overflow:hidden}
+    .agenth{background:linear-gradient(135deg,#e94560,#ff6b6b);padding:20px;display:flex;align-items:center;gap:15px}
+    .agenti{width:50px;height:50px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+    .agentb{padding:20px}
+    .tag{display:inline-block;padding:5px 12px;background:#16213e;border-radius:15px;font-size:12px;margin:3px}
+  </style>
+</head>
+<body>
+  <div class="login" id="login">
+    <h1>Stack Decor</h1>
+    <p>Dashboard Fondateur</p>
+    <input type="email" id="email" value="electronbusiness07@gmail.com">
+    <input type="password" id="pass" placeholder="Mot de passe">
+    <button onclick="login()">Se connecter</button>
+  </div>
+  <div class="dashboard" id="dash">
+    <div class="header">
+      <h1>Stack Decor <span class="badge">Dashboard Fondateur</span></h1>
+      <span style="color:#00d9a5">● AI Actif</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">9</div><div>Agents</div></div>
+      <div class="stat"><div class="n">24/7</div><div>Disponibilité</div></div>
+      <div class="stat"><div class="n">100%</div><div>Automatisé</div></div>
+      <div class="stat"><div class="n">360°</div><div>Couverture</div></div>
+    </div>
+    <h2 style="padding:40px 40px 0">Agents Stack Decor</h2>
+    <div class="agents" id="agents"></div>
+  </div>
+  <script>
+    const FOUNDER={email:'electronbusiness07@gmail.com',pass:'E-Decor2024!'};
+    const agents=[
+      {n:'Stack Decor',r:'Principal',i:'🎯',d:'Agent central',c:['Coordination','Décisions','Rapports']},
+      {n:'Agent Ventes',r:'Commercial',i:'💼',d:'Support commercial',c:['Ventes','Devis']},
+      {n:'Agent Support',r:'Client',i:'🎧',d:'Support 24/7',c:['Réponses','Réclamations']},
+      {n:'Agent Stock',r:'Inventaire',i:'📦',d:'Gestion stock',c:['Alertes','Commandes']},
+      {n:'Agent Marketing',r:'Marketing',i:'📢',d:'Campagnes',c:['Contenu','Réseaux']},
+      {n:'Agent Comptabilité',r:'Finance',i:'💰',d:'Facturation',c:['Factures','Paiements']},
+      {n:'Agent RH',r:'RH',i:'👥',d:'Ressources humaines',c:['Congés','Formations']},
+      {n:'Agent Analytics',r:'BI',i:'📊',d:'Statistiques',c:['KPIs','Tableaux']},
+      {n:'Agent Security',r:'Sécurité',i:'🔒',d:'Surveillance',c:['Monitoring','Alertes']}
+    ];
+    function login(){
+      if(document.getElementById('email').value==FOUNDER.email&&document.getElementById('pass').value==FOUNDER.pass){
+        document.getElementById('login').style.display='none';
+        document.getElementById('dash').style.display='block';
+        render();
+      }else{alert('Mot de passe incorrect');}
+    }
+    function render(){
+      document.getElementById('agents').innerHTML=agents.map(a=>`<div class="agent"><div class="agenth"><div class="agenti">${a.i}</div><h2>${a.n}</h2></div><div class="agentb"><p>${a.d}</p>${a.c.map(c=>`<span class="tag">${c}</span>`).join('')}</div></div>`).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+﻿version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: edecor-db
+    environment:
+      POSTGRES_USER: edecor
+      POSTGRES_PASSWORD: edecor_secure_2024
+      POSTGRES_DB: edecor_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - edecor_data:/var/lib/postgresql/data
+volumes:
+  edecor_data:
