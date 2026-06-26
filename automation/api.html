@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>E-Décor - API Agents</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Segoe UI;background:#0f0f1a;color:#fff;min-height:100vh;padding:30px}
+    h1{font-size:28px;margin-bottom:10px}
+    .subtitle{color:#888;margin-bottom:30px}
+    .endpoint{background:#1f1f3a;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid #2a2a4a}
+    .endpoint h3{font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+    .method{background:#e94560;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:bold}
+    .method.get{background:#00d9a5;color:#0f0f1a}
+    .method.post{background:#e94560}
+    .url{color:#00b4d8;font-family:monospace;font-size:14px}
+    .desc{color:#888;margin-top:10px;font-size:14px}
+    .example{background:#16213e;padding:15px;border-radius:8px;margin-top:15px;font-family:monospace;font-size:13px;color:#aaa;overflow-x:auto}
+  </style>
+</head>
+<body>
+  <h1>🔌 Stack Decor API</h1>
+  <p class="subtitle">API REST pour les agents E-Décor</p>
+  
+  <div class="endpoint">
+    <h3><span class="method get">GET</span> /api/agents</h3>
+    <p class="url">http://localhost:3000/api/agents</p>
+    <p class="desc">Liste tous les agents disponibles</p>
+    <div class="example">{"agents":[ {"id":"stack","name":"Stack Decor","status":"active"}, ... ]}</div>
+  </div>
+  
+  <div class="endpoint">
+    <h3><span class="method get">GET</span> /api/agents/:id</h3>
+    <p class="url">http://localhost:3000/api/agents/stack</p>
+    <p class="desc">Détails d'un agent spécifique</p>
+    <div class="example">{"id":"stack","name":"Stack Decor","role":"Principal","capabilities":[...]}</div>
+  </div>
+  
+  <div class="endpoint">
+    <h3><span class="method post">POST</span> /api/chat</h3>
+    <p class="url">http://localhost:3000/api/chat</p>
+    <p class="desc">Envoyer un message à un agent</p>
+    <div class="example">{"agent":"stack","message":"Bonjour","context":{}}</div>
+  </div>
+  
+  <div class="endpoint">
+    <h3><span class="method get">GET</span> /api/analytics</h3>
+    <p class="url">http://localhost:3000/api/analytics</p>
+    <p class="desc">Statistiques en temps réel</p>
+    <div class="example">{"sales":12450,"orders":47,"cart":265}</div>
+  </div>
+  
+  <div class="endpoint">
+    <h3><span class="method get">GET</span> /api/health</h3>
+    <p class="url">http://localhost:3000/api/health</p>
+    <p class="desc">Vérifier le statut de l'API</p>
+    <div class="example">{"status":"ok","ollama":"connected","timestamp":"..."}</div>
+  </div>
+</body>
+</html>
