@@ -38,11 +38,13 @@ E-Decor/
 ├── styles.css       # Styles CSS
 ├── renderer.js      # Logique frontend
 ├── package.json   # Configuration
+├── assets/**/*    # Images et icônes
 ├── ai-integration/  # Integration AI (Ollama)
+├── ai-agents/      # Systeme Agents AI 360°
 └── web-version/    # Version web Vercel
 ```
 
-## 🌐 Fonctionnalites (v1.1.0)
+## 🌐 Fonctionnalites (v1.2.0)
 
 - Catalogue produits par categorie
 - Articles de blog pour chaque categorie
@@ -55,6 +57,7 @@ E-Decor/
 - **Animations et transitions UI**
 - **Systeme de paiement (demo)**
 - **Integration AI Ollama**
+- **Systeme d'Agents AI 360°**
 
 ## 🛠️ Commandes
 

@@ -1092,6 +1092,9 @@ async function loadAdminPage() {
   container.innerHTML = `
     <div class="page-title">
       <h1>${t ? 'Administration' : 'Admin Dashboard'}</h1>
+      <button class="product-button" onclick="window.open('ai-agents/admin-panel.html', '_blank')" style="margin-left: 20px;">
+        🤖 ${t ? 'Panel AI Agents' : 'AI Agents Panel'}
+      </button>
     </div>
     <div class="admin-stats">
       <div class="stat-card">
