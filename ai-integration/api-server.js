@@ -10,7 +10,7 @@ const url = require('url');
 // Configuration Ollama
 const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
-const OLLAMA_MODEL = 'llama3:latest';
+const OLLAMA_MODEL = 'llama3.2';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**

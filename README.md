@@ -39,7 +39,6 @@ E-Decor/
 ├── renderer.js      # Logique frontend
 ├── package.json   # Configuration
 ├── ai-integration/  # Integration AI (Ollama)
-├── n8n-workflows/  # 7 workflows automation
 └── web-version/    # Version web Vercel
 ```
 
@@ -56,7 +55,6 @@ E-Decor/
 - **Animations et transitions UI**
 - **Systeme de paiement (demo)**
 - **Integration AI Ollama**
-- **7 workflows n8n**
 
 ## 🛠️ Commandes
 

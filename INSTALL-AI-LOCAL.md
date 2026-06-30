@@ -103,7 +103,6 @@ L'IA est déjà implémentée dans E-Décor :
 ### Fichiers AI
 - `ai-integration/ollama-client.js` - Client Ollama
 - `ai-integration/api-server.js` - API server
-- `automation/ai-automation-360.js` - Automation
 
 ### Comment ça marche
 
