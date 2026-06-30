@@ -1,7 +1,6 @@
 /**
  * E-Décor - API Server pour AI Integration
- * Endpoints pour le workflow n8n et l'automation 360°
- * Avec support Ollama!
+ * Endpoints pour l'intégration AI avec support Ollama
  */
 
 const http = require('http');
@@ -10,7 +9,7 @@ const url = require('url');
 // Configuration Ollama
 const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
-const OLLAMA_MODEL = 'llama3:latest';
+const OLLAMA_MODEL = 'llama3.2';
 const OLLAMA_PATH = 'C:\\Users\\AUGUSTIN\\AppData\\Local\\Programs\\Ollama\\ollama.exe';
 
 /**
