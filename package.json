@@ -33,7 +33,8 @@
       "styles.css",
       "renderer.js",
       "assets/**/*",
-      "ai-integration/**/*"
+      "ai-integration/**/*",
+      "ai-agents/**/*"
     ],
     "win": {
       "target": "nsis",

@@ -201,7 +201,7 @@ async function handleWebhook(req, res) {
 }
 
 /**
- * Route: POST /api/speak - Synthèse vocale (Windows SAPI)
+ * Route: POST /api/speak - Synthèse vocale (Windows SAPI / Linux espeak)
  */
 function handleSpeak(req, res) {
   parseBody(req).then((body) => {
@@ -212,14 +212,27 @@ function handleSpeak(req, res) {
     // Respond immediately, then speak
     sendJson(res, 200, { spoken: true, text: body.text });
     
-    // Speak with better voice - select Zira, adjust rate and volume
+    // Cross-platform TTS
     const { exec } = require('child_process');
-    const text = body.text.replace(/'/g, "''");
-    const psPath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
-    const cmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.SelectVoiceByHints('Female'); $s.Rate = -1; $s.Volume = 100; $s.Speak('${text}')`;
-    exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "${cmd}"`, (err) => {
-      if (err) console.log('[TTS] Error:', err.message);
-    });
+    const text = body.text.replace(/'/g, "''").replace(/"/g, '\\"');
+    
+    // Check platform and use appropriate TTS
+    if (process.platform === 'win32') {
+      // Windows - Use SAPI
+      const psPath = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+      const cmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.SelectVoiceByHints('Female'); $s.Rate = -1; $s.Volume = 100; $s.Speak('${text}')`;
+      exec(`"${psPath}" -NoProfile -ExecutionPolicy Bypass -Command "${cmd}"`, (err) => {
+        if (err) console.log('[TTS] Error:', err.message);
+      });
+    } else {
+      // Linux/Mac - Use espeak or say command
+      const cmd = process.platform === 'darwin' 
+        ? `say "${text}"` 
+        : `espeak "${text}" 2>/dev/null || echo "espeak not installed"`;
+      exec(cmd, (err) => {
+        if (err) console.log('[TTS] Error:', err.message);
+      });
+    }
   }).catch((e) => {
     sendJson(res, 500, { error: e.message });
   });

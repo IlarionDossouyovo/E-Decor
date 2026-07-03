@@ -88,6 +88,11 @@ const webAPI = {
     return cat ? cat.products.find(p => p.id === productId) : null;
   },
   getGlobalBlog: async () => builtInBlogPosts,
+  getBlogArticles: async (categoryId) => {
+    // Pour l'instant, retourne les articles globaux
+    // Les articles par catégorie peuvent être ajoutés séparément
+    return builtInBlogPosts;
+  },
   getBlogPost: async (postId) => builtInBlogPosts.find(p => p.id === postId),
   searchProducts: async (query) => {
     const results = [];
