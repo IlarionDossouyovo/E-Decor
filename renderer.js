@@ -116,8 +116,8 @@ const webAPI = {
   }
 };
 
-// API - utilise window.api si disponible (Electron) sinon webAPI (navigateur)
-const api = (typeof window !== 'undefined' && window.api) ? window.api : webAPI;
+// API - vient de preload.js (Electron) ou webAPI (navigateur)
+const api = window.api || webAPI;
 
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
