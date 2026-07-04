@@ -116,8 +116,8 @@ const webAPI = {
   }
 };
 
-// Vérifier si on est en mode Electron ou Web
-const api = typeof window !== 'undefined' && api ? api : webAPI;
+// API - utilise window.api si disponible (Electron) sinon webAPI (navigateur)
+const api = (typeof window !== 'undefined' && window.api) ? window.api : webAPI;
 
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
