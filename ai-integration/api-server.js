@@ -59,7 +59,7 @@ function callOllama(prompt) {
 }
 
 // Configuration serveur
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 
 // Stockage en mémoire
 const tasks = new Map();

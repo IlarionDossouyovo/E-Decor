@@ -8,7 +8,7 @@ const url = require('url');
 const { agents, OLLAMA_URL, OLLAMA_MODEL, ADMIN_SECRET } = require('./agents-config');
 
 // Configuration serveur
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 const HOST = process.env.HOST || 'localhost';
 
 /**
