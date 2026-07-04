@@ -120,13 +120,13 @@ Utiliser des revêtements différents : parquet dans le salon, carrelage dans la
 ### 3. Elements de mobilier
 Un canapé peut servir de élément séparateur tout en restant confortable.
 
-### 4. Éclairage分区
+### 4. Éclairage par zone
 Installer des éclairages différents pour chaque zone : lumière froide pour le coin travail, lumière chaude pour le coin salon.
 
 ## Exemple pratique
 
 Dans un espace de 40m² ouvert :
-- Zone Salon : Canapé + table basse +电视 (face au-canapé)
+- Zone Salon : Canapé + table basse + TV (face au canapé)
 - Zone Salle à manger : Table + chaises (près de la cuisine)
 - Zone Travail : Petit bureau + chaise (près de la fenêtre)
 
@@ -569,7 +569,7 @@ Investissement pour long terme.
 
 1. Quelle est la fréquence d'utilisation ?
 2. Ai-je des enfants ?
-3. Vais-je dém搬迁 ?
+3. Vais-je déménage ?
 4. QuelStyle je souhaite ?
 
 Les meilleures décisions viennent après réflexion.`,
@@ -598,24 +598,24 @@ Ivoire, champagne - luminosité et douceur.
 ## Matériaux stars
 
 ### Terre cuite
-Poteries, tuiles, objets decoration.
+Poteries, tuiles, objets de decoration.
 
 ### Verre texturé
 Parois, cloches, abat-jour.
 
 ### Métal martelé
-Luminaires,ubinature, objets.
+Luminaires,tubulure, objets.
 
 ## Styles dominants
 
 ### Japandi
-Fusion japonais-scandinave, Minimalisme wisdom.
+Fusion japonais-scandinave, minimalisme sage.
 
 ### Cottage-core
 Style campagne romantique, fleurs, bois naturel.
 
 ### Maximalisme
-Oser les motifs, les couleurs, lesSuperpositions.
+Oser les motifs, les couleurs, les superpositions.
 
 ## Comment adopter
 
@@ -651,7 +651,7 @@ Les meubles low-cost sont jetables.
 ### Impact carbone
 Moins de production = moins d'émissions.
 
-### Déchet减少
+### Déchet réduit
 Moins de meubles jetés.
 
 ### Ressources
