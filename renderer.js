@@ -1,5 +1,6 @@
 // E-Décor - Renderer JavaScript
 console.log('[E-Décor] === Script renderer.js chargé ===');
+alert('[E-Décor] Script chargé!');
 
 let currentLanguage = 'fr';
 let currentPage = 'home';
