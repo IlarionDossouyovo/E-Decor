@@ -563,36 +563,157 @@ function refreshCurrentPage() {
 
 // Load Home Page
 async function loadHomePage(container) {
+  const isFR = currentLanguage === 'fr';
+  
   container.innerHTML = `
+    <!-- Hero Section -->
     <section class="hero-section">
-      <h2>${t('home_title')}</h2>
-      <p>${t('home_subtitle')}</p>
-      <a href="#" class="cta-button" onclick="loadPage('catalog'); return false;">${t('home_cta')}</a>
+      <div class="hero-content">
+        <h2>${isFR ? 'Transformez Votre Intérieur' : 'Transform Your Interior'}</h2>
+        <p>${isFR ? 'Meubles & Décoration de qualité' : 'Quality Furniture & Decor'}</p>
+        <p class="hero-partner">${isFR ? 'Partenaire Officiel ORCA-Décor' : 'Official ORCA-Décor Partner'}</p>
+        <div class="hero-actions">
+          <a href="#" class="cta-button primary" onclick="loadPage('catalog'); return false;">
+            ${isFR ? 'Découvrir le Catalogue' : 'Discover Catalog'}
+          </a>
+          <a href="#" class="cta-button secondary" onclick="loadPage('contact'); return false;">
+            ${isFR ? 'Contactez-nous' : 'Contact Us'}
+          </a>
+        </div>
+      </div>
     </section>
 
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">${isFR ? 'Produits' : 'Products'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">${isFR ? 'Catégories' : 'Categories'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">12+</span>
+          <span class="stat-label">${isFR ? 'Articles Blog' : 'Blog Articles'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">${isFR ? 'Support' : 'Support'}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
     <section class="categories-section">
-      <h2 class="page-title">${t('categories_title')}</h2>
+      <h2 class="section-heading">
+        <span class="heading-icon">🏠</span>
+        ${isFR ? 'Nos Catégories' : 'Our Categories'}
+      </h2>
       <div class="categories-grid">
         ${categoriesData.map(cat => `
           <div class="category-card" onclick="loadCategory('${cat.id}')">
-            <div class="category-image">${categoryIcons[cat.id] || '🪑'}</div>
+            <div class="category-icon">${cat.icon || '🪑'}</div>
             <div class="category-info">
-              <h3>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h3>
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
               <p>${cat.description}</p>
-              <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
+              <span class="category-count">${cat.products.length} ${isFR ? 'produits' : 'products'}</span>
+            </div>
+            <div class="category-arrow">→</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">⭐</span>
+        ${isFR ? 'Produits Vedettes' : 'Featured Products'}
+      </h2>
+      <div class="products-grid">
+        ${getFeaturedProducts().map(product => `
+          <div class="product-card" onclick="showProductDetails('${product.categoryId}', '${product.id}')">
+            <div class="product-image">${product.icon || '🛋️'}</div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <button class="product-button">${isFR ? 'Voir détails' : 'View Details'}</button>
             </div>
           </div>
         `).join('')}
       </div>
     </section>
 
+    <!-- Why Choose Us -->
+    <section class="why-us-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">💎</span>
+        ${isFR ? 'Pourquoi Choisir E-Décor' : 'Why Choose E-Décor'}
+      </h2>
+      <div class="why-us-grid">
+        <div class="why-us-card">
+          <span class="why-us-icon">🚚</span>
+          <h3>${isFR ? 'Livraison Rapide' : 'Fast Delivery'}</h3>
+          <p>${isFR ? 'Livraison partout à Cotonou et environs' : 'Delivery throughout Cotonou and surroundings'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">🛡️</span>
+          <h3>${isFR ? 'Garantie Qualité' : 'Quality Warranty'}</h3>
+          <p>${isFR ? 'Tous nos produits sont garantis 2 ans' : 'All our products are guaranteed 2 years'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">💬</span>
+          <h3>${isFR ? 'Support 24/7' : 'Support 24/7'}</h3>
+          <p>${isFR ? 'Notre équipe est disponible à tout moment' : 'Our team is available at all times'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">🤝</span>
+          <h3>${isFR ? 'Partenaire ORCA' : 'ORCA Partner'}</h3>
+          <p>${isFR ? 'Collaboration avec ORCA-Décor leader' : 'Partnership with ORCA-Décor leader'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Section -->
     <section class="blog-section">
-      <h2 class="page-title">${t('blog_title')}</h2>
+      <h2 class="section-heading">
+        <span class="heading-icon">📰</span>
+        ${isFR ? 'Derniers Articles' : 'Latest Articles'}
+      </h2>
       <div class="blog-grid">
         ${await getRecentBlogPosts(4)}
       </div>
+      <div class="blog-cta">
+        <button class="cta-button" onclick="loadPage('blog')">${isFR ? 'Voir Tous les Articles' : 'View All Articles'}</button>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>${isFR ? 'Prêt à Transformer Votre Intérieur?' : 'Ready to Transform Your Interior?'}</h2>
+        <p>${isFR ? 'Contactez-nous pour un devis personnalisé' : 'Contact us for a personalized quote'}</p>
+        <div class="cta-buttons">
+          <button class="cta-button primary" onclick="loadPage('contact')">${isFR ? 'Contactez-nous' : 'Contact Us'}</button>
+          <button class="cta-button secondary" onclick="loadPage('catalog')">${isFR ? 'Voir le Catalogue' : 'View Catalog'}</button>
+        </div>
+      </div>
     </section>
   `;
+}
+
+// Get featured products
+function getFeaturedProducts() {
+  const products = [];
+  categoriesData.forEach(cat => {
+    cat.products.slice(0, 2).forEach(p => {
+      products.push({ ...p, categoryId: cat.id, categoryName: cat.name, icon: cat.icon });
+    });
+  });
+  return products.slice(0, 4);
 }
 
 // Get recent blog posts
@@ -612,23 +733,46 @@ async function getRecentBlogPosts(count) {
 
 // Load Catalog Page
 async function loadCatalogPage(container) {
+  const isFR = currentLanguage === 'fr';
+  
+  // Calculate total products
+  const totalProducts = categoriesData.reduce((sum, cat) => sum + cat.products.length, 0);
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t('catalog_title')}</h1>
-      <p>${t('catalog_subtitle')}</p>
-    </div>
-    <div class="categories-grid">
-      ${categoriesData.map(cat => `
-        <div class="category-card" onclick="loadCategory('${cat.id}')">
-          <div class="category-image">${categoryIcons[cat.id] || '🪑'}</div>
-          <div class="category-info">
-            <h3>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h3>
-            <p>${cat.description}</p>
-            <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
-          </div>
+    <!-- Catalog Header -->
+    <div class="catalog-header">
+      <div class="catalog-header-content">
+        <h1>${isFR ? 'Notre Catalogue Complet' : 'Our Complete Catalog'}</h1>
+        <p>${isFR ? 'Découvrez tous nos produits de qualité' : 'Discover all our quality products'}</p>
+        <div class="catalog-stats">
+          <span class="catalog-stat">
+            <strong>${categoriesData.length}</strong> ${isFR ? 'Catégories' : 'Categories'}
+          </span>
+          <span class="catalog-stat">
+            <strong>${totalProducts}</strong> ${isFR ? 'Produits' : 'Products'}
+          </span>
         </div>
-      `).join('')}
+      </div>
     </div>
+
+    <!-- Categories Grid -->
+    <section class="catalog-section">
+      <div class="categories-grid">
+        ${categoriesData.map(cat => `
+          <div class="category-card-large" onclick="loadCategory('${cat.id}')">
+            <div class="category-card-icon">${cat.icon || '🪑'}</div>
+            <div class="category-card-content">
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
+              <p>${cat.description}</p>
+              <div class="category-card-meta">
+                <span class="product-count-badge">${cat.products.length} ${isFR ? 'produits' : 'products'}</span>
+                <span class="view-more">${isFR ? 'Voir produits' : 'View products'} →</span>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
   `;
 }
 
@@ -1008,36 +1152,113 @@ function formatBlogContent(content) {
 
 // Load About Page
 async function loadAboutPage(container) {
+  const isFR = currentLanguage === 'fr';
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t('about_title')}</h1>
-      <p>${t('about_subtitle')}</p>
+    <!-- About Header -->
+    <div class="about-header">
+      <div class="about-header-content">
+        <h1>${isFR ? 'À Propos de E-Décor' : 'About E-Décor'}</h1>
+        <p>${isFR ? 'Votre partenaire de confiance pour l\'ameublement et la décoration' : 'Your trusted partner for furniture and decor'}</p>
+      </div>
     </div>
 
+    <!-- Story Section -->
     <section class="about-section">
-      <h2>Notre Histoire</h2>
-      <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec ORCA-Décor, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
-      <br>
-      <h2>Nos Catégories</h2>
-      <ul>
-        <li><strong>Salons</strong> : Canapés, fauteuils, tables basses, meubles TV</li>
-        <li><strong>Bureaux</strong> : Bureaux exécutifs, fauteuils de direction, rangements</li>
-        <li><strong>Cuisines</strong> : Îlots centraux, meubles bas, étageres</li>
-        <li><strong>Jardins</strong> : Salons d'extérieur, transats, barbecues</li>
-        <li><strong>Salles à manger</strong> : Tables, chaises, buffets, vaisseliers</li>
-      </ul>
-      <br>
-      <h2>Notre Mission</h2>
-      <p>Proposer des mobilier de qualité à des prix compétitifs,avec un service client irréprochable. Nous expédions nos produits dans le monde entier.</p>
+      <div class="about-card">
+        <div class="about-icon">🏠</div>
+        <h2>${isFR ? 'Notre Histoire' : 'Our Story'}</h2>
+        <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec <strong>ORCA-Décor</strong>, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
+        <p>${isFR ? 'Basés à Cotonou, au Bénin, nous servons des clients partout en Afrique de l\'Ouest et au-delà.' : 'Based in Cotonou, Benin, we serve customers across West Africa and beyond.'}</p>
+      </div>
     </section>
 
+    <!-- Categories Section -->
+    <section class="about-categories">
+      <h2 class="section-heading">
+        <span class="heading-icon">📦</span>
+        ${isFR ? 'Nos Catégories' : 'Our Categories'}
+      </h2>
+      <div class="about-categories-grid">
+        ${categoriesData.map(cat => `
+          <div class="about-category-item">
+            <span class="about-cat-icon">${cat.icon || '🪑'}</span>
+            <div>
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
+              <p>${isFR ? cat.description : cat.description}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="mission-vision">
+      <div class="mission-card">
+        <div class="mission-icon">🎯</div>
+        <h2>${isFR ? 'Notre Mission' : 'Our Mission'}</h2>
+        <p>${isFR ? 'Proposer des mobilier de qualité à des prix compétitifs, avec un service client irréprochable. Nous expédions nos produits dans le monde entier.' : 'Provide quality furniture at competitive prices, with impeccable customer service. We ship our products worldwide.'}</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">🔭</div>
+        <h2>${isFR ? 'Notre Vision' : 'Our Vision'}</h2>
+        <p>${isFR ? 'Devenir le leader de l\'e-commerce mobilier en Afrique de l\'Ouest, en offrant des produits de qualité et un service exceptionnel.' : 'Become the leader in furniture e-commerce in West Africa, offering quality products and exceptional service.'}</p>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">💎</span>
+        ${isFR ? 'Nos Valeurs' : 'Our Values'}
+      </h2>
+      <div class="values-grid">
+        <div class="value-item">
+          <span class="value-icon">✅</span>
+          <h3>${isFR ? 'Qualité' : 'Quality'}</h3>
+          <p>${isFR ? 'Produits rigoureuxelectionnés' : 'Carefully selected products'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h3>${isFR ? 'Confiance' : 'Trust'}</h3>
+          <p>${isFR ? 'Relation client durable' : 'Long-term customer relationship'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">⚡</span>
+          <h3>${isFR ? 'Rapidité' : 'Speed'}</h3>
+          <p>${isFR ? 'Livraison rapide' : 'Fast delivery'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">💬</span>
+          <h3>${isFR ? 'Écoute' : 'Listening'}</h3>
+          <p>${isFR ? 'Support réactif 24/7' : 'Responsive support 24/7'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners -->
     <section class="partners-section">
-      <h2>Nos Partenaires</h2>
-      <p><strong>ORCA-Décor</strong> : Notre partenaire exclusif pour la decoration et l'ameublement.</p>
+      <h2 class="section-heading">
+        <span class="heading-icon">🤝</span>
+        ${isFR ? 'Nos Partenaires' : 'Our Partners'}
+      </h2>
+      <div class="partners-grid">
+        <div class="partner-card">
+          <span class="partner-logo">🏠</span>
+          <h3>ORCA-Décor</h3>
+          <p>${isFR ? 'Partenaire exclusif pour la decoration et l\'ameublement' : 'Exclusive partner for decoration and furniture'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+      <h2>${isFR ? 'Contactez-nous' : 'Contact Us'}</h2>
+      <p>${isFR ? 'Vous avez des questions? Notre équipe est là pour vous aider!' : 'Have questions? Our team is here to help!'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${isFR ? 'Envoyer un message' : 'Send a Message'}</button>
     </section>
   `;
 }
-
 // Load Contact Page
 async function loadContactPage(container) {
   container.innerHTML = `
