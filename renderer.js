@@ -1,4 +1,22 @@
 // E-Décor - Renderer JavaScript
+console.log('[E-Décor] === Script renderer.js chargé ===');
+
+// Immediate alert to confirm script is running
+if (typeof window !== 'undefined') {
+  window.onload = function() {
+    setTimeout(function() {
+      console.log('[E-Décor] Window loaded, checking main-content...');
+      var mc = document.getElementById('main-content');
+      if (mc) {
+        console.log('[E-Décor] main-content found, inserting content...');
+        mc.innerHTML = '<div style="padding:50px; text-align:center; background:#e8f5e9; margin:20px; border-radius:10px;"><h2>🔥 E-Décor se charge...</h2></div>';
+      } else {
+        alert('ERREUR: main-content non trouvé!');
+      }
+    }, 500);
+  };
+}
+
 let currentLanguage = 'fr';
 let currentPage = 'home';
 let categoriesData = [];
@@ -237,7 +255,29 @@ async function init() {
   
   // ALWAYS use built-in categories as primary source
   categoriesData = builtInCategories;
-  console.log('[E-Décor] Catégories intégrées chargées:', categoriesData.length);
+  console.log('[E-Décor] Catégories intégrées:', categoriesData.length);
+  
+  // Verify main-content exists
+  var mainContent = document.getElementById('main-content');
+  console.log('[E-Décor] main-content:', mainContent);
+  
+  if (mainContent) {
+    // Directly inject categories
+    var catHtml = '<section class="categories-section"><h2 class="page-title">Nos Catégories</h2><div class="categories-grid">';
+    categoriesData.forEach(function(cat) {
+      catHtml += '<div class="category-card" onclick="loadCategory(\'' + cat.id + '\')">' +
+        '<div class="category-image">' + (categoryIcons[cat.id] || '🪑') + '</div>' +
+        '<div class="category-info"><h3>' + cat.name + '</h3>' +
+        '<p>' + cat.description + '</p>' +
+        '<p class="product-count">' + cat.products.length + ' produits</p></div></div>';
+    });
+    catHtml += '</div></section>';
+    
+    mainContent.innerHTML = catHtml;
+    console.log('[E-Décor] Catégories injectées!');
+  } else {
+    console.error('[E-Décor] ERREUR: main-content est null!');
+  }
   
   populateCategoriesMenu();
   setupEventListeners();
@@ -245,8 +285,6 @@ async function init() {
   initCart();
   initFavorites();
   loadOrdersFromStorage();
-  loadPage('home');
-  console.log('[E-Décor] Page home chargée');
 }
 
 function t(key) {
