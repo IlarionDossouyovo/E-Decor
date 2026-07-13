@@ -197,6 +197,8 @@
     .agent-finance .agent-icon { background: #e0f7fa; }
     .agent-rh .agent-icon { background: #f1f8e9; }
     .agent-direction .agent-icon { background: #ede7f6; }
+    .agent-health .agent-icon { background: #ffebee; }
+    .agent-maintenance .agent-icon { background: #eceff1; }
     
     .agent-name {
       color: var(--primary);
@@ -337,11 +339,11 @@
       <div class="stats-grid">
         <div class="stat-card">
           <h3>Agents Actifs</h3>
-          <div class="value" id="stat-agents">7</div>
+          <div class="value" id="stat-agents">9</div>
         </div>
         <div class="stat-card">
           <h3>Départements</h3>
-          <div class="value" id="stat-depts">7</div>
+          <div class="value" id="stat-depts">9</div>
         </div>
         <div class="stat-card">
           <h3>Modèle AI</h3>
@@ -544,6 +546,60 @@
             </div>
           </div>
         </div>
+        
+        <!-- Agent: Health -->
+        <div class="agent-card agent-health">
+          <div class="agent-header">
+            <div class="agent-icon">🏥</div>
+            <div>
+              <div class="agent-name">Agent Santé & Bien-être</div>
+              <div class="agent-dept">Département: Santé & Sécurité</div>
+            </div>
+          </div>
+          <p class="agent-description">Gestion de la santé des employés, sécurité au travail et bien-être du personnel.</p>
+          <div class="agent-capabilities">
+            <span class="capability-tag">Santé</span>
+            <span class="capability-tag">Sécurité</span>
+            <span class="capability-tag">Bien-être</span>
+            <span class="capability-tag">Prévention</span>
+          </div>
+          <div class="agent-chat">
+            <textarea id="chat-health" placeholder="Posez votre question..."></textarea>
+            <button onclick="chatWithAgent('health')">Envoyer</button>
+            <div class="loading" id="loading-health">⏳ Traitement en cours...</div>
+            <div class="agent-response" id="response-health">
+              <h4>Réponse de l'Agent:</h4>
+              <p></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Agent: Maintenance -->
+        <div class="agent-card agent-maintenance">
+          <div class="agent-header">
+            <div class="agent-icon">🔧</div>
+            <div>
+              <div class="agent-name">Agent Maintenance</div>
+              <div class="agent-dept">Département: Technique & Maintenance</div>
+            </div>
+          </div>
+          <p class="agent-description">Gestion technique, maintenance des équipements et infrastructure informatique.</p>
+          <div class="agent-capabilities">
+            <span class="capability-tag">Équipements</span>
+            <span class="capability-tag">Dépannage</span>
+            <span class="capability-tag">Infrastructure</span>
+            <span class="capability-tag">Prévention</span>
+          </div>
+          <div class="agent-chat">
+            <textarea id="chat-maintenance" placeholder="Posez votre question..."></textarea>
+            <button onclick="chatWithAgent('maintenance')">Envoyer</button>
+            <div class="loading" id="loading-maintenance">⏳ Traitement en cours...</div>
+            <div class="agent-response" id="response-maintenance">
+              <h4>Réponse de l'Agent:</h4>
+              <p></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -617,7 +673,9 @@
           marketing: 'Je m\'occupe de la stratégie marketing et communication. Je peux analyser les tendances.',
           finance: 'Je gère les finances et les paiements. Je peux générer des rapports.',
           rh: 'Je suis l\'Agent RH. Je peux vous aider avec le recrutement et les questions empleado.',
-          direction: 'Je coordonne tous les départements. Je peux générer des rapports consolidés.'
+          direction: 'Je coordonne tous les départements. Je peux générer des rapports consolidés.',
+          health: 'Je suis l\'Agent Santé & Bien-être d\'E-Décor. Je gère la santé des employés, la sécurité au travail et le bien-être du personnel. Je peux vous aider avec les protocoles de sécurité et les demandes related.',
+          maintenance: 'Je suis l\'Agent Maintenance d\'E-Décor. Je gère la maintenance des équipements, l\'infrastructure technique et le dépannage. Je peux planifier les interventions et suivre les équipements.'
         };
         
         document.querySelector('#response-' + agentId + ' p').textContent = offlineResponses[agentId] + '\n\n⚠️ Note: Connectez le serveur AI avec `node ai-agents/api-server.js` pour des réponses complètes.';

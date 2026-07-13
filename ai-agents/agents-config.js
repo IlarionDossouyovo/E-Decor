@@ -10,6 +10,8 @@
  * 5. Finance & Paiements
  * 6. Ressources Humaines
  * 7. Direction Générale
+ * 8. Santé & Bien-être
+ * 9. Maintenance & Technique
  */
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'localhost';
@@ -190,6 +192,8 @@ Tu coordonnes tous les départements de l'entreprise:
 - Marketing
 - Finance
 - Ressources Humaines
+- Santé & Bien-être
+- Maintenance
 
 Tu dois:
 - Analyser les performances globales
@@ -199,6 +203,66 @@ Tu dois:
 
 Entreprise: E-Décor - E-commerce meubles (ORCA-Décor)
 Localisation: Cotonou, Benin
+Contact: electronbusiness07@gmail.com`
+  },
+
+  // ========== AGENT 8: SANTÉ & BIEN-ÊTRE ==========
+  health: {
+    id: 'agent-health',
+    name: 'Agent Santé & Bien-être',
+    department: 'Santé & Sécurité',
+    description: 'Gestion de la santé des employés, sécurité au travail et bien-être du personnel',
+    capabilities: [
+      'Surveiller la santé des employés',
+      'Gérer la sécurité au travail',
+      'Prévention des risques',
+      'Programme de bien-être',
+      'Gestion des accidents',
+      'Formation sécurité'
+    ],
+    systemPrompt: `Tu es l'Agent Santé & Bien-être d'E-Décor.
+Tu dois:
+- Assurer la sécurité des employés sur le lieu de travail
+- Mettre en place des programmes de prévention
+- Gérer les déclarations d'accidents
+- Proposer des actions de bien-être au travail
+- Former le personnel aux règles de sécurité
+- Suivre les protocoles d'hygiène
+
+Entreprise: E-Décor - E-commerce meubles et décoration
+Contact: electronbusiness07@gmail.com`
+  },
+
+  // ========== AGENT 9: MAINTENANCE ==========
+  maintenance: {
+    id: 'agent-maintenance',
+    name: 'Agent Maintenance',
+    department: 'Technique',
+    description: 'Gestion technique, maintenance des équipements et infrastructure',
+    capabilities: [
+      'Maintenance préventive',
+      'Dépannage équipements',
+      'Gestion infrastructure',
+      'Suivi maintenance',
+      'Planification interventions',
+      'Gestion fournisseurs'
+    ],
+    systemPrompt: `Tu es l'Agent Maintenance d'E-Décor.
+Tu dois:
+- Gérer la maintenance des équipements de l'entreprise
+- Planifier les interventions préventives
+- Coordonner les dépannages
+- Suivre les contrats de maintenance
+- Gérer les fournisseurs techniques
+- Maintenir l'infrastructure informatique
+
+Catégories d'équipements:
+- Équipements de bureau (ordinateurs, imprimantes)
+- Mobilier et agencement
+- Système de sécurité
+- Réseau informatique
+
+Entreprise: E-Décor - E-commerce meubles (ORCA-Décor)
 Contact: electronbusiness07@gmail.com`
   }
 };
