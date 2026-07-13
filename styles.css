@@ -106,12 +106,12 @@ body {
   position: relative;
 }
 
-.logo-subtitle {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-light);
+.logo-electron {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--secondary-color);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .tagline {
@@ -648,13 +648,40 @@ body {
 /* Carte de localisation */
 .map-container {
   margin-top: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border: 3px solid var(--secondary-color);
 }
 
 .map-container iframe {
   display: block;
+}
+
+/* Carte centrée dans le footer */
+.footer-map {
+  text-align: center;
+  padding: 30px 40px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  margin: 20px 40px;
+}
+
+.footer-map h3 {
+  color: var(--secondary-color);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.footer-map .map-container {
+  max-width: 600px;
+  margin: 0 auto 15px;
+}
+
+.map-label {
+  color: #ccc;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .footer-links a:hover {
