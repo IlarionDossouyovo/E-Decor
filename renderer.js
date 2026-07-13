@@ -356,6 +356,7 @@ async function init() {
   initCart();
   initFavorites();
   loadOrdersFromStorage();
+  initAIChat(); // Initialize AI Chat Assistant
 }
 
 function t(key) {
@@ -1718,6 +1719,205 @@ function showNotification(message) {
   document.body.appendChild(notification);
   setTimeout(() => notification.remove(), 3000);
 }
+
+// ============= AI ASSISTANT CHAT =============
+
+// AI Chat State
+let aiChatOpen = false;
+let aiChatMessages = [];
+
+// Initialize AI Chat
+function initAIChat() {
+  // Create chat button and container if not exists
+  if (!document.getElementById('ai-chat-container')) {
+    const chatHTML = `
+      <div id="ai-chat-container" class="ai-chat-container">
+        <button id="ai-chat-toggle" class="ai-chat-toggle" onclick="toggleAIChat()">
+          <span class="chat-icon">💬</span>
+          <span class="chat-text">AI Assistant</span>
+        </button>
+        <div id="ai-chat-window" class="ai-chat-window">
+          <div class="chat-header">
+            <span>🤖 Assistant E-Décor</span>
+            <button class="chat-close" onclick="toggleAIChat()">×</button>
+          </div>
+          <div id="ai-chat-messages" class="chat-messages"></div>
+          <div class="chat-input-area">
+            <input type="text" id="ai-chat-input" placeholder="Posez votre question..." onkeypress="handleAIChatKeypress(event)">
+            <button onclick="sendAIChatMessage()">Envoyer</button>
+          </div>
+          <div class="chat-quick-actions">
+            <button onclick="sendQuickMessage('Conseils décoration')">🎨 Conseils</button>
+            <button onclick="sendQuickMessage('Produits salon')">🛋️ Salons</button>
+            <button onclick="sendQuickMessage('Prix livraison')">🚚 Livraison</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', chatHTML);
+  }
+}
+
+// Toggle AI Chat
+function toggleAIChat() {
+  aiChatOpen = !aiChatOpen;
+  const window = document.getElementById('ai-chat-window');
+  const toggle = document.getElementById('ai-chat-toggle');
+  
+  if (aiChatOpen) {
+    window.classList.add('open');
+    toggle.classList.add('hidden');
+    // Focus input
+    setTimeout(() => document.getElementById('ai-chat-input').focus(), 100);
+    // Show welcome message if empty
+    if (aiChatMessages.length === 0) {
+      addAIChatMessage('assistant', currentLanguage === 'fr' 
+        ? 'Bonjour! Je suis votre assistant E-Décor. Comment puis-je vous aider aujourd\'hui?' 
+        : 'Hello! I\'m your E-Décor assistant. How can I help you today?');
+    }
+  } else {
+    window.classList.remove('open');
+    toggle.classList.remove('hidden');
+  }
+}
+
+// Handle Enter key
+function handleAIChatKeypress(event) {
+  if (event.key === 'Enter') {
+    sendAIChatMessage();
+  }
+}
+
+// Send quick message
+function sendQuickMessage(message) {
+  if (!aiChatOpen) toggleAIChat();
+  document.getElementById('ai-chat-input').value = message;
+  sendAIChatMessage();
+}
+
+// Send AI Chat Message
+async function sendAIChatMessage() {
+  const input = document.getElementById('ai-chat-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Add user message
+  addAIChatMessage('user', message);
+  input.value = '';
+  
+  // Show typing indicator
+  showTypingIndicator();
+  
+  // Get AI response
+  try {
+    const response = await sendAIMessage(message, { context: 'chat' });
+    hideTypingIndicator();
+    
+    if (response.error) {
+      // Show helpful response even without AI
+      const helpfulResponses = getHelpfulResponse(message);
+      addAIChatMessage('assistant', helpfulResponses);
+    } else {
+      addAIChatMessage('assistant', response.message || response.response || JSON.stringify(response));
+    }
+  } catch (e) {
+    hideTypingIndicator();
+    const helpfulResponses = getHelpfulResponse(message);
+    addAIChatMessage('assistant', helpfulResponses);
+  }
+}
+
+// Get helpful responses without AI
+function getHelpfulResponse(message) {
+  const msg = message.toLowerCase();
+  const t = currentLanguage === 'fr';
+  
+  // Prix et produits
+  if (msg.includes('prix') || msg.includes('price') || msg.includes('cost')) {
+    return t 
+      ? 'Nos prix varient selon les produits:\n• Canapés: 649€ - 1299€\n• Bureaux: 799€ - 999€\n• Tables: 299€ - 899€\n\nContactez-nous pour un devis personnalisé!'
+      : 'Our prices vary by product:\n• Sofas: €649 - €1299\n• Desks: €799 - €999\n• Tables: €299 - €899\n\nContact us for a personalized quote!';
+  }
+  
+  // Livraison
+  if (msg.includes('livraison') || msg.includes('delivery') || msg.includes('shipping')) {
+    return t
+      ? '🚚 Modes de livraison disponibles:\n• Standard: 5-10 jours ouvrés\n• Express: 2-5 jours\n• Retrait en magasin: Gratuit\n\nZone: Cotonou et environs.'
+      : '🚚 Delivery options:\n• Standard: 5-10 business days\n• Express: 2-5 days\n• In-store pickup: Free\n\nArea: Cotonou and surroundings.';
+  }
+  
+  // Catégorie
+  if (msg.includes('salon') || msg.includes('living')) {
+    return t
+      ? '🛋️ Catégorie Salons:\n• Canapés: LINO, modulables\n• Fauteuils: relax, électriques\n• Tables basses: chêne, carrées\n• Meubles TV: suspendus\n\nPrix: 299€ - 1299€'
+      : '🛋️ Living Room Category:\n• Sofas: LINO, modular\n• Armchairs: electric, relax\n• Coffee tables: oak, square\n• TV units: wall-mounted\n\nPrice: €299 - €1299';
+  }
+  
+  if (msg.includes('bureau') || msg.includes('office')) {
+    return t
+      ? '💼 Catégorie Bureaux:\n• Bureaux: exécutifs, debout\n• Chaines: ergonomiques, mesh\n• Rangements: caissons, tiroirs\n\nPrix: 189€ - 999€'
+      : '💼 Office Category:\n• Desks: executive, standing\n• Chairs: ergonomic, mesh\n• Storage: drawers, cabinets\n\nPrice: €189 - €999';
+  }
+  
+  // Contact
+  if (msg.includes('contact') || msg.includes('téléphone') || msg.includes('phone')) {
+    return t
+      ? '📞 Coordonnées:\n• Email: electronbusiness07@gmail.com\n• Tél: +229 01 977 003 47\n• Tél: +229 01 411 663 14\n• Adresse: Cotonou, Benin'
+      : '📞 Contact:\n• Email: electronbusiness07@gmail.com\n• Phone: +229 01 977 003 47\n• Phone: +229 01 411 663 14\n• Address: Cotonou, Benin';
+  }
+  
+  // Commande
+  if (msg.includes('commande') || msg.includes('order') || msg.includes('achat')) {
+    return t
+      ? '🛒 Pour passer une commande:\n1. Parcourez nos catégories\n2. Ajoutez vos produits au panier\n3. Validez votre panier\n4. Choisissez le mode de livraison\n\nOu contactez-nous directement!'
+      : '🛒 To place an order:\n1. Browse our categories\n2. Add products to cart\n3. Validate your cart\n4. Choose delivery method\n\nOr contact us directly!';
+  }
+  
+  // Conseil décoration
+  if (msg.includes('conseil') || msg.includes('tip') || msg.includes('advice') || msg.includes('décoration')) {
+    return t
+      ? '🎨 Conseils-decoration:\n• Jouez avec les couleurs neutres\n• Mixez les textures (bois, tissu)\n• Ajoutez des plantes vertes\n• Optez pour un éclairage tamisé\n\nDécouvrez nos articles blog pour plus d\'astuces!'
+      : '🎨 Decorating tips:\n• Play with neutral colors\n• Mix textures (wood, fabric)\n• Add green plants\n• Opt for soft lighting\n\nCheck our blog articles for more tips!';
+  }
+  
+  // Default response
+  return t
+    ? 'Merci pour votre message! Je peux vous aider avec:\n• Nos produits et prix\n• La livraison\n• Les commandes\n• Les conseils-decoration\n\nQue souhaitez-vous savoir?'
+    : 'Thank you for your message! I can help you with:\n• Our products and prices\n• Delivery\n• Orders\n• Decorating tips\n\nWhat would you like to know?';
+}
+
+// Add message to chat
+function addAIChatMessage(role, content) {
+  const messagesContainer = document.getElementById('ai-chat-messages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `chat-message ${role}`;
+  messageDiv.innerHTML = `<div class="message-content">${content.replace(/\n/g, '<br>')}</div>`;
+  messagesContainer.appendChild(messageDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // Store in history
+  aiChatMessages.push({ role, content });
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+  const messagesContainer = document.getElementById('ai-chat-messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'chat-message assistant typing';
+  typingDiv.id = 'ai-typing';
+  typingDiv.innerHTML = '<div class="message-content">...</div>';
+  messagesContainer.appendChild(typingDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+  const typing = document.getElementById('ai-typing');
+  if (typing) typing.remove();
+}
+
+// ============= END AI ASSISTANT =============
 
 // ============= END PAYMENT SYSTEM =============
 
