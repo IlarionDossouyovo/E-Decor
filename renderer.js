@@ -1619,61 +1619,222 @@ async function loadAdminPage() {
   const totalOrders = orders.length;
   const totalItems = orders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0), 0);
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+  
+  // Calculate average order value
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+  
+  // Top products
+  const productCounts = {};
+  orders.forEach(order => {
+    order.items.forEach(item => {
+      productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+    });
+  });
+  const topProducts = Object.entries(productCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  
+  // Orders by status
+  const ordersByStatus = {
+    pending: orders.filter(o => o.status === 'pending').length,
+    delivered: orders.filter(o => o.status === 'delivered').length,
+    cancelled: orders.filter(o => o.status === 'cancelled').length
+  };
   
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t ? 'Administration' : 'Admin Dashboard'}</h1>
-      <button class="product-button" onclick="window.open('ai-agents/admin-panel.html', '_blank')" style="margin-left: 20px;">
-        🤖 ${t ? 'Panel AI Agents' : 'AI Agents Panel'}
-      </button>
+    <!-- Admin Header -->
+    <div class="admin-header">
+      <div class="admin-header-content">
+        <h1>📊 ${t ? 'Tableau de Bord' : 'Dashboard'}</h1>
+        <p>${t ? 'Gestion complète de votre entreprise E-Décor' : 'Complete management of your E-Décor business'}</p>
+        <div class="admin-actions-header">
+          <button class="admin-btn primary" onclick="window.open('ai-agents/admin-panel.html', '_blank')">
+            🤖 ${t ? 'Panel AI Agents' : 'AI Agents Panel'}
+          </button>
+          <button class="admin-btn" onclick="exportData()">
+            📥 ${t ? 'Exporter données' : 'Export Data'}
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="admin-stats">
-      <div class="stat-card">
-        <div class="stat-icon">📦</div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">📦</span>
+          <span class="stat-trend positive">+12%</span>
+        </div>
         <div class="stat-value">${totalOrders}</div>
-        <div class="stat-label">${t ? 'Total commandes' : 'Total Orders'}</div>
+        <div class="stat-label">${t ? 'Total Commandes' : 'Total Orders'}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="width: ${totalOrders > 0 ? (deliveredOrders / totalOrders * 100) : 0}%"></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-value">${pendingOrders}</div>
-        <div class="stat-label">${t ? 'En attente' : 'Pending'}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🛍️</div>
-        <div class="stat-value">${totalItems}</div>
-        <div class="stat-label">${t ? 'Articles vendus' : 'Items Sold'}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">💰</div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">💰</span>
+          <span class="stat-trend positive">+8%</span>
+        </div>
         <div class="stat-value">${totalRevenue} €</div>
-        <div class="stat-label">${t ? 'Revenu total' : 'Total Revenue'}</div>
+        <div class="stat-label">${t ? 'Revenu Total' : 'Total Revenue'}</div>
+      </div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">⏳</span>
+          <span class="stat-trend warning">${pendingOrders}</span>
+        </div>
+        <div class="stat-value">${pendingOrders}</div>
+        <div class="stat-label">${t ? 'Commandes en Attente' : 'Pending Orders'}</div>
+      </div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">📈</span>
+        </div>
+        <div class="stat-value">${avgOrderValue} €</div>
+        <div class="stat-label">${t ? 'Panier Moyen' : 'Average Order'}</div>
       </div>
     </div>
-    
-    <h2 class="page-title" style="margin-top: 40px;">${t ? 'Gestion des commandes' : 'Order Management'}</h2>
-    <div class="orders-list">
-      ${orders.map(order => `
-        <div class="order-card">
-          <div class="order-header">
-            <span class="order-id">${order.id}</span>
-            <span class="order-status ${order.status}">${t ? order.status === 'pending' ? 'En attente' : 'Livré' : order.status}</span>
+
+    <!-- Charts Section -->
+    <div class="admin-charts-grid">
+      <!-- Orders by Status -->
+      <div class="admin-chart-card">
+        <h3>📊 ${t ? 'Statut des Commandes' : 'Order Status'}</h3>
+        <div class="chart-pie">
+          <div class="pie-segment pending" style="--p: ${totalOrders > 0 ? (ordersByStatus.pending / totalOrders * 100) : 0}">
+            <span class="pie-label">${t ? 'En attente' : 'Pending'}</span>
+            <span class="pie-value">${ordersByStatus.pending}</span>
           </div>
-          <div class="order-date">${new Date(order.date).toLocaleDateString()}</div>
-          <div class="order-items">
-            ${order.items.map(item => `
-              <p>${item.name} × ${item.quantity}</p>
-            `).join('')}
-          </div>
-          <div class="order-total">
-            <strong>${order.total} ${order.currency}</strong>
-          </div>
-          <div class="admin-actions">
-            <button class="product-button" onclick="updateOrderStatus('${order.id}', 'delivered')">${t ? 'Marquer livré' : 'Mark Delivered'}</button>
+          <div class="pie-segment delivered" style="--p: ${totalOrders > 0 ? (ordersByStatus.delivered / totalOrders * 100) : 0}">
+            <span class="pie-label">${t ? 'Livrées' : 'Delivered'}</span>
+            <span class="pie-value">${ordersByStatus.delivered}</span>
           </div>
         </div>
-      `).join('')}
+      </div>
+
+      <!-- Top Products -->
+      <div class="admin-chart-card">
+        <h3>🏆 ${t ? 'Produits les Vendus' : 'Top Products'}</h3>
+        <div class="top-products-list">
+          ${topProducts.length > 0 ? topProducts.map((product, index) => `
+            <div class="top-product-item">
+              <span class="top-rank">#${index + 1}</span>
+              <span class="top-name">${product[0]}</span>
+              <span class="top-qty">${product[1]} ${t ? 'ventes' : 'sold'}</span>
+            </div>
+          `).join('') : `<p class="no-data">${t ? 'Aucune vente encore' : 'No sales yet'}</p>`}
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-quick-actions">
+      <h3>⚡ ${t ? 'Actions Rapides' : 'Quick Actions'}</h3>
+      <div class="quick-actions-grid">
+        <button class="quick-action-btn" onclick="loadPage('catalog')">
+          <span>📦</span>
+          ${t ? 'Gérer Produits' : 'Manage Products'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('orders')">
+          <span>📋</span>
+          ${t ? 'Voir Commandes' : 'View Orders'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('blog')">
+          <span>📝</span>
+          ${t ? 'Gérer Blog' : 'Manage Blog'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('affiliates')">
+          <span>🤝</span>
+          ${t ? 'Gérer Affiliés' : 'Manage Affiliates'}
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="admin-orders-section">
+      <h3>📦 ${t ? 'Dernières Commandes' : 'Recent Orders'}</h3>
+      <div class="orders-table">
+        <div class="table-header">
+          <span>ID</span>
+          <span>${t ? 'Client' : 'Customer'}</span>
+          <span>${t ? 'Articles' : 'Items'}</span>
+          <span>${t ? 'Total' : 'Total'}</span>
+          <span>${t ? 'Statut' : 'Status'}</span>
+          <span>${t ? 'Actions' : 'Actions'}</span>
+        </div>
+        ${orders.length > 0 ? orders.slice(0, 10).map(order => `
+          <div class="table-row">
+            <span class="order-id-cell">${order.id}</span>
+            <span>${order.delivery?.name || 'N/A'}</span>
+            <span>${order.items.reduce((s, i) => s + i.quantity, 0)}</span>
+            <span class="price-cell">${order.total} €</span>
+            <span class="status-badge ${order.status}">${t ? (order.status === 'pending' ? 'En attente' : order.status === 'delivered' ? 'Livré' : 'Annulé') : order.status}</span>
+            <span class="actions-cell">
+              <button class="action-btn view" onclick="viewOrder('${order.id}')" title="${t ? 'Voir' : 'View'}">👁️</button>
+              ${order.status === 'pending' ? `<button class="action-btn deliver" onclick="updateOrderStatus('${order.id}', 'delivered')" title="${t ? 'Livrer' : 'Deliver'}">✅</button>` : ''}
+              <button class="action-btn delete" onclick="cancelOrder('${order.id}')" title="${t ? 'Annuler' : 'Cancel'}">❌</button>
+            </span>
+          </div>
+        `).join('') : `<div class="no-orders">${t ? 'Aucune commande pour le moment' : 'No orders yet'}</div>`}
+      </div>
+    </div>
+
+    <!-- Products Overview -->
+    <div class="admin-products-section">
+      <h3>🛋️ ${t ? 'Aperçu des Produits' : 'Products Overview'}</h3>
+      <div class="products-overview-grid">
+        ${categoriesData.map(cat => `
+          <div class="product-category-card">
+            <div class="cat-icon">${cat.icon || '🪑'}</div>
+            <div class="cat-info">
+              <h4>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h4>
+              <p>${cat.products.length} ${t ? 'produits' : 'products'}</p>
+            </div>
+            <button class="cat-btn" onclick="loadCategory('${cat.id}')">→</button>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
+}
+
+// View order details
+function viewOrder(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+  
+  const t = currentLanguage === 'fr';
+  alert(`${t ? 'Détails de la commande' : 'Order Details'}\n\nID: ${order.id}\n${t ? 'Client' : 'Customer'}: ${order.delivery?.name || 'N/A'}\n${t ? 'Email' : 'Email'}: ${order.delivery?.email || 'N/A'}\n${t ? 'Téléphone' : 'Phone'}: ${order.delivery?.phone || 'N/A'}\n${t ? 'Adresse' : 'Address'}: ${order.delivery?.address || 'N/A'}\n${t ? 'Mode paiement' : 'Payment'}: ${order.paymentMethod}\n${t ? 'Total' : 'Total'}: ${order.total} €`);
+}
+
+// Cancel order
+function cancelOrder(orderId) {
+  if (confirm(currentLanguage === 'fr' ? 'Êtes-vous sûr de vouloir annuler cette commande?' : 'Are you sure you want to cancel this order?')) {
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+      order.status = 'cancelled';
+      saveOrdersToStorage();
+      loadAdminPage();
+      showNotification(currentLanguage === 'fr' ? 'Commande annulée!' : 'Order cancelled!');
+    }
+  }
+}
+
+// Export data
+function exportData() {
+  const data = {
+    orders: orders,
+    exportDate: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `e-decor-orders-${Date.now()}.json`;
+  a.click();
 }
 
 // Update order status
