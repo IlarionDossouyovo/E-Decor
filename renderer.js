@@ -8,18 +8,27 @@ let aiStatus = { available: false };
 let aiConversations = [];
 
 // Données intégrées pour la version web (sans Electron)
+// Catégories avec sous-catégories
 const builtInCategories = [
   {
     id: 'salons',
     name: 'Salons',
     name_en: 'Living Rooms',
     description: 'Meubles pour salons modernes et classiques',
+    icon: '🛋️',
+    subcategories: [
+      { id: 'canapes', name: 'Canapés', name_en: 'Sofas', description: 'Canapés, causeuses et divans' },
+      { id: 'fauteuils', name: 'Fauteuils', name_en: 'Armchairs', description: 'Fauteuils, relax et accoudoirs' },
+      { id: 'tables-basses', name: 'Tables basses', name_en: 'Coffee Tables', description: 'Tables basses et tables d\'appoint' },
+      { id: 'meubles-tv', name: 'Meubles TV', name_en: 'TV Units', description: 'Meubles TV et supports muraux' },
+      { id: 'bibliotheques', name: 'Bibliothèques', name_en: 'Bookshelves', description: 'Étagères et bibliothèques' }
+    ],
     products: [
-      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', description: 'Canapé 3 places modulable en tissu gris' },
-      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', description: 'Fauteuil relax avec relève-pieds électrique' },
-      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', description: 'Table basse en chêne massif 90x90cm' },
-      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', description: 'Meuble TV 160cm avec rangements' },
-      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', description: 'Étagère 5 modules ajustables' }
+      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', description: 'Canapé 3 places modulable en tissu gris', subcategory: 'canapes' },
+      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', description: 'Fauteuil relax avec relève-pieds électrique', subcategory: 'fauteuils' },
+      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', description: 'Table basse en chêne massif 90x90cm', subcategory: 'tables-basses' },
+      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', description: 'Meuble TV 160cm avec rangements', subcategory: 'meubles-tv' },
+      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', description: 'Étagère 5 modules ajustables', subcategory: 'bibliotheques' }
     ]
   },
   {
@@ -27,11 +36,18 @@ const builtInCategories = [
     name: 'Bureaux',
     name_en: 'Offices',
     description: 'Mobilier de bureau professionnel et domestique',
+    icon: '💼',
+    subcategories: [
+      { id: 'bureaux', name: 'Bureaux', name_en: 'Desks', description: 'Bureaux debout et classiques' },
+      { id: 'chaises', name: 'Chaises de bureau', name_en: 'Office Chairs', description: 'Fauteuils et chaises ergonomiques' },
+      { id: 'rangements', name: 'Rangements', name_en: 'Storage', description: 'Caissons, tiroirs et armoires' },
+      { id: 'luminaires', name: 'Luminaires', name_en: 'Lighting', description: 'Lampes de bureau et éclairage' }
+    ],
     products: [
-      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', description: 'Bureau 160cm en chêne avec tiroirs' },
-      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', description: 'Fauteuil ergonomique Mesh' },
-      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', description: 'Caisson sur roulettes mélaminé' },
-      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', description: 'Bureau debout électrique hauteur variable' }
+      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', description: 'Bureau 160cm en chêne avec tiroirs', subcategory: 'bureaux' },
+      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', description: 'Fauteuil ergonomique Mesh', subcategory: 'chaises' },
+      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', description: 'Caisson sur roulettes mélaminé', subcategory: 'rangements' },
+      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', description: 'Bureau debout électrique hauteur variable', subcategory: 'bureaux' }
     ]
   },
   {
@@ -39,10 +55,17 @@ const builtInCategories = [
     name: 'Cuisines',
     name_en: 'Kitchens',
     description: 'Équipements et meubles de cuisine',
+    icon: '🍳',
+    subcategories: [
+      { id: 'ilot-central', name: 'Îlots centraux', name_en: 'Kitchen Islands', description: 'Îlots et plans de travail' },
+      { id: 'meubles-bas', name: 'Meubles bas', name_en: 'Base Cabinets', description: 'Meubles de rangement bas' },
+      { id: 'etagere-murale', name: 'Étagères murales', name_en: 'Wall Shelves', description: 'Étagères et rangements muraux' },
+      { id: 'tables-chaises', name: 'Tables & Chaises', name_en: 'Tables & Chairs', description: 'Tables et chaises de cuisine' }
+    ],
     products: [
-      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', description: 'Îlot 180cm avec plan de travail stratifié' },
-      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', description: 'Meuble 60cm avec porte et tiroir' },
-      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', description: 'Étagère 90cm polyvalente' }
+      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', description: 'Îlot 180cm avec plan de travail stratifié', subcategory: 'ilot-central' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', description: 'Meuble 60cm avec porte et tiroir', subcategory: 'meubles-bas' },
+      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', description: 'Étagère 90cm polyvalente', subcategory: 'etagere-murale' }
     ]
   },
   {
@@ -50,11 +73,18 @@ const builtInCategories = [
     name: 'Jardins',
     name_en: 'Gardens',
     description: 'Mobilier d\'extérieur et de jardin',
+    icon: '🌳',
+    subcategories: [
+      { id: 'salon-exterieur', name: 'Salons d\'extérieur', name_en: 'Outdoor Living', description: 'Salons et ensembles de jardin' },
+      { id: 'transats', name: 'Transats & Bain de soleil', name_en: 'Loungers', description: 'Transats et chaises longues' },
+      { id: 'parasols', name: 'Parasols & Voiles', name_en: 'Umbrellas', description: 'Parasols et voiles d\'ombrage' },
+      { id: 'barbecue', name: 'Barbecue & Plancha', name_en: 'BBQ & Grill', description: 'Barbecues et planchas' }
+    ],
     products: [
-      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', description: 'Table + 4 fauteuilles + 2 bancs' },
-      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', description: 'Transat en bois d\'acacia avec toile' },
-      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', description: 'Parasol déporté avec socle' },
-      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', description: 'Barbecue à charbon 57cm' }
+      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', description: 'Table + 4 fauteuilles + 2 bancs', subcategory: 'salon-exterieur' },
+      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', description: 'Transat en bois d\'acacia avec toile', subcategory: 'transats' },
+      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', description: 'Parasol déporté avec socle', subcategory: 'parasols' },
+      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', description: 'Barbecue à charbon 57cm', subcategory: 'barbecue' }
     ]
   },
   {
@@ -62,40 +92,93 @@ const builtInCategories = [
     name: 'Salle à manger',
     name_en: 'Dining Rooms',
     description: 'Tables, chaises et meubles de salle à manger',
+    icon: '🍽️',
+    subcategories: [
+      { id: 'tables', name: 'Tables', name_en: 'Tables', description: 'Tables fixes et extensibles' },
+      { id: 'chaises', name: 'Chaises', name_en: 'Chairs', description: 'Chaises et fauteuils de salle à manger' },
+      { id: 'buffets', name: 'Buffets & Vaisseliers', name_en: 'Sideboards', description: 'Buffets et vaisseliers' },
+      { id: 'vitrines', name: 'Vitrines', name_en: 'Display Cabinets', description: 'Vitrines et cabinets' }
+    ],
     products: [
-      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', description: 'Table 6-10 personnes extensible' },
-      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', description: 'Chaise upholstrée avec pieds bois' },
-      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', description: 'Buffet 180cm en bois massif' },
-      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', description: 'Vaisselier 2 tiroirs + niches' }
+      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', description: 'Table 6-10 personnes extensible', subcategory: 'tables' },
+      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', description: 'Chaise upholstrée avec pieds bois', subcategory: 'chaises' },
+      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', description: 'Buffet 180cm en bois massif', subcategory: 'buffets' },
+      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', description: 'Vaisselier 2 tiroirs + niches', subcategory: 'vitrines' }
     ]
   }
 ];
 
-// Blog posts intégrés
+// Articles de blog par catégorie et sous-catégorie
 const builtInBlogPosts = [
-  { id: 'tendances-2024', title: 'Tendances décoration 2024', title_en: 'Decor Trends 2024', excerpt: 'Découvrez les tendances de l\'année', author: 'Marie Dupont', date: '2024-01-10', content: 'Les tendances 2024...' },
-  { id: 'salon-design', title: 'Aménager son salon', title_en: 'Design your living room', excerpt: 'Conseils pour un salon parfait', author: 'Jean Martin', date: '2024-02-15', content: 'Un beau salon...' },
-  { id: 'bureau-productif', title: '10 conseils productivité', title_en: '10 productivity tips', excerpt: 'Optimisez votre espace de travail', author: 'Sophie Bernard', date: '2024-03-01', content: 'Productivité...' }
+  // Articles Salons
+  { id: 'tendances-salon-2024', title: 'Tendances décoration salon 2024', title_en: 'Living Room Trends 2024', excerpt: 'Découvrez les dernières tendances pour votre salon', category: 'salons', subcategory: null, author: 'Marie Dupont', date: '2024-01-10', image: 'salon', content: 'Les tendances 2024 pour les salons...' },
+  { id: 'choisir-canape', title: 'Comment choisir son canapé', title_en: 'How to choose your sofa', excerpt: 'Guide complet pour bien choisir votre canapé', category: 'salons', subcategory: 'canapes', author: 'Jean Martin', date: '2024-01-15', image: 'salon', content: 'Choisir un canapé...' },
+  { id: 'ambiance-salon', title: 'Créer une ambiance salon cosy', title_en: 'Create a cozy living room', excerpt: 'Astuces pour un salon chaleureux', category: 'salons', subcategory: 'fauteuils', author: 'Sophie Bernard', date: '2024-02-01', image: 'salon', content: 'Ambiance cosy...' },
+  
+  // Articles Bureaux
+  { id: 'bureau-productif', title: '10 conseils pour un bureau productif', title_en: '10 tips for a productive office', excerpt: 'Optimisez votre espace de travail', category: 'bureaux', subcategory: null, author: 'Pierre Durant', date: '2024-03-01', image: 'bureau', content: 'Productivité au bureau...' },
+  { id: 'ergonomie-bureau', title: 'L\'ergonomie au bureau', title_en: 'Office ergonomics', excerpt: 'Bien s\'asseoir pour mieux travailler', category: 'bureaux', subcategory: 'chaises', author: 'Marie Martin', date: '2024-03-10', image: 'bureau', content: 'Ergonomie...' },
+  { id: 'luminaire-bureau', title: 'L\'éclairage parfait pour votre bureau', title_en: 'Perfect lighting for your office', excerpt: 'Choisir le bon luminaire', category: 'bureaux', subcategory: 'luminaires', author: 'Lucas Petit', date: '2024-03-15', image: 'bureau', content: 'Éclairage...' },
+  
+  // Articles Cuisines
+  { id: 'cuisine-moderne', title: 'Concevoir une cuisine moderne', title_en: 'Design a modern kitchen', excerpt: 'Guide pour une cuisine contemporaine', category: 'cuisines', subcategory: null, author: 'Emma Wilson', date: '2024-04-01', image: 'cuisine', content: 'Cuisine moderne...' },
+  { id: 'ilot-cuisine', title: 'L\'îlot central star de la cuisine', title_en: 'The kitchen island', excerpt: 'Pourquoi choisir un îlot central', category: 'cuisines', subcategory: 'ilot-central', author: 'Marie Dubois', date: '2024-04-10', image: 'cuisine', content: 'Îlot central...' },
+  
+  // Articles Jardins
+  { id: 'jardin-tendances', title: 'Tendances jardin 2024', title_en: 'Garden trends 2024', excerpt: 'Les must-have pour votre extérieur', category: 'jardins', subcategory: null, author: 'Thomas Green', date: '2024-05-01', image: 'jardin', content: 'Tendances jardin...' },
+  { id: 'salon-exterieur', title: 'Choisir son salon d\'extérieur', title_en: 'Choose your outdoor furniture', excerpt: 'Comparatif des salons de jardin', category: 'jardins', subcategory: 'salon-exterieur', author: 'Sophie Brown', date: '2024-05-10', image: 'jardin', content: 'Salon extérieur...' },
+  
+  // Articles Salle à manger
+  { id: 'salle-manger-guide', title: 'Guide : Bien choisir sa salle à manger', title_en: 'Dining room guide', excerpt: 'Tout savoir sur les salles à manger', category: 'salle-a-manger', subcategory: null, author: 'Julie Adams', date: '2024-06-01', image: 'salle-manger', content: 'Salle à manger...' },
+  { id: 'table-extensible', title: 'Pourquoi choisir une table extensible', title_en: 'Why choose an extensible table', excerpt: 'Les avantages des tables extensibles', category: 'salle-a-manger', subcategory: 'tables', author: 'Marc Lefebvre', date: '2024-06-10', image: 'salle-manger', content: 'Table extensible...' }
+];
+
+// Affiliés E-Décor
+const builtInAffiliates = [
+  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
+  { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['ambiance-salon', 'jardin-tendances'] },
+  { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: ['luminaire-bureau', 'ergonomie-bureau'] },
+  { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: ['jardin-tendances', 'salon-exterieur'] },
+  { id: 'artisanat-benin', name: 'Artisanat Bénin', description: 'Produits artisanaux béninois', commission: '20%', logo: 'artisanat', website: '#', blogPosts: ['salle-manger-guide', 'choisir-canape'] }
 ];
 
 // API simulée pour le web
 const webAPI = {
   getCategories: async () => builtInCategories,
-  getProducts: async (categoryId) => {
+  getCategory: async (categoryId) => builtInCategories.find(c => c.id === categoryId),
+  getSubcategories: async (categoryId) => {
     const cat = builtInCategories.find(c => c.id === categoryId);
-    return cat ? cat.products : [];
+    return cat ? cat.subcategories || [] : [];
+  },
+  getProducts: async (categoryId, subcategoryId = null) => {
+    const cat = builtInCategories.find(c => c.id === categoryId);
+    if (!cat) return [];
+    if (subcategoryId) {
+      return cat.products.filter(p => p.subcategory === subcategoryId);
+    }
+    return cat.products;
   },
   getProduct: async (categoryId, productId) => {
     const cat = builtInCategories.find(c => c.id === categoryId);
     return cat ? cat.products.find(p => p.id === productId) : null;
   },
   getGlobalBlog: async () => builtInBlogPosts,
-  getBlogArticles: async (categoryId) => {
-    // Pour l'instant, retourne les articles globaux
-    // Les articles par catégorie peuvent être ajoutés séparément
-    return builtInBlogPosts;
+  getBlogArticles: async (categoryId, subcategoryId = null) => {
+    if (!categoryId) return builtInBlogPosts;
+    let posts = builtInBlogPosts.filter(p => p.category === categoryId);
+    if (subcategoryId) {
+      posts = posts.filter(p => p.subcategory === subcategoryId);
+    }
+    return posts;
   },
   getBlogPost: async (postId) => builtInBlogPosts.find(p => p.id === postId),
+  getAffiliates: async () => builtInAffiliates,
+  getAffiliate: async (affiliateId) => builtInAffiliates.find(a => a.id === affiliateId),
+  getAffiliateBlogPosts: async (affiliateId) => {
+    const affiliate = builtInAffiliates.find(a => a.id === affiliateId);
+    if (!affiliate) return [];
+    return builtInBlogPosts.filter(p => affiliate.blogPosts.includes(p.id));
+  },
   searchProducts: async (query) => {
     const results = [];
     const lowerQuery = query.toLowerCase();
@@ -426,6 +509,9 @@ async function loadPage(page) {
     case 'blog':
       await loadBlogPage(mainContent);
       break;
+    case 'affiliates':
+      await loadAffiliatesPage(mainContent);
+      break;
     case 'about':
       await loadAboutPage(mainContent);
       break;
@@ -545,39 +631,173 @@ async function loadCatalogPage(container) {
   `;
 }
 
-// Load Category
+// Load Category with subcategories
 async function loadCategory(categoryId) {
   const category = categoriesData.find(c => c.id === categoryId);
   if (!category) return;
 
   const products = await api.getProducts(categoryId);
+  const subcategories = category.subcategories || [];
   const container = document.getElementById('main-content');
 
+  // Get blog posts for this category
+  const categoryPosts = await api.getBlogArticles(categoryId);
+
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${currentLanguage === 'fr' ? category.name : category.name_en}</h1>
-      <p>${category.description}</p>
+    <div class="page-title category-header">
+      <div class="category-header-content">
+        <span class="category-icon-large">${category.icon || '🪑'}</span>
+        <div>
+          <h1>${currentLanguage === 'fr' ? category.name : category.name_en}</h1>
+          <p>${category.description}</p>
+        </div>
+      </div>
     </div>
-    <div class="products-grid">
-      ${products.map(product => `
-        <div class="product-card">
-          <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
-          <div class="product-info">
-            <h4>${product.name}</h4>
-            <p class="price">${formatPrice(product.price, product.currency)}</p>
-            <p class="description">${product.description}</p>
-            <div class="product-actions">
-              <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
-              <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+
+    <!-- Sous-catégories -->
+    ${subcategories.length > 0 ? `
+    <div class="subcategories-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos sous-catégories' : 'Our Subcategories'}</h2>
+      <div class="subcategories-grid">
+        ${subcategories.map(sub => `
+          <div class="subcategory-card" onclick="loadSubcategory('${categoryId}', '${sub.id}')">
+            <span class="subcategory-icon">${getSubcategoryIcon(sub.id)}</span>
+            <h3>${currentLanguage === 'fr' ? sub.name : sub.name_en}</h3>
+            <p>${sub.description}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Produits -->
+    <div class="products-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos produits' : 'Our Products'}</h2>
+      <div class="products-grid">
+        ${products.map(product => `
+          <div class="product-card">
+            <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <div class="product-actions">
+                <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
+                <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('')}
+        `).join('')}
+      </div>
     </div>
+
+    <!-- Articles Blog liés -->
+    ${categoryPosts.length > 0 ? `
+    <div class="blog-related-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Articles blog liés' : 'Related Blog Articles'}</h2>
+      <div class="blog-mini-grid">
+        ${categoryPosts.slice(0, 3).map(post => `
+          <div class="blog-mini-card" onclick="loadBlogPost('${post.id}')">
+            <span class="blog-mini-icon">📄</span>
+            <h4>${currentLanguage === 'fr' ? post.title : post.title_en}</h4>
+            <p>${post.excerpt}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
   `;
 
   currentPage = 'category';
   updateActiveNavLink(null);
+}
+
+// Load Subcategory
+async function loadSubcategory(categoryId, subcategoryId) {
+  const category = categoriesData.find(c => c.id === categoryId);
+  const subcategory = category?.subcategories.find(s => s.id === subcategoryId);
+  if (!subcategory) return;
+
+  const products = await api.getProducts(categoryId, subcategoryId);
+  const subcategoryPosts = await api.getBlogArticles(categoryId, subcategoryId);
+  const container = document.getElementById('main-content');
+
+  container.innerHTML = `
+    <div class="page-title category-header">
+      <button class="back-button" onclick="loadCategory('${categoryId}')">← ${currentLanguage === 'fr' ? 'Retour' : 'Back'}</button>
+      <div class="category-header-content">
+        <span class="category-icon-large">${getSubcategoryIcon(subcategoryId)}</span>
+        <div>
+          <h1>${currentLanguage === 'fr' ? subcategory.name : subcategory.name_en}</h1>
+          <p>${subcategory.description}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Produits de la sous-catégorie -->
+    <div class="products-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Produits' : 'Products'}</h2>
+      <div class="products-grid">
+        ${products.map(product => `
+          <div class="product-card">
+            <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <div class="product-actions">
+                <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
+                <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Articles Blog liés -->
+    ${subcategoryPosts.length > 0 ? `
+    <div class="blog-related-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Articles blog' : 'Blog Articles'}</h2>
+      <div class="blog-mini-grid">
+        ${subcategoryPosts.map(post => `
+          <div class="blog-mini-card" onclick="loadBlogPost('${post.id}')">
+            <span class="blog-mini-icon">📄</span>
+            <h4>${currentLanguage === 'fr' ? post.title : post.title_en}</h4>
+            <p>${post.excerpt}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+  `;
+}
+
+// Helper function to get subcategory icon
+function getSubcategoryIcon(subcategoryId) {
+  const icons = {
+    'canapes': '🛋️',
+    'fauteuils': '🪑',
+    'tables-basses': '🪵',
+    'meubles-tv': '📺',
+    'bibliotheques': '📚',
+    'bureaux': '💼',
+    'chaises': '🪑',
+    'rangements': '🗄️',
+    'luminaires': '💡',
+    'ilot-central': '🍳',
+    'idables': '🍽️',
+    'etagere-murale': '🪜',
+    'tables-chaises': '🪑',
+    'salon-exterieur': '🌳',
+    'transats': '🏖️',
+    'parasols': '☂️',
+    'barbecue': '🍖',
+    'tables': '🪵',
+    'buffets': '🗄️',
+    'vitrines': '🖼️'
+  };
+  return icons[subcategoryId] || '📦';
 }
 
 // Show product details in modal
@@ -665,6 +885,61 @@ async function loadBlogPage(container) {
       `).join('')}
     </div>
   `;
+}
+
+// Load Affiliates Page
+async function loadAffiliatesPage(container) {
+  const affiliates = await api.getAffiliates();
+  
+  container.innerHTML = `
+    <div class="affiliates-hero">
+      <h1>${currentLanguage === 'fr' ? 'Nos Partenaires Affiliés' : 'Our Affiliated Partners'}</h1>
+      <p>${currentLanguage === 'fr' ? 'Découvrez nos partenaires de confiance pour la décoration et l\'ameublement' : 'Discover our trusted partners for decoration and furniture'}</p>
+    </div>
+
+    <div class="affiliates-grid">
+      ${affiliates.map(affiliate => `
+        <div class="affiliate-card">
+          <div class="affiliate-logo">${getAffiliateLogo(affiliate.logo)}</div>
+          <div class="affiliate-info">
+            <h3>${affiliate.name}</h3>
+            <p class="affiliate-desc">${affiliate.description}</p>
+            <div class="affiliate-stats">
+              <span class="commission-badge">💰 Commission: ${affiliate.commission}</span>
+            </div>
+            <div class="affiliate-posts">
+              <h4>${currentLanguage === 'fr' ? 'Articles liés' : 'Related Articles'}</h4>
+              ${affiliate.blogPosts.slice(0, 2).map(postId => {
+                const post = builtInBlogPosts.find(p => p.id === postId);
+                return post ? `<span class="post-tag" onclick="loadBlogPost('${post.id}')">📄 ${currentLanguage === 'fr' ? post.title : post.title_en}</span>` : '';
+              }).join('')}
+            </div>
+            <a href="${affiliate.website}" class="affiliate-btn" target="_blank">
+              ${currentLanguage === 'fr' ? 'Visiter le site' : 'Visit Website'} →
+            </a>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="affiliates-cta">
+      <h2>${currentLanguage === 'fr' ? 'Devenir partenaire' : 'Become a Partner'}</h2>
+      <p>${currentLanguage === 'fr' ? 'Rejoignez notre programme d\'affiliation et gagnez des commissions sur chaque vente' : 'Join our affiliate program and earn commissions on every sale'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    </div>
+  `;
+}
+
+// Helper function to get affiliate logo
+function getAffiliateLogo(type) {
+  const logos = {
+    'orca': '🏠',
+    'maison': '🛋️',
+    'tech': '💡',
+    'green': '🌿',
+    'artisanat': '🎨'
+  };
+  return logos[type] || '🤝';
 }
 
 // Load blog posts by category
