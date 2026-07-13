@@ -954,11 +954,12 @@ function getSubcategoryIcon(subcategoryId) {
 }
 
 // Show product details in modal
-// Get product image URL
+// Get product image URL - returns path to local image
 function getProductImageUrl(imageName) {
   if (!imageName) return null;
-  // Check if it's a local image in assets/produits
-  return `assets/produits/${imageName}`;
+  // For Electron, use the assets folder relative to app root
+  // The app root is where index.html is located
+  return `./assets/produits/${imageName}`;
 }
 
 // Show product details in modal

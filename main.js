@@ -62,7 +62,7 @@ const categories = [
     ],
     products: [
       { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', image: 'ilot-cuisine.jpg', description: 'Îlot 180cm avec plan de travail stratifié', subcategory: 'ilot-central' },
-      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', image: 'meub bas-cuisine.jpg', description: 'Meuble 60cm avec porte et tiroir', subcategory: 'meubles-bas' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', image: 'meub-bas-cuisine.jpg', description: 'Meuble 60cm avec porte et tiroir', subcategory: 'meubles-bas' },
       { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', image: 'etagere-murale.jpg', description: 'Étagère 90cm polyvalente', subcategory: 'etagere-murale' }
     ]
   },
