@@ -516,6 +516,9 @@ async function loadPage(page) {
     case 'about':
       await loadAboutPage(mainContent);
       break;
+    case 'faq':
+      await loadFAQPage(mainContent);
+      break;
     case 'contact':
       await loadContactPage(mainContent);
       break;
@@ -1310,6 +1313,120 @@ async function loadAboutPage(container) {
     </section>
   `;
 }
+
+// FAQ Data
+const faqData = [
+  {
+    question: 'Quels sont les délais de livraison?',
+    question_en: 'What are the delivery times?',
+    answer: 'Nos délais de livraison varient entre 5 et 15 jours ouvrés selon votre localisation. La livraison est gratuite pour toute commande supérieure à 500€.',
+    answer_en: 'Our delivery times vary between 5 and 15 working days depending on your location. Delivery is free for orders over 500€.'
+  },
+  {
+    question: 'Quelle est la politique de retour?',
+    question_en: 'What is the return policy?',
+    answer: 'Vous disposez de 30 jours pour retourner un produit non utilisé dans son embalagem d\'origine. Les frais de retour sont à votre charge sauf en cas de produit défectueux.',
+    answer_en: 'You have 30 days to return an unused product in its original packaging. Return costs are at your expense unless the product is defective.'
+  },
+  {
+    question: 'Proposez-vous l\'installation des meubles?',
+    question_en: 'Do you offer furniture installation?',
+    answer: 'Oui, nous proposons un service d\'installation premium pour les meubles complexes. Ce service est disponible moyennant un supplément indiqué lors de la commande.',
+    answer_en: 'Yes, we offer a premium installation service for complex furniture. This service is available for an additional fee indicated during order.'
+  },
+  {
+    question: 'Comment suivre ma commande?',
+    question_en: 'How do I track my order?',
+    answer: 'Vous recevrez un email de confirmation avec un numéro de suivi. Vous pouvez également suivre votre commande depuis votre espace client sur notre site.',
+    answer_en: 'You will receive a confirmation email with a tracking number. You can also track your order from your customer account on our site.'
+  },
+  {
+    question: 'Quelles garanties proposent vos meubles?',
+    question_en: 'What guarantees do your furniture offer?',
+    answer: 'Tous nos meubles bénéficient d\'une garantie minimale de 2 ans. Certains produits premium proposent une garantie étendue jusqu\'à 5 ans.',
+    answer_en: 'All our furniture comes with a minimum 2-year warranty. Some premium products offer an extended warranty up to 5 years.'
+  },
+  {
+    question: 'Comment contacter le service client?',
+    question_en: 'How to contact customer service?',
+    answer: 'Vous pouvez nous contacter par email à support@e-decor.com, par téléphone au +229 01 23 45 67 89, ou via le formulaire de contact sur le site.',
+    answer_en: 'You can contact us by email at support@e-decor.com, by phone at +229 01 23 45 67 89, or via the contact form on the site.'
+  },
+  {
+    question: 'Proposez-vous des paiement en plusieurs fois?',
+    question_en: 'Do you offer installment payments?',
+    answer: 'Oui! Nous proposons le paiement en 3x sans frais via notre partenaire Floa Bank. Cette option est disponible dès 100€ d\'achat.',
+    answer_en: 'Yes! We offer 3x interest-free payment via our partner Floa Bank. This option is available from 100€ purchase.'
+  },
+  {
+    question: 'Livrez-vous à l\'international?',
+    question_en: 'Do you deliver internationally?',
+    answer: 'Oui, nous livrons dans plus de 23 pays à travers l\'Afrique, l\'Europe et les Amériques. Les frais de livraison varient selon la destination.',
+    answer_en: 'Yes, we deliver to over 23 countries across Africa, Europe, and the Americas. Delivery costs vary depending on the destination.'
+  }
+];
+
+// Load FAQ Page
+async function loadFAQPage(container) {
+  container.innerHTML = `
+    <div class="faq-hero">
+      <h1>${t('faq_title') || 'Questions Fréquentes'}</h1>
+      <p>${t('faq_subtitle') || 'Trouvez rapidement les réponses à vos questions'}</p>
+    </div>
+    
+    <div class="faq-container">
+      ${faqData.map((faq, index) => `
+        <div class="faq-item" onclick="toggleFAQ(${index})">
+          <div class="faq-question">
+            <span>${currentLanguage === 'fr' ? faq.question : faq.question_en}</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer" id="faq-answer-${index}">
+            <p>${currentLanguage === 'fr' ? faq.answer : faq.answer_en}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="faq-cta">
+      <h3>${currentLanguage === 'fr' ? 'Vous ne trouvez pas votre réponse?' : 'Didn\'t find your answer?'}</h3>
+      <p>${currentLanguage === 'fr' ? 'Notre équipe est disponible pour vous aider.' : 'Our team is available to help you.'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    </div>
+  `;
+  currentPage = 'faq';
+  updateActiveNavLink('faq');
+}
+
+// Toggle FAQ accordion
+function toggleFAQ(index) {
+  const answer = document.getElementById(`faq-answer-${index}`);
+  const item = answer.parentElement;
+  const icon = item.querySelector('.faq-icon');
+  
+  // Close all other answers
+  document.querySelectorAll('.faq-answer').forEach((el, i) => {
+    if (i !== index) {
+      el.style.maxHeight = null;
+      el.style.padding = '0 20px';
+    }
+  });
+  document.querySelectorAll('.faq-icon').forEach((el, i) => {
+    if (i !== index) el.textContent = '+';
+  });
+  
+  // Toggle current
+  if (answer.style.maxHeight) {
+    answer.style.maxHeight = null;
+    answer.style.padding = '0 20px';
+    icon.textContent = '+';
+  } else {
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+    answer.style.padding = '15px 20px';
+    icon.textContent = '−';
+  }
+}
+
 // Load Contact Page
 async function loadContactPage(container) {
   container.innerHTML = `
