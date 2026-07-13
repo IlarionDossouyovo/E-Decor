@@ -957,9 +957,10 @@ function getSubcategoryIcon(subcategoryId) {
 // Get product image URL - returns path to local image
 function getProductImageUrl(imageName) {
   if (!imageName) return null;
-  // For Electron, use the assets folder relative to app root
-  // The app root is where index.html is located
-  return `./assets/produits/${imageName}`;
+  // Return path relative to index.html (in app root)
+  const url = `assets/produits/${imageName}`;
+  console.log('[E-Décor] Image URL:', url);
+  return url;
 }
 
 // Show product details in modal
