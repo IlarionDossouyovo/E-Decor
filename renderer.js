@@ -1368,6 +1368,7 @@ const faqData = [
 
 // Load FAQ Page
 async function loadFAQPage(container) {
+  console.log('[E-Décor] Loading FAQ page...');
   container.innerHTML = `
     <div class="faq-hero">
       <h1>${t('faq_title') || 'Questions Fréquentes'}</h1>
