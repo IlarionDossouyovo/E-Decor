@@ -1687,141 +1687,307 @@ function updateOrderStatus(orderId, status) {
   }
 }
 
+// Payment methods by region/country
+const paymentMethodsByRegion = {
+  // West Africa
+  'BJ': [  // Benin
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' },
+    { id: 'cash', name: 'Paiement à la livraison', icon: '💵', desc: 'Espèces' }
+  ],
+  'TG': [  // Togo
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  'SN': [  // Senegal
+    { id: 'orange', name: 'Orange Money', icon: '🟠', desc: 'Paiement mobile' },
+    { id: 'wave', name: 'Wave', icon: '🌊', desc: 'Sans frais' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  'CI': [  // Côte d'Ivoire
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'orange', name: 'Orange Money', icon: '🟠', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' }
+  ],
+  'NG': [  // Nigeria
+    { id: 'flutterwave', name: 'Flutterwave', icon: '💙', desc: 'Leader Nigeria' },
+    { id: 'paystack', name: 'Paystack', icon: '💜', desc: 'Stripe partner' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  // Europe
+  'FR': [  // France
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'CB, Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'Compte PayPal' },
+    { id: 'bank', name: 'Virement SEPA', icon: '🏦', desc: 'Gratuit EU' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'iPhone, Mac' },
+    { id: 'google', name: 'Google Pay', icon: '🔴', desc: 'Android' }
+  ],
+  'DE': [  // Germany
+    { id: 'card', name: 'Kreditkarte', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal Konto' },
+    { id: 'klarna', name: 'Klarna', icon: '🛒', desc: 'Payer en 3x' },
+    { id: 'bank', name: 'Überweisung', icon: '🏦', desc: 'SEPA' },
+    { id: 'giropay', name: 'Giropay', icon: '🔵', desc: 'Direct banking' }
+  ],
+  'GB': [  // United Kingdom
+    { id: 'card', name: 'Debit/Credit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal Account' },
+    { id: 'bank', name: 'Bank Transfer', icon: '🏦', desc: 'BACS' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'iPhone, Mac' }
+  ],
+  // Americas
+  'US': [  // United States
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard, Amex' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'Apple Pay' },
+    { id: 'google', name: 'Google Pay', icon: '🔴', desc: 'Google Pay' },
+    { id: 'cashapp', name: 'Cash App', icon: '💵', desc: 'Cash App Pay' }
+  ],
+  'CA': [  // Canada
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'interac', name: 'Interac', icon: '🔴', desc: 'Canada only' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'Apple Pay' }
+  ],
+  // Default (all other countries)
+  'OTHER': [
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'bank', name: 'Bank Transfer', icon: '🏦', desc: 'SWIFT/IBAN' },
+    { id: 'western', name: 'Western Union', icon: '🌍', desc: 'Cash pickup' }
+  ]
+};
+
+// All countries list
+const countriesList = [
+  { code: 'BJ', name: 'Bénin', name_en: 'Benin', region: 'AF' },
+  { code: 'TG', name: 'Togo', name_en: 'Togo', region: 'AF' },
+  { code: 'SN', name: 'Sénégal', name_en: 'Senegal', region: 'AF' },
+  { code: 'CI', name: 'Côte d\'Ivoire', name_en: 'Ivory Coast', region: 'AF' },
+  { code: 'NG', name: 'Nigéria', name_en: 'Nigeria', region: 'AF' },
+  { code: 'GH', name: 'Ghana', name_en: 'Ghana', region: 'AF' },
+  { code: 'CM', name: 'Cameroun', name_en: 'Cameroon', region: 'AF' },
+  { code: 'FR', name: 'France', name_en: 'France', region: 'EU' },
+  { code: 'DE', name: 'Allemagne', name_en: 'Germany', region: 'EU' },
+  { code: 'GB', name: 'Royaume-Uni', name_en: 'United Kingdom', region: 'EU' },
+  { code: 'ES', name: 'Espagne', name_en: 'Spain', region: 'EU' },
+  { code: 'IT', name: 'Italie', name_en: 'Italy', region: 'EU' },
+  { code: 'BE', name: 'Belgique', name_en: 'Belgium', region: 'EU' },
+  { code: 'NL', name: 'Pays-Bas', name_en: 'Netherlands', region: 'EU' },
+  { code: 'US', name: 'États-Unis', name_en: 'United States', region: 'AM' },
+  { code: 'CA', name: 'Canada', name_en: 'Canada', region: 'AM' },
+  { code: 'BR', name: 'Brésil', name_en: 'Brazil', region: 'AM' },
+  { code: 'MX', name: 'Mexique', name_en: 'Mexico', region: 'AM' },
+  { code: 'CN', name: 'Chine', name_en: 'China', region: 'AS' },
+  { code: 'JP', name: 'Japon', name_en: 'Japan', region: 'AS' },
+  { code: 'KR', name: 'Corée du Sud', name_en: 'South Korea', region: 'AS' },
+  { code: 'AE', name: 'Émirats Arabes Unis', name_en: 'UAE', region: 'AS' },
+  { code: 'OTHER', name: 'Autre pays', name_en: 'Other country', region: 'OT' }
+];
+
 // Checkout page with payment methods
 async function loadCheckoutPage() {
   const container = document.getElementById('main-content');
   const t = currentLanguage === 'fr';
   
+  // Default payment methods for Benin
+  const defaultPayments = paymentMethodsByRegion['BJ'];
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t ? 'Paiement' : 'Payment'}</h1>
-    </div>
-    <div class="checkout-container">
-      <div class="payment-methods">
-        <h3>${t ? 'Mode de paiement' : 'Payment Method'}</h3>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="card" checked>
-          <div class="payment-card">
-            <span class="pm-icon">💳</span>
-            <span class="pm-name">${t ? 'Carte bancaire' : 'Credit/Debit Card'}</span>
-            <span class="pm-desc">Visa, Mastercard, Verve</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="mtn">
-          <div class="payment-card">
-            <span class="pm-icon">📱</span>
-            <span class="pm-name">MTN Mobile Money</span>
-            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="moov">
-          <div class="payment-card">
-            <span class="pm-icon">📱</span>
-            <span class="pm-name">Moov Money</span>
-            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="paypal">
-          <div class="payment-card">
-            <span class="pm-icon">🅿️</span>
-            <span class="pm-name">PayPal</span>
-            <span class="pm-desc">${t ? 'International' : 'International'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="bank">
-          <div class="payment-card">
-            <span class="pm-icon">🏦</span>
-            <span class="pm-name">${t ? 'Virement bancaire' : 'Bank Transfer'}</span>
-            <span class="pm-desc">${t ? 'Europe/International' : 'Europe/International'}</span>
-          </div>
-        </label>
+    <div class="checkout-page">
+      <div class="checkout-header">
+        <h1>🛒 ${t ? 'Finaliser votre commande' : 'Complete Your Order'}</h1>
+        <p>${t ? 'Choisissez votre pays et mode de paiement' : 'Choose your country and payment method'}</p>
       </div>
       
-      <div class="checkout-form">
-        <h3>${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
-        <form onsubmit="processPayment(event)">
-          <div class="form-group">
-            <label>${t ? 'Nom complet' : 'Full Name'}</label>
-            <input type="text" id="delivery-name" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Email' : 'Email'}</label>
-            <input type="email" id="delivery-email" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Téléphone' : 'Phone'}</label>
-            <input type="tel" id="delivery-phone" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Adresse de livraison' : 'Delivery Address'}</label>
-            <textarea id="delivery-address" required></textarea>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Ville' : 'City'}</label>
-            <input type="text" id="delivery-city" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Pays' : 'Country'}</label>
-            <select id="delivery-country" required>
-              <option value="BJ">Benin</option>
-              <option value="FR">France</option>
-              <option value="US">United States</option>
-              <option value="DE">Germany</option>
-              <option value="GB">United Kingdom</option>
-              <option value="CA">Canada</option>
-              <option value="SN">Senegal</option>
-              <option value="CI">Cote d'Ivoire</option>
-              <option value="TG">Togo</option>
-              <option value="NG">Nigeria</option>
-              <option value="OTHER">${t ? 'Autre' : 'Other'}</option>
+      <div class="checkout-grid">
+        <!-- Payment Methods -->
+        <div class="checkout-section payment-section">
+          <h3>💳 ${t ? 'Mode de paiement' : 'Payment Method'}</h3>
+          <p class="section-hint">${t ? 'Sélectionnez votre pays pour voir les méthodes disponibles' : 'Select your country to see available methods'}</p>
+          
+          <div class="country-selector">
+            <label>🌍 ${t ? 'Votre pays' : 'Your Country'}</label>
+            <select id="checkout-country" onchange="updatePaymentMethods()">
+              ${countriesList.map(c => `<option value="${c.code}">${t ? c.name : c.name_en}</option>`).join('')}
             </select>
           </div>
           
-          <div class="order-summary">
-            <h4>${t ? 'Commande' : 'Order'}</h4>
-            <p>${cart.items.length} ${t ? 'articles' : 'items'}</p>
-            <p class="order-total">${t ? 'Total' : 'Total'}: <strong>${cart.total} ${cart.currency}</strong></p>
+          <div id="payment-methods-list" class="payment-methods-grid">
+            ${defaultPayments.map(pm => `
+              <label class="payment-option">
+                <input type="radio" name="payment" value="${pm.id}" ${pm.id === 'card' ? 'checked' : ''}>
+                <div class="payment-card">
+                  <span class="pm-icon">${pm.icon}</span>
+                  <span class="pm-name">${pm.name}</span>
+                  <span class="pm-desc">${pm.desc}</span>
+                </div>
+              </label>
+            `).join('')}
           </div>
-          
-          <button type="submit" class="submit-button">${t ? 'Confirmer le paiement' : 'Confirm Payment'}</button>
-        </form>
+        </div>
+        
+        <!-- Delivery Info -->
+        <div class="checkout-section delivery-section">
+          <h3>🚚 ${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
+          <form onsubmit="processPayment(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Nom complet' : 'Full Name'} *</label>
+                <input type="text" id="delivery-name" required>
+              </div>
+              <div class="form-group">
+                <label>${t ? 'Email' : 'Email'} *</label>
+                <input type="email" id="delivery-email" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Téléphone' : 'Phone'} *</label>
+                <input type="tel" id="delivery-phone" required placeholder="+229 XX XXX XX">
+              </div>
+              <div class="form-group">
+                <label>${t ? 'WhatsApp' : 'WhatsApp'}</label>
+                <input type="tel" id="delivery-whatsapp" placeholder="+229 XX XXX XX">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>${t ? 'Adresse de livraison' : 'Delivery Address'} *</label>
+              <textarea id="delivery-address" rows="2" required></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Ville' : 'City'} *</label>
+                <input type="text" id="delivery-city" required>
+              </div>
+              <div class="form-group">
+                <label>${t ? 'Code postal' : 'Postal Code'}</label>
+                <input type="text" id="delivery-postal">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>${t ? 'Instructions spéciales' : 'Special Instructions'}</label>
+              <textarea id="delivery-instructions" rows="2" placeholder="${t ? 'Instructions pour la livraison...' : 'Delivery instructions...'}"></textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Order Summary -->
+      <div class="order-summary-section">
+        <h3>📋 ${t ? 'Récapitulatif de commande' : 'Order Summary'}</h3>
+        <div class="order-items">
+          ${cart.items.map(item => `
+            <div class="order-item">
+              <span class="item-name">${item.name}</span>
+              <span class="item-qty">×${item.quantity}</span>
+              <span class="item-price">${item.price * item.quantity} €</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-totals">
+          <div class="total-row">
+            <span>${t ? 'Sous-total' : 'Subtotal'}:</span>
+            <span>${cart.total} €</span>
+          </div>
+          <div class="total-row">
+            <span>${t ? 'Livraison' : 'Delivery'}:</span>
+            <span>${t ? 'Calculée après' : 'Calculated after'}</span>
+          </div>
+          <div class="total-row final">
+            <span>${t ? 'Total' : 'Total'}:</span>
+            <strong>${cart.total} €</strong>
+          </div>
+        </div>
+        <button type="submit" form="checkout-form" class="submit-button" onclick="document.querySelector('#checkout-form').dispatchEvent(new Event('submit'))">
+          ✅ ${t ? 'Confirmer la commande' : 'Confirm Order'}
+        </button>
+        <p class="secure-notice">🔒 ${t ? 'Paiement sécurisé - SSL 256-bit' : 'Secure payment - SSL 256-bit'}</p>
       </div>
     </div>
   `;
+}
+
+// Update payment methods based on country
+function updatePaymentMethods() {
+  const country = document.getElementById('checkout-country')?.value || 'BJ';
+  const methods = paymentMethodsByRegion[country] || paymentMethodsByRegion['OTHER'];
+  const t = currentLanguage === 'fr';
+  
+  const container = document.getElementById('payment-methods-list');
+  if (container) {
+    container.innerHTML = methods.map(pm => `
+      <label class="payment-option">
+        <input type="radio" name="payment" value="${pm.id}" ${pm.id === methods[0].id ? 'checked' : ''}>
+        <div class="payment-card">
+          <span class="pm-icon">${pm.icon}</span>
+          <span class="pm-name">${pm.name}</span>
+          <span class="pm-desc">${pm.desc}</span>
+        </div>
+      </label>
+    `).join('');
+  }
 }
 
 // Process payment (demo - requires real integration)
 function processPayment(event) {
   event.preventDefault();
   
-  const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-  const name = document.getElementById('delivery-name').value;
-  const email = document.getElementById('delivery-email').value;
-  const phone = document.getElementById('delivery-phone').value;
-  const address = document.getElementById('delivery-address').value;
-  const city = document.getElementById('delivery-city').value;
-  const country = document.getElementById('delivery-country').value;
+  const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
+  const name = document.getElementById('delivery-name')?.value;
+  const email = document.getElementById('delivery-email')?.value;
+  const phone = document.getElementById('delivery-phone')?.value;
+  const address = document.getElementById('delivery-address')?.value;
+  const city = document.getElementById('delivery-city')?.value;
+  const country = document.getElementById('checkout-country')?.value || 'BJ';
+  
+  // Validation
+  if (!name || !email || !phone || !address || !city) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez remplir tous les champs obligatoires!' : 'Please fill all required fields!');
+    return;
+  }
   
   // Generate order ID
   const orderId = 'ED-' + Date.now();
   
   // In production, integrate with real payment processor:
-  // - Stripe (cards, PayPal)
+  // - Stripe (cards, PayPal, Apple Pay, Google Pay)
   // - MTN/Moov API (mobile money Benin)
+  // - Flutterwave/Paystack (Nigeria)
+  // - Wave (Senegal)
+  // - Klarna/Giropay (Germany)
   // - Bank transfer (SEPA/SWIFT)
   
-  showPaymentConfirmation(orderId, paymentMethod, {
-    name, email, phone, address, city, country
-  });
+  // Create order
+  const order = {
+    id: orderId,
+    date: new Date().toISOString(),
+    items: [...cart.items],
+    total: cart.total,
+    currency: cart.currency,
+    status: 'pending',
+    paymentMethod: paymentMethod,
+    delivery: { name, email, phone, address, city, country },
+    notes: document.getElementById('delivery-instructions')?.value || ''
+  };
+  
+  // Save order
+  orders.unshift(order);
+  saveOrdersToStorage();
+  
+  // Show confirmation
+  showPaymentConfirmation(orderId, paymentMethod, { name, email, phone, address, city, country });
 }
 
 // Orders state
