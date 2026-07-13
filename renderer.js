@@ -519,6 +519,9 @@ async function loadPage(page) {
     case 'faq':
       await loadFAQPage(mainContent);
       break;
+    case 'legal':
+      await loadLegalPage(mainContent);
+      break;
     case 'contact':
       await loadContactPage(mainContent);
       break;
@@ -1397,6 +1400,64 @@ async function loadFAQPage(container) {
   `;
   currentPage = 'faq';
   updateActiveNavLink('faq');
+}
+
+// Load Legal/Mentions légales Page
+async function loadLegalPage(container) {
+  container.innerHTML = `
+    <div class="legal-container">
+      <h1>${currentLanguage === 'fr' ? 'Mentions Légales' : 'Legal Notice'}</h1>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '1. Éditeur du site' : '1. Website Publisher'}</h2>
+        <p><strong>E-Décor</strong></p>
+        <p>${currentLanguage === 'fr' ? 
+          'SAS au capital de 10.000.000 FCF<br>Siège social: Cotonou, Benin<br>Email: contact@e-decor.com<br>Téléphone: +229 01 23 45 67 89' : 
+          'SAS with capital of 10,000,000 FCF<br>Headquarters: Cotonou, Benin<br>Email: contact@e-decor.com<br>Phone: +229 01 23 45 67 89'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '2. Hébergement' : '2. Hosting'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Hébergé par Vercel Inc.<br>440 Barranco Street<br>Palo Alto, CA 94301, USA' : 
+          'Hosted by Vercel Inc.<br>440 Barranco Street<br>Palo Alto, CA 94301, USA'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '3. Propriété intellectuelle' : '3. Intellectual Property'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'L\'ensemble du contenu de ce site (textes, images, logos, graphismes) est protégé par les droits de propriété intellectuelle. Toute reproduction est interdite sans autorisation préalable.' : 
+          'All content on this site (texts, images, logos, graphics) is protected by intellectual property rights. Any reproduction is prohibited without prior authorization.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '4. Protection des données personnelles' : '4. Personal Data Protection'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Vos données personnelles sont collectées et traitées conformément à la loi sur la protection des données. Vous disposez d\'un droit d\'accès, de rectification et de suppression de vos données.' : 
+          'Your personal data is collected and processed in accordance with data protection laws. You have the right to access, rectify and delete your data.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '5. Conditions générales de vente' : '5. General Terms of Sale'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Les CGV sont disponibles sur demande auprès de notre service client. La commande implique l\'acceptation pleine et entière des conditions générales de vente.' : 
+          'The GTC are available upon request from our customer service. The order implies full acceptance of the general terms of sale.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '6. Responsabilité' : '6. Liability'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'E-Décor s\'efforce de fournir des informations exactes mais ne peut être tenu responsable des erreurs ou omissions. Les photos des produits sont non contractuelles.' : 
+          'E-Décor strives to provide accurate information but cannot be held responsible for errors or omissions. Product photos are non-contractual.'}</p>
+      </section>
+      
+      <div class="legal-footer">
+        <p>© 2024 E-Décor - ${currentLanguage === 'fr' ? 'Tous droits réservés' : 'All rights reserved'}</p>
+      </div>
+    </div>
+  `;
+  currentPage = 'legal';
+  updateActiveNavLink('legal');
 }
 
 // Toggle FAQ accordion
