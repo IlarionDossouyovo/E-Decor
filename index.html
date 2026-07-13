@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org; frame-src 'self' https://www.openstreetmap.org;">
   <title>E-Décor - Meubles & Décoration</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -79,6 +79,20 @@
           <li>Tél: +229 01 977 003 47 / 01 411 663 14</li>
           <li>Adresse: Cotonou, Benin</li>
         </ul>
+        <!-- Carte de localisation -->
+        <div class="map-container">
+          <iframe 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=2.40%2C6.35%2C2.45%2C6.42&amp;layer=mapnik&amp;marker=6.38%2C2.43" 
+            width="100%" 
+            height="200" 
+            style="border:0; border-radius:8px; margin-top:10px;" 
+            loading="lazy"
+            title="Carte de Cotonou, Benin">
+          </iframe>
+          <p style="font-size:12px; text-align:center; margin-top:5px; color:#666;">
+            📍 Cotonou, Benin
+          </p>
+        </div>
       </div>
       <div class="footer-section">
         <h3>Suivez-nous</h3>
