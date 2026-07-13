@@ -119,10 +119,14 @@ const webAPI = {
   }
 };
 
-// API - Utiliser directement les données intégrées pour éviter les problèmes Electron
-// Les données intégrées fonctionnent toujours, même si l'IPC échoue
-const api = webAPI;
-console.log('[E-Décor] API initialisée avec données intégrées');
+// API - Utiliser webAPI par défaut, ou window.api si disponible (Electron)
+var api = webAPI;
+if (typeof window !== 'undefined' && typeof window.api !== 'undefined') {
+  console.log('[E-Décor] Utilisation window.api (Electron)');
+  api = window.api;
+} else {
+  console.log('[E-Décor] Utilisation webAPI (intégré)');
+}
 
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
