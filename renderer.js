@@ -1462,3 +1462,11 @@ function closeModal() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+// ALSO try immediately in case DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(init, 100);
+}
+
+// And try even more directly
+init();
