@@ -934,13 +934,13 @@ async function loadAffiliatesPage(container) {
 // Helper function to get affiliate logo
 function getAffiliateLogo(type) {
   const logos = {
-    'orca': '🏠',
-    'maison': '🛋️',
-    'tech': '💡',
-    'green': '🌿',
-    'artisanat': '🎨'
+    'orca': '<span class="logo-orca">🏠<br><small>ORCA</small></span>',
+    'maison': '<span class="logo-maison">🛋️<br><small>Maison</small></span>',
+    'tech': '<span class="logo-tech">💡<br><small>TechHome</small></span>',
+    'green': '<span class="logo-green">🌿<br><small>Green</small></span>',
+    'artisanat': '<span class="logo-artisanat">🎨<br><small>Artisanat</small></span>'
   };
-  return logos[type] || '🤝';
+  return logos[type] || '<span class="logo-default">🤝<br><small>Partner</small></span>';
 }
 
 // Load blog posts by category

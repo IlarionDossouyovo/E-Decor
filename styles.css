@@ -1317,8 +1317,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
+  color: white;
+  text-align: center;
 }
+
+.affiliate-logo span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.affiliate-logo small {
+  font-size: 0.8rem;
+  margin-top: 5px;
+  opacity: 0.9;
+}
+
+.logo-orca { color: #fff; }
+.logo-maison { color: #e91e63; }
+.logo-tech { color: #2196f3; }
+.logo-green { color: #4caf50; }
+.logo-artisanat { color: #ff9800; }
 
 .affiliate-info {
   padding: 25px;

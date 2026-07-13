@@ -793,11 +793,11 @@ function createWindow() {
 
 // Affiliés E-Décor
 const affiliates = [
-  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['bien-choisir-meubles', 'tendances-2024'] },
-  { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['tendances-2024'] },
-  { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: [] },
-  { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: [] },
-  { id: 'artisanat-benin', name: 'Artisanat Bénin', description: 'Produits artisanaux béninois', commission: '20%', logo: 'artisanat', website: '#', blogPosts: [] }
+  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
+  { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['ambiance-salon', 'jardin-tendances'] },
+  { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: ['luminaire-bureau', 'ergonomie-bureau'] },
+  { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: ['jardin-tendances', 'salon-exterieur'] },
+  { id: 'artisanat-benin', name: 'Artisanat Bénin', description: 'Produits artisanaux béninois', commission: '20%', logo: 'artisanat', website: '#', blogPosts: ['salle-manger-guide', 'choisir-canape'] }
 ];
 
 // IPC handlers pour récupérer les données
