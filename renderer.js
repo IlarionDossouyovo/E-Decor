@@ -234,35 +234,19 @@ const categoryIcons = {
 // Initialize the app
 async function init() {
   console.log('[E-Décor] Initialisation...');
-  console.log('[E-Décor] API:', api);
-  console.log('[E-Décor] window.api:', window.api);
   
-  try {
-    categoriesData = await api.getCategories();
-    console.log('[E-Décor] Catégories chargées:', categoriesData.length);
-    
-    populateCategoriesMenu();
-    setupEventListeners();
-    setupIPCListeners();
-    initCart(); // Initialize cart with localStorage persistence
-    initFavorites(); // Initialize favorites
-    loadOrdersFromStorage(); // Initialize orders history
-    loadPage('home');
-    console.log('[E-Décor] Page home chargée');
-  } catch (error) {
-    console.error('[E-Décor] Initialization error:', error);
-    // Fallback to built-in data if API fails
-    categoriesData = builtInCategories;
-    console.log('[E-Décor] Utilisation des données intégrées');
-    populateCategoriesMenu();
-    setupEventListeners();
-    setupIPCListeners();
-    initCart();
-    initFavorites();
-    loadOrdersFromStorage();
-    loadPage('home');
-    document.getElementById('main-content').innerHTML = '<p>Error loading application. Please restart.</p>';
-  }
+  // ALWAYS use built-in categories as primary source
+  categoriesData = builtInCategories;
+  console.log('[E-Décor] Catégories intégrées chargées:', categoriesData.length);
+  
+  populateCategoriesMenu();
+  setupEventListeners();
+  setupIPCListeners();
+  initCart();
+  initFavorites();
+  loadOrdersFromStorage();
+  loadPage('home');
+  console.log('[E-Décor] Page home chargée');
 }
 
 function t(key) {
