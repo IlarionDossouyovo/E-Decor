@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org; frame-src 'self' https://www.openstreetmap.org;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; frame-src 'self' https://www.openstreetmap.org;">
   <title>E-Décor - Meubles & Décoration</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -11,8 +11,14 @@
   <header class="main-header">
     <div class="header-top">
       <div class="logo-container">
-        <h1 class="logo">E-Décor <span class="by-electron">by Electron</span></h1>
-        <p class="tagline">Votre partenaire ORCA-Décor pour l'aménagement intérieur</p>
+        <div class="logo-wrapper">
+          <span class="logo-icon">🏠</span>
+          <div class="logo-text">
+            <h1 class="logo">E-<span class="logo-accent">Décor</span></h1>
+            <span class="logo-subtitle">by ORCA-Décor</span>
+          </div>
+        </div>
+        <p class="tagline">Votre partenaire pour l'aménagement intérieur</p>
       </div>
       <div class="header-actions">
         <select id="language-selector" class="language-selector">
@@ -21,7 +27,7 @@
         </select>
         <div class="search-box">
           <input type="text" id="search-input" placeholder="Rechercher un produit...">
-          <button id="search-btn">🔍</button>
+          <button id="search-btn" aria-label="Rechercher">🔍</button>
         </div>
       </div>
     </div>

@@ -1,15 +1,36 @@
 /* E-Décor - Styles CSS */
+/* Palette de couleurs élégante pour mobilier/décoration */
 :root {
-  --primary-color: #2c3e50;
-  --secondary-color: #e74c3c;
-  --accent-color: #3498db;
-  --text-color: #333;
-  --light-bg: #f8f9fa;
-  --dark-bg: #2c3e50;
-  --white: #fff;
-  --border-color: #ddd;
-  --shadow: 0 2px 10px rgba(0,0,0,0.1);
+  /* Couleurs principales - Palette élégante */
+  --primary-color: #1a365d;      /* Bleu nuit élégant */
+  --primary-light: #2c5282;      /* Bleu moyen */
+  --secondary-color: #c9a227;    /* Or élégant */
+  --secondary-light: #d4af37;    /* Or clair */
+  --accent-color: #38a169;       /* Vert olive moderne */
+  --accent-light: #48bb78;       /* Vert clair */
+  
+  /* Couleurs neutres */
+  --text-color: #2d3748;         /* Gris foncé */
+  --text-light: #718096;          /* Gris moyen */
+  --light-bg: #f7fafc;           /* Blanc cassé */
+  --white: #ffffff;
+  --off-white: #edf2f7;
+  --dark-bg: #1a202c;
+  
+  /* Couleurs fonctionnelles */
+  --border-color: #e2e8f0;
+  --shadow: 0 4px 15px rgba(26, 54, 93, 0.1);
+  --shadow-hover: 0 8px 25px rgba(26, 54, 93, 0.15);
+  --danger: #e53e3e;
+  --success: #38a169;
+  
+  /* Typographie */
+  --font-primary: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
 }
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -18,83 +39,148 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-primary);
   color: var(--text-color);
-  line-height: 1.6;
+  line-height: 1.7;
   background-color: var(--light-bg);
+  font-size: 16px;
 }
 
 /* Header */
 .main-header {
-  background: var(--white);
+  background: linear-gradient(135deg, var(--white) 0%, var(--off-white) 100%);
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 3px solid var(--secondary-color);
 }
 
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 15px 40px;
+  background: transparent;
 }
 
 .logo-container {
   flex: 1;
 }
 
-.logo {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin: 0;
+/* Nouveau style logo */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.logo .by-electron {
+.logo-icon {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.logo-accent {
   color: var(--secondary-color);
-  font-size: 1rem;
-  font-weight: normal;
+  position: relative;
+}
+
+.logo-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .tagline {
-  color: #666;
+  color: var(--text-light);
   font-size: 0.9rem;
+  margin-top: 4px;
+  font-weight: 400;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 .language-selector {
-  padding: 8px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  padding: 10px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
   background: var(--white);
   cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.language-selector:hover {
+  border-color: var(--secondary-color);
 }
 
 .search-box {
   display: flex;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: 2px solid var(--border-color);
+  border-radius: 25px;
   overflow: hidden;
+  transition: all 0.3s ease;
+  background: var(--white);
+}
+
+.search-box:focus-within {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
 }
 
 .search-box input {
-  padding: 8px 12px;
+  padding: 10px 18px;
   border: none;
-  width: 250px;
+  width: 260px;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  background: transparent;
+}
+
+.search-box input:focus {
+  outline: none;
 }
 
 .search-box button {
-  padding: 8px 15px;
+  padding: 10px 18px;
   border: none;
-  background: var(--primary-color);
+  background: var(--secondary-color);
   color: var(--white);
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.search-box button:hover {
+  background: var(--secondary-light);
 }
 
 /* Navigation */
