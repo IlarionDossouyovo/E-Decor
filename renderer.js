@@ -820,11 +820,11 @@ async function loadCategory(categoryId) {
       <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos produits' : 'Our Products'}</h2>
       <div class="products-grid">
         ${products.map(product => {
-          const imgUrl = getProductImageUrl(product.image);
+          const productEmoji = getEmojiForProduct(product.id);
           return `
           <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
             <div class="product-image">
-              ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : `<span class="image-fallback">${categoryIcons[categoryId] || '🪑'}</span>`}
+              <span class="product-emoji">${productEmoji}</span>
             </div>
             <div class="product-info">
               <h4>${product.name}</h4>
@@ -888,11 +888,11 @@ async function loadSubcategory(categoryId, subcategoryId) {
       <h2 class="section-title">${currentLanguage === 'fr' ? 'Produits' : 'Products'}</h2>
       <div class="products-grid">
         ${products.map(product => {
-          const imgUrl = getProductImageUrl(product.image);
+          const productEmoji = getEmojiForProduct(product.id);
           return `
           <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
             <div class="product-image">
-              ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : `<span class="image-fallback">${categoryIcons[categoryId] || '🪑'}</span>`}
+              <span class="product-emoji">${productEmoji}</span>
             </div>
             <div class="product-info">
               <h4>${product.name}</h4>
@@ -954,13 +954,24 @@ function getSubcategoryIcon(subcategoryId) {
 }
 
 // Show product details in modal
-// Get product image URL - returns path to local image
-function getProductImageUrl(imageName) {
-  if (!imageName) return null;
-  // Return path relative to index.html (in app root)
-  const url = `assets/produits/${imageName}`;
-  console.log('[E-Décor] Image URL:', url);
-  return url;
+// Get product image URL - use emoji as fallback
+function getProductImageUrl(imageName, productId) {
+  // For now, use emoji icons since local images have path issues
+  // This can be updated when images are properly configured
+  const emoji = getEmojiForProduct(productId);
+  return emoji; // Return emoji directly, not as image
+}
+
+// Get emoji based on product
+function getEmojiForProduct(productId) {
+  const emojis = {
+    's1': '🛋️', 's2': '🪑', 's3': '🪵', 's4': '📺', 's5': '📚',
+    'b1': '💼', 'b2': '🪑', 'b3': '🗄️', 'b4': '📈',
+    'c1': '🍳', 'c2': '� cabinets', 'c3': '🪜',
+    'j1': '🌳', 'j2': '🏖️', 'j3': '☂️', 'j4': '🍖',
+    'sd1': '🪵', 'sd2': '🪑', 'sd3': '🗄️', 'sd4': '🖼️'
+  };
+  return emojis[productId] || '🪑';
 }
 
 // Show product details in modal
@@ -974,13 +985,13 @@ async function showProductDetails(categoryId, productId) {
   const favBtnText = isFavorite(productId) ? (currentLanguage === 'fr' ? '💔 Retirer' : '💔 Remove') : '❤️ Favoris';
   const favAction = isFavorite(productId) ? `removeFromFavorites('${productId}')` : `addToFavoritesFromCatalog('${categoryId}', '${productId}')`;
   
-  const imageUrl = getProductImageUrl(product.image);
+  const productEmoji = getEmojiForProduct(productId);
   
   modalBody.innerHTML = `
     <div class="product-detail-modal">
       <div class="product-gallery">
         <div class="product-image-large">
-          ${imageUrl ? `<img src="${imageUrl}" alt="${product.name}" onerror="this.outerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : (categoryIcons[categoryId] || '🪑')}
+          <span class="product-emoji-large">${productEmoji}</span>
         </div>
       </div>
       <div class="product-info-detail">
