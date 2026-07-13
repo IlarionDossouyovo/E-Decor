@@ -23,6 +23,84 @@ const OLLAMA_URL = `http://${OLLAMA_HOST}:${OLLAMA_PORT}`;
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'e-decor-admin-secret-key';
 
 /**
+ * Modèles Ollama disponibles
+ */
+const OLLAMA_MODELS = {
+  llama3_2: {
+    id: 'llama3.2:latest',
+    name: 'Llama 3.2',
+    size: '2.0 GB',
+    description: 'Modèle principal - Rapide et efficace'
+  },
+  llama3_1_8b: {
+    id: 'llama3.1:8b',
+    name: 'Llama 3.1 (8B)',
+    size: '4.9 GB',
+    description: 'Modèle puissant - Plus de détails'
+  },
+  qwen2_5_coder: {
+    id: 'qwen2.5-coder:7b',
+    name: 'Qwen 2.5 Coder',
+    size: '4.7 GB',
+    description: 'Spécialisé code et analyse'
+  },
+  phi3_mini: {
+    id: 'phi3:mini',
+    name: 'Phi-3 Mini',
+    size: '2.2 GB',
+    description: 'Modèle léger - Usage rapide'
+  }
+};
+
+/**
+ * Configuration de la synthèse vocale
+ */
+const VOICE_CONFIG = {
+  enabled: true,
+  defaultVoice: 'fr-FR-Neural2-F', // Voix féminine par défaut
+  defaultRate: 1.0, // Vitesse normale
+  defaultPitch: 0,
+  defaultVolume: 1.0,
+  
+  // Voix françaises disponibles
+  voices: {
+    female: [
+      { id: 'fr-FR-Neural2-F', name: 'Julie', gender: 'F', quality: 'high' },
+      { id: 'fr-FR-Neural2-H', name: 'Emilie', gender: 'F', quality: 'high' },
+      { id: 'fr-FR-Standard-A', name: 'Alice', gender: 'F', quality: 'medium' },
+      { id: 'fr-FR-Wavenet-A', name: 'Marie', gender: 'F', quality: 'high' }
+    ],
+    male: [
+      { id: 'fr-FR-Neural2-D', name: 'Bernard', gender: 'M', quality: 'high' },
+      { id: 'fr-FR-Neural2-J', name: 'Thomas', gender: 'M', quality: 'high' },
+      { id: 'fr-FR-Standard-B', name: 'Pierre', gender: 'M', quality: 'medium' },
+      { id: 'fr-FR-Wavenet-C', name: 'Jean', gender: 'M', quality: 'high' }
+    ]
+  },
+  
+  // Niveaux de qualité
+  quality: {
+    low: { rate: 0.8, pitch: 0 },
+    medium: { rate: 1.0, pitch: 0 },
+    high: { rate: 1.1, pitch: 1 },
+    ultra: { rate: 1.2, pitch: 2 }
+  },
+  
+  // Préférences par agent
+  agentVoices: {
+    ventes: { voice: 'fr-FR-Neural2-F', quality: 'high' },
+    support: { voice: 'fr-FR-Neural2-H', quality: 'high' },
+    stock: { voice: 'fr-FR-Neural2-D', quality: 'medium' },
+    marketing: { voice: 'fr-FR-Neural2-F', quality: 'ultra' },
+    finance: { voice: 'fr-FR-Neural2-D', quality: 'high' },
+    rh: { voice: 'fr-FR-Neural2-H', quality: 'high' },
+    direction: { voice: 'fr-FR-Neural2-D', quality: 'ultra' },
+    health: { voice: 'fr-FR-Neural2-H', quality: 'high' },
+    maintenance: { voice: 'fr-FR-Neural2-D', quality: 'medium' }
+  }
+};
+
+/**
  * Configuration des Agents par département
  */
 const agents = {
@@ -305,5 +383,7 @@ module.exports = {
   agentRoutes,
   OLLAMA_URL,
   OLLAMA_MODEL,
-  ADMIN_SECRET
+  ADMIN_SECRET,
+  OLLAMA_MODELS,
+  VOICE_CONFIG
 };

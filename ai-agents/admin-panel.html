@@ -355,6 +355,120 @@
         </div>
       </div>
       
+      <!-- Paramètres Vocaux -->
+      <div class="voice-settings" style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">🎤 Configuration Vocale</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+          <!-- Activation vocale -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="voice-enabled" checked onchange="updateVoiceSettings()">
+              <span style="font-weight: bold;">Activer la synthèse vocale</span>
+            </label>
+          </div>
+          
+          <!-- Genre de voix -->
+          <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Genre de voix:</label>
+            <select id="voice-gender" onchange="updateVoiceSettings()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+              <option value="female">👩 Femmes</option>
+              <option value="male">👨 Hommes</option>
+            </select>
+          </div>
+          
+          <!-- Voix spécifique -->
+          <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Voix:</label>
+            <select id="voice-select" onchange="updateVoiceSettings()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+              <optgroup label="Voix Féminines">
+                <option value="fr-FR-Neural2-F">Julie (Haute qualité)</option>
+                <option value="fr-FR-Neural2-H">Emilie (Haute qualité)</option>
+                <option value="fr-FR-Standard-A">Alice (Qualité moyenne)</option>
+                <option value="fr-FR-Wavenet-A">Marie (Haute qualité)</option>
+              </optgroup>
+              <optgroup label="Voix Masculines">
+                <option value="fr-FR-Neural2-D">Bernard (Haute qualité)</option>
+                <option value="fr-FR-Neural2-J">Thomas (Haute qualité)</option>
+                <option value="fr-FR-Standard-B">Pierre (Qualité moyenne)</option>
+                <option value="fr-FR-Wavenet-C">Jean (Haute qualité)</option>
+              </optgroup>
+            </select>
+          </div>
+          
+          <!-- Qualité vocale -->
+          <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Qualité:</label>
+            <select id="voice-quality" onchange="updateVoiceSettings()" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+              <option value="low">🔊 Basse - Plus rapide</option>
+              <option value="medium" selected>🔊🔊 Moyenne - Équilibré</option>
+              <option value="high">🔊🔊🔊 Haute - Meilleure qualité</option>
+              <option value="ultra">🔊🔊🔊🔊 Ultra - Premium</option>
+            </select>
+          </div>
+          
+          <!-- Vitesse -->
+          <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Vitesse:</label>
+            <input type="range" id="voice-rate" min="0.5" max="2" step="0.1" value="1" onchange="updateVoiceSettings()" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666;">
+              <span>Lent</span>
+              <span id="rate-value">Normal</span>
+              <span>Rapide</span>
+            </div>
+          </div>
+          
+          <!-- Volume -->
+          <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Volume:</label>
+            <input type="range" id="voice-volume" min="0" max="1" step="0.1" value="1" onchange="updateVoiceSettings()" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #666;">
+              <span>Silencieux</span>
+              <span id="volume-value">100%</span>
+              <span>Fort</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Test vocal -->
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+          <button onclick="testVoice()" style="background: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+            🔊 Tester la voix
+          </button>
+          <button onclick="stopVoice()" style="background: var(--danger); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-left: 10px;">
+            ⏹️ Arrêter
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modèles AI -->
+      <div class="model-settings" style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <h2 style="color: var(--primary); margin-bottom: 20px;">🤖 Configuration des Modèles AI</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+          <label style="cursor: pointer; padding: 15px; border: 2px solid var(--secondary); border-radius: 10px; background: #f8f9fa;">
+            <input type="radio" name="ai-model" value="llama3.2:latest" checked>
+            <strong>Llama 3.2</strong><br>
+            <small>2.0 GB - Standard</small>
+          </label>
+          <label style="cursor: pointer; padding: 15px; border: 2px solid #ddd; border-radius: 10px;">
+            <input type="radio" name="ai-model" value="llama3.1:8b">
+            <strong>Llama 3.1 (8B)</strong><br>
+            <small>4.9 GB - Plus précis</small>
+          </label>
+          <label style="cursor: pointer; padding: 15px; border: 2px solid #ddd; border-radius: 10px;">
+            <input type="radio" name="ai-model" value="qwen2.5-coder:7b">
+            <strong>Qwen 2.5 Coder</strong><br>
+            <small>4.7 GB - Code/Analyse</small>
+          </label>
+          <label style="cursor: pointer; padding: 15px; border: 2px solid #ddd; border-radius: 10px;">
+            <input type="radio" name="ai-model" value="phi3:mini">
+            <strong>Phi-3 Mini</strong><br>
+            <small>2.2 GB - Léger</small>
+          </label>
+        </div>
+      </div>
+      
       <!-- Agents -->
       <h2 class="section-title">🤖 Nos Agents AI</h2>
       <div class="agents-grid" id="agents-grid">
@@ -685,8 +799,228 @@
       textarea.value = '';
     }
     
+    // ========== SYNTHÈSE VOCALE ==========
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+    
+    // Paramètres vocaux par défaut
+    let voiceSettings = {
+      enabled: true,
+      gender: 'female',
+      voice: 'fr-FR-Neural2-F',
+      quality: 'medium',
+      rate: 1.0,
+      volume: 1.0
+    };
+    
+    // Liste des voix disponibles
+    const femaleVoices = [
+      { id: 'fr-FR-Neural2-F', name: 'Julie' },
+      { id: 'fr-FR-Neural2-H', name: 'Emilie' },
+      { id: 'fr-FR-Standard-A', name: 'Alice' },
+      { id: 'fr-FR-Wavenet-A', name: 'Marie' }
+    ];
+    
+    const maleVoices = [
+      { id: 'fr-FR-Neural2-D', name: 'Bernard' },
+      { id: 'fr-FR-Neural2-J', name: 'Thomas' },
+      { id: 'fr-FR-Standard-B', name: 'Pierre' },
+      { id: 'fr-FR-Wavenet-C', name: 'Jean' }
+    ];
+    
+    // Qualité des voix
+    const qualitySettings = {
+      low: { rate: 0.8, pitch: 0 },
+      medium: { rate: 1.0, pitch: 0 },
+      high: { rate: 1.1, pitch: 1 },
+      ultra: { rate: 1.2, pitch: 2 }
+    };
+    
+    // Mettre à jour les paramètres vocaux
+    function updateVoiceSettings() {
+      voiceSettings.enabled = document.getElementById('voice-enabled').checked;
+      voiceSettings.gender = document.getElementById('voice-gender').value;
+      voiceSettings.voice = document.getElementById('voice-select').value;
+      voiceSettings.quality = document.getElementById('voice-quality').value;
+      voiceSettings.rate = parseFloat(document.getElementById('voice-rate').value);
+      voiceSettings.volume = parseFloat(document.getElementById('voice-volume').value);
+      
+      // Mise à jour de l'affichage des valeurs
+      const rateLabels = { 0.5: 'Très lent', 0.8: 'Lent', 1.0: 'Normal', 1.2: 'Rapide', 1.5: 'Très rapide', 2.0: 'Ultra rapide' };
+      document.getElementById('rate-value').textContent = rateLabels[voiceSettings.rate] || 'Normal';
+      document.getElementById('volume-value').textContent = Math.round(voiceSettings.volume * 100) + '%';
+      
+      // Sauvegarder dans localStorage
+      localStorage.setItem('e-decor-voice-settings', JSON.stringify(voiceSettings));
+      
+      // Mettre à jour le sélecteur de voix selon le genre
+      updateVoiceSelect();
+    }
+    
+    // Mettre à jour le sélecteur de voix
+    function updateVoiceSelect() {
+      const voiceSelect = document.getElementById('voice-select');
+      const voices = voiceSettings.gender === 'female' ? femaleVoices : maleVoices;
+      
+      voiceSelect.innerHTML = '';
+      
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = voiceSettings.gender === 'female' ? 'Voix Féminines' : 'Voix Masculines';
+      
+      voices.forEach(v => {
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = v.name + ' (Haute qualité)';
+        optgroup.appendChild(option);
+      });
+      
+      voiceSelect.appendChild(optgroup);
+      
+      // Sélectionner la première voix du genre
+      if (voices.length > 0) {
+        voiceSettings.voice = voices[0].id;
+        voiceSelect.value = voiceSettings.voice;
+      }
+    }
+    
+    // Synthèse vocale - Parler
+    function speak(text, agentId = null) {
+      if (!voiceSettings.enabled) return;
+      
+      // Arrêter toute parole en cours
+      stopVoice();
+      
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      
+      // Configurer la voix
+      const voices = speechSynthesis.getVoices();
+      const selectedVoice = voices.find(v => v.name.includes(voiceSettings.voice.split('-')[2])) || voices[0];
+      
+      if (selectedVoice) {
+        currentUtterance.voice = selectedVoice;
+      }
+      
+      // Appliquer les paramètres
+      const quality = qualitySettings[voiceSettings.quality];
+      currentUtterance.rate = voiceSettings.rate;
+      currentUtterance.pitch = quality.pitch;
+      currentUtterance.volume = voiceSettings.volume;
+      
+      // Langue française
+      currentUtterance.lang = 'fr-FR';
+      
+      // Lire le texte
+      speechSynthesis.speak(currentUtterance);
+    }
+    
+    // Arrêter la synthèse vocale
+    function stopVoice() {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+    }
+    
+    // Tester la voix
+    function testVoice() {
+      const testText = "Bonjour! Je suis votre assistant E-Décor. La synthèse vocale est maintenant configurée et prête à être utilisée.";
+      speak(testText);
+    }
+    
+    // Charger les paramètres sauvegardés
+    function loadVoiceSettings() {
+      const saved = localStorage.getItem('e-decor-voice-settings');
+      if (saved) {
+        voiceSettings = JSON.parse(saved);
+        
+        document.getElementById('voice-enabled').checked = voiceSettings.enabled;
+        document.getElementById('voice-gender').value = voiceSettings.gender;
+        document.getElementById('voice-quality').value = voiceSettings.quality;
+        document.getElementById('voice-rate').value = voiceSettings.rate;
+        document.getElementById('voice-volume').value = voiceSettings.volume;
+        
+        updateVoiceSelect();
+        document.getElementById('voice-select').value = voiceSettings.voice;
+        
+        // Mise à jour de l'affichage
+        const rateLabels = { 0.5: 'Très lent', 0.8: 'Lent', 1.0: 'Normal', 1.2: 'Rapide', 1.5: 'Très rapide', 2.0: 'Ultra rapide' };
+        document.getElementById('rate-value').textContent = rateLabels[voiceSettings.rate] || 'Normal';
+        document.getElementById('volume-value').textContent = Math.round(voiceSettings.volume * 100) + '%';
+      }
+    }
+    
+    // Fonction modifiée pour parler après avoir reçu une réponse
+    function chatWithAgent(agentId) {
+      const textarea = document.getElementById('chat-' + agentId);
+      const message = textarea.value.trim();
+      
+      if (!message) {
+        alert('Veuillez entrer un message');
+        return;
+      }
+      
+      // Show loading
+      document.getElementById('loading-' + agentId).classList.add('show');
+      document.getElementById('response-' + agentId).classList.remove('show');
+      
+      fetch(API_URL + '/agents/' + agentId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('loading-' + agentId).classList.remove('show');
+        
+        let responseText = '';
+        if (data.success) {
+          responseText = data.response;
+          document.querySelector('#response-' + agentId + ' p').textContent = responseText;
+          document.getElementById('response-' + agentId).classList.add('show');
+          
+          // Synthèse vocale de la réponse
+          if (voiceSettings.enabled) {
+            speak(responseText, agentId);
+          }
+        } else {
+          alert('Erreur: ' + data.error);
+        }
+      })
+      .catch(e => {
+        document.getElementById('loading-' + agentId).classList.remove('show');
+        
+        const offlineResponses = {
+          ventes: 'Je suis l\'Agent Ventes d\'E-Décor. Je peux vous aider avec vos commandes et demandes.',
+          support: 'Je suis l\'Agent Support Client. Je suis là pour vous aider 24/7.',
+          stock: 'Je gère les niveaux de stock et les approvisionnements.',
+          marketing: 'Je m\'occupe de la stratégie marketing et communication.',
+          finance: 'Je gère les finances et les paiements.',
+          rh: 'Je suis l\'Agent RH. Je peux vous aider avec le recrutement.',
+          direction: 'Je coordonne tous les départements.',
+          health: 'Je suis l\'Agent Santé et Bien-être.',
+          maintenance: 'Je suis l\'Agent Maintenance.'
+        };
+        
+        const text = offlineResponses[agentId] + ' Connectez le serveur AI pour des réponses complètes.';
+        document.querySelector('#response-' + agentId + ' p').textContent = text;
+        document.getElementById('response-' + agentId).classList.add('show');
+        
+        if (voiceSettings.enabled) {
+          speak(text, agentId);
+        }
+      });
+      
+      textarea.value = '';
+    }
+    
+    // Précharger les voix
+    window.speechSynthesis.onvoiceschanged = function() {
+      console.log('Voices loaded:', speechSynthesis.getVoices().length);
+    };
+    
     // Vérifier la session au chargement
     window.onload = function() {
+      loadVoiceSettings();
+      
       if (localStorage.getItem('e-decor-admin') === 'true') {
         isLoggedIn = true;
         document.getElementById('login-section').style.display = 'none';
