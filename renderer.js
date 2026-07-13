@@ -819,20 +819,24 @@ async function loadCategory(categoryId) {
     <div class="products-section">
       <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos produits' : 'Our Products'}</h2>
       <div class="products-grid">
-        ${products.map(product => `
-          <div class="product-card">
-            <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
+        ${products.map(product => {
+          const imgUrl = getProductImageUrl(product.image);
+          return `
+          <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
+            <div class="product-image">
+              ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : `<span class="image-fallback">${categoryIcons[categoryId] || '🪑'}</span>`}
+            </div>
             <div class="product-info">
               <h4>${product.name}</h4>
               <p class="price">${formatPrice(product.price, product.currency)}</p>
               <p class="description">${product.description}</p>
-              <div class="product-actions">
+              <div class="product-actions" onclick="event.stopPropagation()">
                 <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
                 <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
               </div>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
     </div>
 
@@ -883,20 +887,24 @@ async function loadSubcategory(categoryId, subcategoryId) {
     <div class="products-section">
       <h2 class="section-title">${currentLanguage === 'fr' ? 'Produits' : 'Products'}</h2>
       <div class="products-grid">
-        ${products.map(product => `
-          <div class="product-card">
-            <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
+        ${products.map(product => {
+          const imgUrl = getProductImageUrl(product.image);
+          return `
+          <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
+            <div class="product-image">
+              ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : `<span class="image-fallback">${categoryIcons[categoryId] || '🪑'}</span>`}
+            </div>
             <div class="product-info">
               <h4>${product.name}</h4>
               <p class="price">${formatPrice(product.price, product.currency)}</p>
               <p class="description">${product.description}</p>
-              <div class="product-actions">
+              <div class="product-actions" onclick="event.stopPropagation()">
                 <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
                 <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
               </div>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
     </div>
 
@@ -946,6 +954,14 @@ function getSubcategoryIcon(subcategoryId) {
 }
 
 // Show product details in modal
+// Get product image URL
+function getProductImageUrl(imageName) {
+  if (!imageName) return null;
+  // Check if it's a local image in assets/produits
+  return `assets/produits/${imageName}`;
+}
+
+// Show product details in modal
 async function showProductDetails(categoryId, productId) {
   const product = await api.getProduct(categoryId, productId);
   if (!product) return;
@@ -956,10 +972,14 @@ async function showProductDetails(categoryId, productId) {
   const favBtnText = isFavorite(productId) ? (currentLanguage === 'fr' ? '💔 Retirer' : '💔 Remove') : '❤️ Favoris';
   const favAction = isFavorite(productId) ? `removeFromFavorites('${productId}')` : `addToFavoritesFromCatalog('${categoryId}', '${productId}')`;
   
+  const imageUrl = getProductImageUrl(product.image);
+  
   modalBody.innerHTML = `
     <div class="product-detail-modal">
       <div class="product-gallery">
-        <div class="product-image-large">${categoryIcons[categoryId] || '🪑'}</div>
+        <div class="product-image-large">
+          ${imageUrl ? `<img src="${imageUrl}" alt="${product.name}" onerror="this.outerHTML='<span class=\\'image-fallback\\'>${categoryIcons[categoryId] || '🪑'}</span>'">` : (categoryIcons[categoryId] || '🪑')}
+        </div>
       </div>
       <div class="product-info-detail">
         <span class="category-tag">${categoryName}</span>
@@ -969,10 +989,19 @@ async function showProductDetails(categoryId, productId) {
         <div class="product-specs">
           <h4>${currentLanguage === 'fr' ? 'Caractéristiques' : 'Specifications'}</h4>
           <ul>
-            <li>${currentLanguage === 'fr' ? 'Qualité premium' : 'Premium quality'}</li>
-            <li>${currentLanguage === 'fr' ? 'Garantie 2 ans' : '2 year warranty'}</li>
-            <li>${currentLanguage === 'fr' ? 'Livraison internationale' : 'International delivery'}</li>
+            <li>✅ ${currentLanguage === 'fr' ? 'Qualité premium' : 'Premium quality'}</li>
+            <li>🛡️ ${currentLanguage === 'fr' ? 'Garantie 2 ans' : '2 year warranty'}</li>
+            <li>🚚 ${currentLanguage === 'fr' ? 'Livraison internationale' : 'International delivery'}</li>
+            <li>💬 ${currentLanguage === 'fr' ? 'Support 24/7' : 'Support 24/7'}</li>
           </ul>
+        </div>
+        <div class="product-quantity">
+          <label>${currentLanguage === 'fr' ? 'Quantité' : 'Quantity'}:</label>
+          <div class="quantity-selector">
+            <button onclick="updateModalQuantity(-1)">-</button>
+            <input type="number" id="modal-product-qty" value="1" min="1" max="99">
+            <button onclick="updateModalQuantity(1)">+</button>
+          </div>
         </div>
         <div class="product-actions-detail">
           <button class="cta-button" onclick="addToCartFromModal('${categoryId}', '${product.id}')">${t('ajouter_panier')}</button>
@@ -983,6 +1012,15 @@ async function showProductDetails(categoryId, productId) {
   `;
 
   openModal();
+}
+
+// Update quantity in modal
+function updateModalQuantity(change) {
+  const input = document.getElementById('modal-product-qty');
+  if (input) {
+    const newValue = Math.max(1, Math.min(99, parseInt(input.value) + change));
+    input.value = newValue;
+  }
 }
 
 // Add to cart from modal
