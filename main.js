@@ -805,9 +805,13 @@ ipcMain.handle('get-categories', () => {
   return categories;
 });
 
-ipcMain.handle('get-products', (event, categoryId) => {
+ipcMain.handle('get-products', (event, categoryId, subcategoryId) => {
   const category = categories.find(c => c.id === categoryId);
-  return category ? category.products : [];
+  if (!category) return [];
+  if (subcategoryId) {
+    return category.products.filter(p => p.subcategory === subcategoryId);
+  }
+  return category.products;
 });
 
 ipcMain.handle('get-product', (event, categoryId, productId) => {
@@ -818,11 +822,16 @@ ipcMain.handle('get-product', (event, categoryId, productId) => {
   return null;
 });
 
-ipcMain.handle('get-blog-articles', (event, categoryId) => {
-  if (categoryId && blogArticles[categoryId]) {
-    return blogArticles[categoryId];
+ipcMain.handle('get-blog-articles', (event, categoryId, subcategoryId) => {
+  if (!categoryId) return globalBlogPosts;
+  
+  let posts = globalBlogPosts.filter(p => p.category === categoryId);
+  
+  if (subcategoryId && posts.length > 0) {
+    posts = posts.filter(p => p.subcategory === subcategoryId);
   }
-  return globalBlogPosts;
+  
+  return posts;
 });
 
 ipcMain.handle('get-global-blog', () => {
@@ -874,24 +883,6 @@ ipcMain.handle('get-category', (event, categoryId) => {
 ipcMain.handle('get-subcategories', (event, categoryId) => {
   const category = categories.find(c => c.id === categoryId);
   return category ? (category.subcategories || []) : [];
-});
-
-ipcMain.handle('get-products', (event, categoryId, subcategoryId) => {
-  const category = categories.find(c => c.id === categoryId);
-  if (!category) return [];
-  if (subcategoryId) {
-    return category.products.filter(p => p.subcategory === subcategoryId);
-  }
-  return category.products;
-});
-
-ipcMain.handle('get-blog-articles', (event, categoryId, subcategoryId) => {
-  if (!categoryId) return globalBlogPosts;
-  let posts = globalBlogPosts.filter(p => p.category === categoryId);
-  if (subcategoryId) {
-    posts = posts.filter(p => p.subcategory === subcategoryId);
-  }
-  return posts;
 });
 
 // Affiliés
