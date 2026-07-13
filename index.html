@@ -94,40 +94,6 @@
     </div>
   </footer>
 
-  <!-- Test inline script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('TEST: DOM Content Loaded!');
-      var mc = document.getElementById('main-content');
-      if (mc) {
-        console.log('TEST: main-content found');
-        mc.innerHTML = '<div style="background:#c8e6c9; padding:30px; margin:20px; border-radius:10px; text-align:center;"><h2>✅ JavaScript fonctionne!</h2><p>Les catégories:</p></div>';
-        
-        // Simple categories
-        var categories = [
-          {id:'salons',name:'Salons',icon:'🛋️'},
-          {id:'bureaux',name:'Bureaux',icon:'💼'},
-          {id:'cuisines',name:'Cuisines',icon:'🍳'},
-          {id:'jardins',name:'Jardins',icon:'🌳'},
-          {id:'salle-a-manger',name:'Salle à manger',icon:'🍽️'}
-        ];
-        
-        var html = '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; padding:20px;">';
-        categories.forEach(function(cat) {
-          html += '<div style="background:white; padding:20px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;">';
-          html += '<div style="font-size:48px;">' + cat.icon + '</div>';
-          html += '<h3>' + cat.name + '</h3>';
-          html += '</div>';
-        });
-        html += '</div>';
-        
-        mc.innerHTML += html;
-      } else {
-        alert('ERREUR: main-content est null');
-      }
-    });
-  </script>
-  
   <script src="renderer.js"></script>
 </body>
 </html>

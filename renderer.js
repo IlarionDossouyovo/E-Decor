@@ -1,22 +1,6 @@
 // E-Décor - Renderer JavaScript
 console.log('[E-Décor] === Script renderer.js chargé ===');
 
-// Immediate alert to confirm script is running
-if (typeof window !== 'undefined') {
-  window.onload = function() {
-    setTimeout(function() {
-      console.log('[E-Décor] Window loaded, checking main-content...');
-      var mc = document.getElementById('main-content');
-      if (mc) {
-        console.log('[E-Décor] main-content found, inserting content...');
-        mc.innerHTML = '<div style="padding:50px; text-align:center; background:#e8f5e9; margin:20px; border-radius:10px;"><h2>🔥 E-Décor se charge...</h2></div>';
-      } else {
-        alert('ERREUR: main-content non trouvé!');
-      }
-    }, 500);
-  };
-}
-
 let currentLanguage = 'fr';
 let currentPage = 'home';
 let categoriesData = [];
