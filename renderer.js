@@ -116,14 +116,10 @@ const webAPI = {
   }
 };
 
-// API - vient de preload.js (Electron) ou webAPI (navigateur)
-// Use window.api if available (Electron), otherwise fallback to webAPI
-let api;
-if (typeof window !== 'undefined' && window.api) {
-  api = window.api;
-} else {
-  api = webAPI;
-}
+// API - Utiliser directement les données intégrées pour éviter les problèmes Electron
+// Les données intégrées fonctionnent toujours, même si l'IPC échoue
+const api = webAPI;
+console.log('[E-Décor] API initialisée avec données intégrées');
 
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
