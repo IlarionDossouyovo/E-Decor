@@ -395,6 +395,12 @@ async function loadPage(page) {
     case 'about':
       await loadAboutPage(mainContent);
       break;
+    case 'faq':
+      await loadFAQPage(mainContent);
+      break;
+    case 'legal':
+      await loadLegalPage(mainContent);
+      break;
     case 'contact':
       await loadContactPage(mainContent);
       break;
@@ -726,6 +732,175 @@ async function loadAboutPage(container) {
       <p><strong>ORCA-Décor</strong> : Notre partenaire exclusif pour la decoration et l'ameublement.</p>
     </section>
   `;
+}
+
+// FAQ Data
+const faqData = [
+  {
+    question: 'Quels sont les délais de livraison?',
+    question_en: 'What are the delivery times?',
+    answer: 'Nos délais de livraison varient entre 5 et 15 jours ouvrés selon votre localisation. La livraison est gratuite pour toute commande supérieure à 500€.',
+    answer_en: 'Our delivery times vary between 5 and 15 working days depending on your location. Delivery is free for orders over 500€.'
+  },
+  {
+    question: 'Quelle est la politique de retour?',
+    question_en: 'What is the return policy?',
+    answer: 'Vous disposez de 30 jours pour retourner un produit non utilisé dans son emballage d\'origine. Les frais de retour sont à votre charge sauf en cas de produit défectueux.',
+    answer_en: 'You have 30 days to return an unused product in its original packaging. Return costs are at your expense unless the product is defective.'
+  },
+  {
+    question: 'Proposez-vous l\'installation des meubles?',
+    question_en: 'Do you offer furniture installation?',
+    answer: 'Oui, nous proposons un service d\'installation premium pour les meubles complexes. Ce service est disponible moyennant un supplément indiqué lors de la commande.',
+    answer_en: 'Yes, we offer a premium installation service for complex furniture. This service is available for an additional fee indicated during order.'
+  },
+  {
+    question: 'Comment suivre ma commande?',
+    question_en: 'How do I track my order?',
+    answer: 'Vous recevrez un email de confirmation avec un numéro de suivi. Vous pouvez également suivre votre commande depuis votre espace client sur notre site.',
+    answer_en: 'You will receive a confirmation email with a tracking number. You can also track your order from your customer account on our site.'
+  },
+  {
+    question: 'Quelles garanties proposent vos meubles?',
+    question_en: 'What guarantees do your furniture offer?',
+    answer: 'Tous nos meubles bénéficient d\'une garantie minimale de 2 ans. Certains produits premium proposent une garantie étendue jusqu\'à 5 ans.',
+    answer_en: 'All our furniture comes with a minimum 2-year warranty. Some premium products offer an extended warranty up to 5 years.'
+  },
+  {
+    question: 'Comment contacter le service client?',
+    question_en: 'How to contact customer service?',
+    answer: 'Vous pouvez nous contacter par email à support@e-decor.com, par téléphone au +229 01 23 45 67 89, ou via le formulaire de contact sur le site.',
+    answer_en: 'You can contact us by email at support@e-decor.com, by phone at +229 01 23 45 67 89, or via the contact form on the site.'
+  },
+  {
+    question: 'Proposez-vous des paiement en plusieurs fois?',
+    question_en: 'Do you offer installment payments?',
+    answer: 'Oui! Nous proposons le paiement en 3x sans frais via notre partenaire Floa Bank. Cette option est disponible dès 100€ d\'achat.',
+    answer_en: 'Yes! We offer 3x interest-free payment via our partner Floa Bank. This option is available from 100€ purchase.'
+  },
+  {
+    question: 'Livrez-vous à l\'international?',
+    question_en: 'Do you deliver internationally?',
+    answer: 'Oui, nous livrons dans plus de 23 pays à travers l\'Afrique, l\'Europe et les Amériques. Les frais de livraison varient selon la destination.',
+    answer_en: 'Yes, we deliver to over 23 countries across Africa, Europe, and the Americas. Delivery costs vary depending on the destination.'
+  }
+];
+
+// Load FAQ Page
+async function loadFAQPage(container) {
+  container.innerHTML = `
+    <div class="faq-hero">
+      <h1>${t('faq_title') || 'Questions Fréquentes'}</h1>
+      <p>${t('faq_subtitle') || 'Trouvez rapidement les réponses à vos questions'}</p>
+    </div>
+    
+    <div class="faq-container">
+      ${faqData.map((faq, index) => `
+        <div class="faq-item" onclick="toggleFAQ(${index})">
+          <div class="faq-question">
+            <span>${currentLanguage === 'fr' ? faq.question : faq.question_en}</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer" id="faq-answer-${index}">
+            <p>${currentLanguage === 'fr' ? faq.answer : faq.answer_en}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="faq-cta">
+      <h3>${currentLanguage === 'fr' ? 'Vous ne trouvez pas votre réponse?' : 'Didn\'t find your answer?'}</h3>
+      <p>${currentLanguage === 'fr' ? 'Notre équipe est disponible pour vous aider.' : 'Our team is available to help you.'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    </div>
+  `;
+  currentPage = 'faq';
+  updateActiveNavLink('faq');
+}
+
+// Toggle FAQ accordion
+function toggleFAQ(index) {
+  const answer = document.getElementById('faq-answer-' + index);
+  const item = answer.parentElement;
+  const icon = item.querySelector('.faq-icon');
+  
+  document.querySelectorAll('.faq-answer').forEach((el, i) => {
+    if (i !== index) {
+      el.style.maxHeight = null;
+      el.style.padding = '0 20px';
+    }
+  });
+  document.querySelectorAll('.faq-icon').forEach((el, i) => {
+    if (i !== index) el.textContent = '+';
+  });
+  
+  if (answer.style.maxHeight) {
+    answer.style.maxHeight = null;
+    answer.style.padding = '0 20px';
+    icon.textContent = '+';
+  } else {
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+    answer.style.padding = '15px 20px';
+    icon.textContent = '−';
+  }
+}
+
+// Load Legal/Mentions légales Page
+async function loadLegalPage(container) {
+  container.innerHTML = `
+    <div class="legal-container">
+      <h1>${currentLanguage === 'fr' ? 'Mentions Légales' : 'Legal Notice'}</h1>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '1. Éditeur du site' : '1. Website Publisher'}</h2>
+        <p><strong>E-Décor</strong></p>
+        <p>${currentLanguage === 'fr' ? 
+          'SAS au capital de 10.000.000 FCF<br>Siège social: Cotonou, Benin<br>Email: contact@e-decor.com<br>Téléphone: +229 01 23 45 67 89' : 
+          'SAS with capital of 10,000,000 FCF<br>Headquarters: Cotonou, Benin<br>Email: contact@e-decor.com<br>Phone: +229 01 23 45 67 89'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '2. Hébergement' : '2. Hosting'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Hébergé par Vercel Inc.<br>440 Barranco Street<br>Palo Alto, CA 94301, USA' : 
+          'Hosted by Vercel Inc.<br>440 Barranco Street<br>Palo Alto, CA 94301, USA'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '3. Propriété intellectuelle' : '3. Intellectual Property'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'L\'ensemble du contenu de ce site (textes, images, logos, graphismes) est protégé par les droits de propriété intellectuelle. Toute reproduction est interdite sans autorisation préalable.' : 
+          'All content on this site (texts, images, logos, graphics) is protected by intellectual property rights. Any reproduction is prohibited without prior authorization.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '4. Protection des données personnelles' : '4. Personal Data Protection'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Vos données personnelles sont collectées et traitées conformément à la loi sur la protection des données. Vous disposez d\'un droit d\'accès, de rectification et de suppression de vos données.' : 
+          'Your personal data is collected and processed in accordance with data protection laws. You have the right to access, rectify and delete your data.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '5. Conditions générales de vente' : '5. General Terms of Sale'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'Les CGV sont disponibles sur demande auprès de notre service client. La commande implique l\'acceptation pleine et entière des conditions générales de vente.' : 
+          'The GTC are available upon request from our customer service. The order implies full acceptance of the general terms of sale.'}</p>
+      </section>
+      
+      <section class="legal-section">
+        <h2>${currentLanguage === 'fr' ? '6. Responsabilité' : '6. Liability'}</h2>
+        <p>${currentLanguage === 'fr' ? 
+          'E-Décor s\'efforce de fournir des informations exactes mais ne peut être tenu responsable des erreurs ou omissions. Les photos des produits sont non contractuelles.' : 
+          'E-Décor strives to provide accurate information but cannot be held responsible for errors or omissions. Product photos are non-contractual.'}</p>
+      </section>
+      
+      <div class="legal-footer">
+        <p>© 2024 E-Décor - ${currentLanguage === 'fr' ? 'Tous droits réservés' : 'All rights reserved'}</p>
+      </div>
+    </div>
+  `;
+  currentPage = 'legal';
+  updateActiveNavLink('legal');
 }
 
 // Load Contact Page

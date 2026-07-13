@@ -3,20 +3,28 @@ const path = require('path');
 
 let mainWindow;
 
-// Données des catégories de produits
+// Données des catégories de produits AVEC SOUS-CATÉGORIES
 const categories = [
   {
     id: 'salons',
     name: 'Salons',
     name_en: 'Living Rooms',
     description: 'Meubles pour salons modernes et classiques',
+    icon: '🛋️',
     image: 'salon.jpg',
+    subcategories: [
+      { id: 'canapes', name: 'Canapés', name_en: 'Sofas' },
+      { id: 'fauteuils', name: 'Fauteuils', name_en: 'Armchairs' },
+      { id: 'tables-basses', name: 'Tables basses', name_en: 'Coffee Tables' },
+      { id: 'meubles-tv', name: 'Meubles TV', name_en: 'TV Units' },
+      { id: 'bibliotheques', name: 'Bibliothèques', name_en: 'Bookshelves' }
+    ],
     products: [
-      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', image: 'canoe-lino.jpg', description: 'Canapé 3 places modulable en tissu gris' },
-      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', image: 'fauteuil-relax.jpg', description: 'Fauteuil relax avec relève-pieds électrique' },
-      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', image: 'table-basse.jpg', description: 'Table basse en chêne massif 90x90cm' },
-      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', image: 'meuble-tv.jpg', description: 'Meuble TV 160cm avec rangements' },
-      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', image: 'bibliotheque.jpg', description: 'Étagère 5 modules ajustables' }
+      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', image: 'canoe-lino.jpg', description: 'Canapé 3 places modulable en tissu gris', subcategory: 'canapes' },
+      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', image: 'fauteuil-relax.jpg', description: 'Fauteuil relax avec relève-pieds électrique', subcategory: 'fauteuils' },
+      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', image: 'table-basse.jpg', description: 'Table basse en chêne massif 90x90cm', subcategory: 'tables-basses' },
+      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', image: 'meuble-tv.jpg', description: 'Meuble TV 160cm avec rangements', subcategory: 'meubles-tv' },
+      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', image: 'bibliotheque.jpg', description: 'Étagère 5 modules ajustables', subcategory: 'bibliotheques' }
     ]
   },
   {
@@ -24,12 +32,19 @@ const categories = [
     name: 'Bureaux',
     name_en: 'Offices',
     description: 'Mobilier de bureau professionnel et domestique',
+    icon: '💼',
     image: 'bureau.jpg',
+    subcategories: [
+      { id: 'bureaux', name: 'Bureaux', name_en: 'Desks' },
+      { id: 'chaises', name: 'Chaises de bureau', name_en: 'Office Chairs' },
+      { id: 'rangements', name: 'Rangements', name_en: 'Storage' },
+      { id: 'luminaires', name: 'Luminaires', name_en: 'Lighting' }
+    ],
     products: [
-      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', image: 'bureau-executif.jpg', description: 'Bureau 160cm en chêne avec tiroirs' },
-      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', image: 'fauteuil-dir.jpg', description: 'Fauteuil ergonomique Mesh' },
-      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', image: 'caisson.jpg', description: 'Caisson sur roulettes mélaminé' },
-      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', image: 'bureau-standing.jpg', description: 'Bureau debout électrique hauteur variable' }
+      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', image: 'bureau-executif.jpg', description: 'Bureau 160cm en chêne avec tiroirs', subcategory: 'bureaux' },
+      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', image: 'fauteuil-dir.jpg', description: 'Fauteuil ergonomique Mesh', subcategory: 'chaises' },
+      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', image: 'caisson.jpg', description: 'Caisson sur roulettes mélaminé', subcategory: 'rangements' },
+      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', image: 'bureau-standing.jpg', description: 'Bureau debout électrique hauteur variable', subcategory: 'bureaux' }
     ]
   },
   {
@@ -37,24 +52,38 @@ const categories = [
     name: 'Cuisines',
     name_en: 'Kitchens',
     description: 'Équipements et meubles de cuisine',
+    icon: '🍳',
     image: 'cuisine.jpg',
+    subcategories: [
+      { id: 'ilot-central', name: 'Îlots centraux', name_en: 'Kitchen Islands' },
+      { id: 'meubles-bas', name: 'Meubles bas', name_en: 'Base Cabinets' },
+      { id: 'etagere-murale', name: 'Étagères murales', name_en: 'Wall Shelves' },
+      { id: 'tables-chaises', name: 'Tables & Chaises', name_en: 'Tables & Chairs' }
+    ],
     products: [
-      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', image: 'ilot-cuisine.jpg', description: 'Îlot 180cm avec plan de travail stratifié' },
-      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', image: 'meub bas-cuisine.jpg', description: 'Meuble 60cm avec porte et tiroir' },
-      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', image: 'etagere-murale.jpg', description: 'Étagère 90cm polyvalente' }
+      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', image: 'ilot-cuisine.jpg', description: 'Îlot 180cm avec plan de travail stratifié', subcategory: 'ilot-central' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', image: 'meub-bas-cuisine.jpg', description: 'Meuble 60cm avec porte et tiroir', subcategory: 'meubles-bas' },
+      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', image: 'etagere-murale.jpg', description: 'Étagère 90cm polyvalente', subcategory: 'etagere-murale' }
     ]
   },
   {
     id: 'jardins',
     name: 'Jardins',
     name_en: 'Gardens',
-    description: 'Mobilier d extérieur et de jardin',
+    description: 'Mobilier d\'extérieur et de jardin',
+    icon: '🌳',
     image: 'jardin.jpg',
+    subcategories: [
+      { id: 'salon-exterieur', name: 'Salons d\'extérieur', name_en: 'Outdoor Living' },
+      { id: 'transats', name: 'Transats', name_en: 'Loungers' },
+      { id: 'parasols', name: 'Parasols', name_en: 'Umbrellas' },
+      { id: 'barbecue', name: 'Barbecue', name_en: 'BBQ' }
+    ],
     products: [
-      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', image: 'salon-jardin.jpg', description: 'Table + 4 fauteuilles + 2 bancs en树脂' },
-      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', image: 'transat.jpg', description: 'Transat en bois d acacia avec toile' },
-      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', image: 'parasol.jpg', description: 'Parasol déporté avec socle' },
-      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', image: 'barbecue.jpg', description: 'Barbecue à charbon 57cm' }
+      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', image: 'salon-jardin.jpg', description: 'Table + 4 fauteuilles + 2 bancs', subcategory: 'salon-exterieur' },
+      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', image: 'transat.jpg', description: 'Transat en bois d\'acacia avec toile', subcategory: 'transats' },
+      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', image: 'parasol.jpg', description: 'Parasol déporté avec socle', subcategory: 'parasols' },
+      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', image: 'barbecue.jpg', description: 'Barbecue à charbon 57cm', subcategory: 'barbecue' }
     ]
   },
   {
@@ -62,12 +91,19 @@ const categories = [
     name: 'Salle à manger',
     name_en: 'Dining Rooms',
     description: 'Tables, chaises et meubles de salle à manger',
+    icon: '🍽️',
     image: 'salle-manger.jpg',
+    subcategories: [
+      { id: 'tables', name: 'Tables', name_en: 'Tables' },
+      { id: 'chaises', name: 'Chaises', name_en: 'Chairs' },
+      { id: 'buffets', name: 'Buffets', name_en: 'Sideboards' },
+      { id: 'vitrines', name: 'Vitrines', name_en: 'Display Cabinets' }
+    ],
     products: [
-      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', image: 'table-extensible.jpg', description: 'Table 6-10 personnes extensible' },
-      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', image: 'chaise-cara.jpg', description: 'Chaise upholstrée avec pieds bois' },
-      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', image: 'buffet.jpg', description: 'Buffet 180cm en bois massif' },
-      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', image: 'vaisselier.jpg', description: 'Vaisselier 2 tiroirs + niches' }
+      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', image: 'table-extensible.jpg', description: 'Table 6-10 personnes extensible', subcategory: 'tables' },
+      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', image: 'chaise-cara.jpg', description: 'Chaise upholstrée avec pieds bois', subcategory: 'chaises' },
+      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', image: 'buffet.jpg', description: 'Buffet 180cm en bois massif', subcategory: 'buffets' },
+      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', image: 'vaisselier.jpg', description: 'Vaisselier 2 tiroirs + niches', subcategory: 'vitrines' }
     ]
   }
 ];
@@ -569,7 +605,7 @@ Investissement pour long terme.
 
 1. Quelle est la fréquence d'utilisation ?
 2. Ai-je des enfants ?
-3. Vais-je déménage ?
+3. Vais-je déménager ?
 4. QuelStyle je souhaite ?
 
 Les meilleures décisions viennent après réflexion.`,
@@ -598,13 +634,13 @@ Ivoire, champagne - luminosité et douceur.
 ## Matériaux stars
 
 ### Terre cuite
-Poteries, tuiles, objets de decoration.
+Poteries, tuiles, objets de décoration.
 
 ### Verre texturé
 Parois, cloches, abat-jour.
 
 ### Métal martelé
-Luminaires,tubulure, objets.
+Luminaires, tubulure, objets.
 
 ## Styles dominants
 
@@ -755,14 +791,27 @@ function createWindow() {
   });
 }
 
+// Affiliés E-Décor
+const affiliates = [
+  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
+  { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['ambiance-salon', 'jardin-tendances'] },
+  { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: ['luminaire-bureau', 'ergonomie-bureau'] },
+  { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: ['jardin-tendances', 'salon-exterieur'] },
+  { id: 'artisanat-benin', name: 'Artisanat Bénin', description: 'Produits artisanaux béninois', commission: '20%', logo: 'artisanat', website: '#', blogPosts: ['salle-manger-guide', 'choisir-canape'] }
+];
+
 // IPC handlers pour récupérer les données
 ipcMain.handle('get-categories', () => {
   return categories;
 });
 
-ipcMain.handle('get-products', (event, categoryId) => {
+ipcMain.handle('get-products', (event, categoryId, subcategoryId) => {
   const category = categories.find(c => c.id === categoryId);
-  return category ? category.products : [];
+  if (!category) return [];
+  if (subcategoryId) {
+    return category.products.filter(p => p.subcategory === subcategoryId);
+  }
+  return category.products;
 });
 
 ipcMain.handle('get-product', (event, categoryId, productId) => {
@@ -773,11 +822,16 @@ ipcMain.handle('get-product', (event, categoryId, productId) => {
   return null;
 });
 
-ipcMain.handle('get-blog-articles', (event, categoryId) => {
-  if (categoryId && blogArticles[categoryId]) {
-    return blogArticles[categoryId];
+ipcMain.handle('get-blog-articles', (event, categoryId, subcategoryId) => {
+  if (!categoryId) return globalBlogPosts;
+  
+  let posts = globalBlogPosts.filter(p => p.category === categoryId);
+  
+  if (subcategoryId && posts.length > 0) {
+    posts = posts.filter(p => p.subcategory === subcategoryId);
   }
-  return globalBlogPosts;
+  
+  return posts;
 });
 
 ipcMain.handle('get-global-blog', () => {
@@ -819,6 +873,31 @@ ipcMain.handle('search-products', (event, query) => {
   });
   
   return results;
+});
+
+// Nouveaux handlers pour sous-catégories et affiliés
+ipcMain.handle('get-category', (event, categoryId) => {
+  return categories.find(c => c.id === categoryId) || null;
+});
+
+ipcMain.handle('get-subcategories', (event, categoryId) => {
+  const category = categories.find(c => c.id === categoryId);
+  return category ? (category.subcategories || []) : [];
+});
+
+// Affiliés
+ipcMain.handle('get-affiliates', () => {
+  return affiliates;
+});
+
+ipcMain.handle('get-affiliate', (event, affiliateId) => {
+  return affiliates.find(a => a.id === affiliateId) || null;
+});
+
+ipcMain.handle('get-affiliate-blog-posts', (event, affiliateId) => {
+  const affiliate = affiliates.find(a => a.id === affiliateId);
+  if (!affiliate) return [];
+  return globalBlogPosts.filter(p => affiliate.blogPosts && affiliate.blogPosts.includes(p.id));
 });
 
 // Intégration AI - Ollama
