@@ -68,6 +68,34 @@ npm run build:linux # Compiler pour Linux
 npm run build:mac   # Compiler pour Mac
 ```
 
+## 📦 Build et Distribution
+
+Les builds compilés sont disponibles dans le dossier `dist/` :
+
+| Fichier | Description | Taille |
+|---------|-------------|--------|
+| `E-Décor-1.2.0.AppImage` | Application Linux portable | ~115 MB |
+| `e-decor_1.2.0_amd64.snap` | Paquet Snap Linux | ~96 MB |
+| `linux-unpacked/` | Version décompressée Linux | ~257 MB |
+
+### Exécuter le build Linux
+
+```bash
+# En tant qu'AppImage
+chmod +x dist/E-Décor-1.2.0.AppImage
+./dist/E-Décor-1.2.0.AppImage
+
+# Ou via le dossier décompressé
+./dist/linux-unpacked/e-decor
+```
+
+### Déploiement Web (Vercel)
+
+1. Aller sur https://vercel.com
+2. Importer le repo GitHub
+3. Configurer : **Root Directory** = `web-version`
+4. Deploy!
+
 ## 📝 license
 
 MIT - E-Décor Team 2024
