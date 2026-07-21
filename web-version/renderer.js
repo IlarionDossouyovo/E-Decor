@@ -2823,7 +2823,114 @@ async function loadAdminPage() {
         `).join('')}
       </div>
     </div>
+
+    <!-- Add Product Section -->
+    <div class="admin-add-product-section">
+      <h3>➕ ${t ? 'Ajouter un Nouveau Produit' : 'Add New Product'}</h3>
+      <form id="add-product-form" class="product-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>${t ? 'Catégorie' : 'Category'}</label>
+            <select id="product-category" required>
+              <option value="">${t ? 'Sélectionner...' : 'Select...'}</option>
+              ${categoriesData.map(cat => `<option value="${cat.id}">${currentLanguage === 'fr' ? cat.name : cat.name_en}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Sous-catégorie' : 'Subcategory'}</label>
+            <select id="product-subcategory" required>
+              <option value="">${t ? 'Sélectionner...' : 'Select...'}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>${t ? 'Nom du produit' : 'Product Name'}</label>
+            <input type="text" id="product-name" required placeholder="${t ? 'Ex: Canapé moderne' : 'Ex: Modern Sofa'}">
+          </div>
+          <div class="form-group">
+            <label>${t ? 'Prix (€)' : 'Price (€)'}</label>
+            <input type="number" id="product-price" required min="1" step="0.01" placeholder="Ex: 1299">
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label>${t ? 'Description' : 'Description'}</label>
+          <textarea id="product-description" rows="3" required placeholder="${t ? 'Décrivez le produit...' : 'Describe the product...'}"></textarea>
+        </div>
+        <button type="submit" class="admin-btn primary">${t ? 'Ajouter le produit' : 'Add Product'}</button>
+      </form>
+    </div>
   `;
+  
+  // Setup subcategory dropdown
+  document.getElementById('product-category')?.addEventListener('change', function() {
+    const categoryId = this.value;
+    const subcategorySelect = document.getElementById('product-subcategory');
+    if (!subcategorySelect) return;
+    
+    subcategorySelect.innerHTML = '<option value="">' + (currentLanguage === 'fr' ? 'Sélectionner...' : 'Select...') + '</option>';
+    
+    if (categoryId) {
+      const category = categoriesData.find(c => c.id === categoryId);
+      if (category && category.subcategories) {
+        category.subcategories.forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub.id;
+          option.textContent = currentLanguage === 'fr' ? sub.name : sub.name_en;
+          subcategorySelect.appendChild(option);
+        });
+      }
+    }
+  });
+  
+  // Setup form submission
+  document.getElementById('add-product-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const categoryId = document.getElementById('product-category').value;
+    const subcategoryId = document.getElementById('product-subcategory').value;
+    const name = document.getElementById('product-name').value;
+    const price = parseFloat(document.getElementById('product-price').value);
+    const description = document.getElementById('product-description').value;
+    
+    if (!categoryId || !subcategoryId || !name || !price || !description) {
+      showNotification(currentLanguage === 'fr' ? 'Veuillez remplir tous les champs!' : 'Please fill all fields!', 'error');
+      return;
+    }
+    
+    // Generate unique ID
+    const productId = categoryId + '-' + Date.now();
+    
+    // Add to categoriesData
+    const category = categoriesData.find(c => c.id === categoryId);
+    if (category) {
+      category.products.push({
+        id: productId,
+        name: name,
+        price: price,
+        currency: '€',
+        description: description,
+        subcategory: subcategoryId
+      });
+      
+      // Update the API data
+      builtInCategories.forEach(cat => {
+        if (cat.id === categoryId) {
+          cat.products.push({
+            id: productId,
+            name: name,
+            price: price,
+            currency: '€',
+            description: description,
+            subcategory: subcategoryId
+          });
+        }
+      });
+      
+      showNotification(currentLanguage === 'fr' ? 'Produit ajouté avec succès!' : 'Product added successfully!');
+      loadAdminPage(); // Refresh page
+    }
+  });
 }
 
 // View order details
