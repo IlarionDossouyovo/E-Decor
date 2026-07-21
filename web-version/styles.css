@@ -1524,6 +1524,122 @@ body {
   font-size: 1.1rem;
 }
 
+/* Enhanced Affiliate Page */
+.affiliate-why-join {
+  padding: 40px 0;
+}
+
+.affiliate-why-join h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.benefit-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: all 0.3s;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+}
+
+.benefit-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.benefit-card h3 {
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.affiliate-how-it-works {
+  padding: 40px 0;
+  background: var(--light-bg);
+  border-radius: 20px;
+  margin: 40px 0;
+}
+
+.affiliate-how-it-works h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.step-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 auto 15px;
+}
+
+.step-card h3 {
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.affiliate-join-cta {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  color: white;
+  padding: 50px;
+  text-align: center;
+  border-radius: 16px;
+}
+
+.affiliate-join-cta h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.affiliate-join-cta p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ==================== SUBCATEGORIES ==================== */
 .category-header {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
@@ -3206,6 +3322,35 @@ body {
 .resellers-hero p {
   font-size: 1.2rem;
   opacity: 0.9;
+}
+
+.reseller-info-section {
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.info-card h2 {
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.info-card li {
+  padding: 10px;
+  font-size: 1.1rem;
 }
 
 .reseller-tiers h2 {

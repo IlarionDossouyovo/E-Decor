@@ -1112,43 +1112,69 @@ async function loadBlogPage(container) {
 
 // Load Affiliates Page
 async function loadAffiliatesPage(container) {
+  const t = currentLanguage === 'fr';
   const affiliates = await api.getAffiliates();
   
   container.innerHTML = `
-    <div class="affiliates-hero">
-      <h1>${currentLanguage === 'fr' ? 'Nos Partenaires Affiliés' : 'Our Affiliated Partners'}</h1>
-      <p>${currentLanguage === 'fr' ? 'Découvrez nos partenaires de confiance pour la décoration et l\'ameublement' : 'Discover our trusted partners for decoration and furniture'}</p>
+    <div class="affiliates-hero" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+      <h1>🤝 ${t ? 'Programme Affiliation E-Décor' : 'E-Décor Affiliate Program'}</h1>
+      <p>${t ? 'Rejoignez notre équipe et gagnez des commissions en promotes nos produits de qualité' : 'Join our team and earn commissions by promoting our quality products'}</p>
     </div>
 
-    <div class="affiliates-grid">
-      ${affiliates.map(affiliate => `
-        <div class="affiliate-card">
-          <div class="affiliate-logo">${getAffiliateLogo(affiliate.logo)}</div>
-          <div class="affiliate-info">
-            <h3>${affiliate.name}</h3>
-            <p class="affiliate-desc">${affiliate.description}</p>
-            <div class="affiliate-stats">
-              <span class="commission-badge">💰 Commission: ${affiliate.commission}</span>
-            </div>
-            <div class="affiliate-posts">
-              <h4>${currentLanguage === 'fr' ? 'Articles liés' : 'Related Articles'}</h4>
-              ${affiliate.blogPosts.slice(0, 2).map(postId => {
-                const post = builtInBlogPosts.find(p => p.id === postId);
-                return post ? `<span class="post-tag" onclick="loadBlogPost('${post.id}')">📄 ${currentLanguage === 'fr' ? post.title : post.title_en}</span>` : '';
-              }).join('')}
-            </div>
-            <a href="${affiliate.website}" class="affiliate-btn" target="_blank">
-              ${currentLanguage === 'fr' ? 'Visiter le site' : 'Visit Website'} →
-            </a>
-          </div>
+    <!-- Why Join E-Décor -->
+    <div class="affiliate-why-join">
+      <h2>${t ? 'Pourquoi rejoindre E-Décor?' : 'Why join E-Décor?'}</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <span class="benefit-icon">💰</span>
+          <h3>${t ? 'Commissions attractives' : 'Attractive Commissions'}</h3>
+          <p>${t ? 'Gagnez jusqu\'à 20% sur chaque vente générée' : 'Earn up to 20% on every sale you generate'}</p>
         </div>
-      `).join('')}
+        <div class="benefit-card">
+          <span class="benefit-icon">🎁</span>
+          <h3>${t ? 'Formation gratuite' : 'Free Training'}</h3>
+          <p>${t ? 'Accédez à nos formations exclusives' : 'Access our exclusive training'}</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">📈</span>
+          <h3>${t ? 'Outils marketing' : 'Marketing Tools'}</h3>
+          <p>${t ? 'Bannières, liens et ressources promo' : 'Banners, links and promo resources'}</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">⏰</span>
+          <h3>${t ? 'Paiement rapide' : 'Fast Payment'}</h3>
+          <p>${t ? 'Recevez vos gains chaque mois' : 'Receive your earnings every month'}</p>
+        </div>
+      </div>
     </div>
 
-    <div class="affiliates-cta">
-      <h2>${currentLanguage === 'fr' ? 'Devenir partenaire' : 'Become a Partner'}</h2>
-      <p>${currentLanguage === 'fr' ? 'Rejoignez notre programme d\'affiliation et gagnez des commissions sur chaque vente' : 'Join our affiliate program and earn commissions on every sale'}</p>
-      <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    <!-- How It Works -->
+    <div class="affiliate-how-it-works">
+      <h2>${t ? 'Comment ça marche?' : 'How it works?'}</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <span class="step-number">1</span>
+          <h3>${t ? 'Inscrivez-vous' : 'Register'}</h3>
+          <p>${t ? 'Créez votre compte affiliate' : 'Create your affiliate account'}</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">2</span>
+          <h3>${t ? 'Promouvez' : 'Promote'}</h3>
+          <p>${t ? 'Partagez vos liens uniques' : 'Share your unique links'}</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">3</span>
+          <h3>${t ? 'Gagnez' : 'Earn'}</h3>
+          <p>${t ? 'Recevez vos commissions' : 'Receive your commissions'}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="affiliate-join-cta">
+      <h2>${t ? 'Prêt à commencer?' : 'Ready to start?'}</h2>
+      <p>${t ? 'Rejoignez l\'équipe E-Décor et commencez à gagner!' : 'Join the E-Décor team and start earning!'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${t ? 'Postuler maintenant' : 'Apply Now'}</button>
     </div>
   `;
 }
@@ -1645,8 +1671,21 @@ async function loadResellersPage(container) {
   container.innerHTML = `
     <div class="resellers-page">
       <div class="resellers-hero">
-        <h1>🏪 ${t ? 'Portail Revendeurs' : 'Reseller Portal'}</h1>
-        <p>${t ? 'Devenez revendeur officiel E-Décor et bénéficier de prix préférentiels' : 'Become an official E-Décor reseller and benefit from preferential prices'}</p>
+        <h1>🏪 ${t ? 'Portail Revendeurs E-Décor' : 'E-Décor Reseller Portal'}</h1>
+        <p>${t ? 'Devenez revendeur officiel E-Décor by Electron et bénéficiez de prix préférentiels sur nos produits de qualité' : 'Become an official E-Décor by Electron reseller and benefit from preferential prices on our quality products'}</p>
+      </div>
+
+      <div class="reseller-info-section">
+        <div class="info-card">
+          <h2>${t ? 'Pourquoi choisir E-Décor?' : 'Why choose E-Décor?'}</h2>
+          <ul>
+            <li>🏠 ${t ? 'Produits exclusifs de qualité' : 'Exclusive quality products'}</li>
+            <li>💰 ${t ? 'Remises avantageuses' : 'Advantageous discounts'}</li>
+            <li>🚚 ${t ? 'Livraison rapide' : 'Fast delivery'}</li>
+            <li>📞 ${t ? 'Support dédié' : 'Dedicated support'}</li>
+            <li>📦 ${t ? 'Stock garanti' : 'Guaranteed stock'}</li>
+          </ul>
+        </div>
       </div>
 
       <div class="reseller-tiers">
@@ -1663,7 +1702,7 @@ async function loadResellersPage(container) {
                 <li>✓ ${t ? 'Catalogue exclusif' : 'Exclusive catalog'}</li>
                 <li>✓ ${t ? 'Livraison gratuite' : 'Free shipping'}</li>
               </ul>
-              <button class="tier-btn">${t ? 'Devenir revendeur' : 'Become a Reseller'}</button>
+              <button class="tier-btn" onclick="loadPage('contact')">${t ? 'Postuler maintenant' : 'Apply Now'}</button>
             </div>
           `).join('')}
         </div>
@@ -1699,7 +1738,7 @@ async function loadResellersPage(container) {
 
       <div class="reseller-cta">
         <h2>${t ? 'Intéressé?' : 'Interested?'}</h2>
-        <p>${t ? 'Contactez-nous pour devenir revendeur officiel' : 'Contact us to become an official reseller'}</p>
+        <p>${t ? 'Contactez-nous pour devenir revendeur officiel E-Décor' : 'Contact us to become an official E-Décor reseller'}</p>
         <button class="cta-button" onclick="loadPage('contact')">${t ? 'Contactez-nous' : 'Contact Us'}</button>
       </div>
     </div>
