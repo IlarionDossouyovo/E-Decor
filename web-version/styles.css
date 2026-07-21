@@ -249,6 +249,9 @@ body {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  position: relative !important;
+  z-index: 100 !important;
+  pointer-events: auto !important;
 }
 
 /* Hero Section */
@@ -3420,6 +3423,9 @@ body {
   text-align: center;
   box-shadow: var(--shadow);
   transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .tier-card:hover {
