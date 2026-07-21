@@ -1525,6 +1525,54 @@ body {
 }
 
 /* Enhanced Affiliate Page */
+.affiliate-about-edecor {
+  background: var(--white);
+  padding: 40px;
+  border-radius: 20px;
+  margin: 30px 0;
+  box-shadow: var(--shadow);
+}
+
+.about-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.about-content > p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.partnership-benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: var(--light-bg);
+  border-radius: 10px;
+}
+
+.benefit-item .benefit-icon {
+  background: var(--primary-color);
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
 .affiliate-why-join {
   padding: 40px 0;
 }

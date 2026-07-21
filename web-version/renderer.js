@@ -1113,17 +1113,45 @@ async function loadBlogPage(container) {
 // Load Affiliates Page
 async function loadAffiliatesPage(container) {
   const t = currentLanguage === 'fr';
-  const affiliates = await api.getAffiliates();
   
   container.innerHTML = `
     <div class="affiliates-hero" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-      <h1>🤝 ${t ? 'Programme Affiliation E-Décor' : 'E-Décor Affiliate Program'}</h1>
-      <p>${t ? 'Rejoignez notre équipe et gagnez des commissions en promotes nos produits de qualité' : 'Join our team and earn commissions by promoting our quality products'}</p>
+      <h1>🤝 ${t ? 'Équipe E-Décor - Partenaires Affiliés' : 'E-Décor Team - Affiliated Partners'}</h1>
+      <p>${t ? 'Découvrez nos partenaires officiels qui rejoignent l\'équipe E-Décor pour vous offrir les meilleurs produits de décoration et ameublement' : 'Discover our official partners who join the E-Décor team to offer you the best decoration and furniture products'}</p>
     </div>
 
-    <!-- Why Join E-Décor -->
+    <!-- E-Décor Presentation -->
+    <div class="affiliate-about-edecor">
+      <div class="about-content">
+        <h2>🏠 ${t ? 'E-Décor by Electron' : 'E-Décor by Electron'}</h2>
+        <p>${t ? 
+          'E-Décor est votre partenaire de confiance pour la décoration et l\'ameublement intérieur. Nous proposons des produits de qualité, des designs modernes et un service exceptionnel. Nos partenaires affiliés travaillent avec nous pour vous faire découvrir notre catalogue exclusif.' : 
+          'E-Décor is your trusted partner for interior decoration and furnishing. We offer quality products, modern designs and exceptional service. Our affiliated partners work with us to introduce you to our exclusive catalog.'}</p>
+        
+        <div class="partnership-benefits">
+          <div class="benefit-item">
+            <span class="benefit-icon">✓</span>
+            <span>${t ? 'Produits exclusifs' : 'Exclusive products'}</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">✓</span>
+            <span>${t ? 'Garantie qualité' : 'Quality guarantee'}</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">✓</span>
+            <span>${t ? 'Livraison rapide' : 'Fast delivery'}</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">✓</span>
+            <span>${t ? 'Service client dédié' : 'Dedicated customer service'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why Become an Affiliate -->
     <div class="affiliate-why-join">
-      <h2>${t ? 'Pourquoi rejoindre E-Décor?' : 'Why join E-Décor?'}</h2>
+      <h2>${t ? 'Pourquoi rejoindre l\'équipe E-Décor?' : 'Why join the E-Décor team?'}</h2>
       <div class="benefits-grid">
         <div class="benefit-card">
           <span class="benefit-icon">💰</span>
@@ -1150,30 +1178,30 @@ async function loadAffiliatesPage(container) {
 
     <!-- How It Works -->
     <div class="affiliate-how-it-works">
-      <h2>${t ? 'Comment ça marche?' : 'How it works?'}</h2>
+      <h2>${t ? 'Comment intégrer l\'équipe E-Décor?' : 'How to join the E-Décor team?'}</h2>
       <div class="steps-grid">
         <div class="step-card">
           <span class="step-number">1</span>
-          <h3>${t ? 'Inscrivez-vous' : 'Register'}</h3>
-          <p>${t ? 'Créez votre compte affiliate' : 'Create your affiliate account'}</p>
+          <h3>${t ? 'Postulez' : 'Apply'}</h3>
+          <p>${t ? 'Remplissez le formulaire de contact' : 'Fill out the contact form'}</p>
         </div>
         <div class="step-card">
           <span class="step-number">2</span>
-          <h3>${t ? 'Promouvez' : 'Promote'}</h3>
-          <p>${t ? 'Partagez vos liens uniques' : 'Share your unique links'}</p>
+          <h3>${t ? 'Validez' : 'Validate'}</h3>
+          <p>${t ? 'Rejoignez notre équipe' : 'Join our team'}</p>
         </div>
         <div class="step-card">
           <span class="step-number">3</span>
           <h3>${t ? 'Gagnez' : 'Earn'}</h3>
-          <p>${t ? 'Recevez vos commissions' : 'Receive your commissions'}</p>
+          <p>${t ? 'Commencez à promouvoir E-Décor' : 'Start promoting E-Décor'}</p>
         </div>
       </div>
     </div>
 
     <!-- CTA -->
     <div class="affiliate-join-cta">
-      <h2>${t ? 'Prêt à commencer?' : 'Ready to start?'}</h2>
-      <p>${t ? 'Rejoignez l\'équipe E-Décor et commencez à gagner!' : 'Join the E-Décor team and start earning!'}</p>
+      <h2>${t ? 'Rejoignez l\'équipe E-Décor!' : 'Join the E-Décor team!'}</h2>
+      <p>${t ? 'Devenez partenaire officiel E-Décor et starts à gagner des commissions en promotes nos produits de qualité' : 'Become an official E-Décor partner and start earning commissions by promoting our quality products'}</p>
       <button class="cta-button" onclick="loadPage('contact')">${t ? 'Postuler maintenant' : 'Apply Now'}</button>
     </div>
   `;
