@@ -3460,7 +3460,7 @@ body {
   padding: 8px 0;
 }
 
-.tier-btn, .reseller-cta .cta-button, .add-cart-btn {
+.tier-btn, a.tier-btn, .reseller-cta .cta-button, a.cta-button, .add-cart-btn {
   background: var(--primary-color) !important;
   color: white !important;
   border: none !important;
@@ -3472,6 +3472,7 @@ body {
   z-index: 100 !important;
   pointer-events: auto !important;
   display: inline-block !important;
+  text-decoration: none !important;
 }
 
 .tier-bronze { border-top: 4px solid #cd7f32; }

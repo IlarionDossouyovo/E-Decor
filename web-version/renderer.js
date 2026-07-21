@@ -1730,7 +1730,7 @@ async function loadResellersPage(container) {
                 <li>✓ ${t ? 'Catalogue exclusif' : 'Exclusive catalog'}</li>
                 <li>✓ ${t ? 'Livraison gratuite' : 'Free shipping'}</li>
               </ul>
-              <button class="tier-btn" onclick="console.log('Reseller button clicked'); loadPage('contact')">${t ? 'Postuler maintenant' : 'Apply Now'}</button>
+              <a href="#" class="tier-btn" onclick="event.preventDefault(); loadPage('contact'); return false;">${t ? 'Postuler maintenant' : 'Apply Now'}</a>
             </div>
           `).join('')}
         </div>
@@ -1767,7 +1767,7 @@ async function loadResellersPage(container) {
       <div class="reseller-cta">
         <h2>${t ? 'Intéressé?' : 'Interested?'}</h2>
         <p>${t ? 'Contactez-nous pour devenir revendeur officiel E-Décor' : 'Contact us to become an official E-Décor reseller'}</p>
-        <button class="cta-button" onclick="console.log('CTA button clicked'); loadPage('contact')">${t ? 'Contactez-nous' : 'Contact Us'}</button>
+        <a href="#" class="cta-button" onclick="event.preventDefault(); loadPage('contact'); return false;">${t ? 'Contactez-nous' : 'Contact Us'}</a>
       </div>
     </div>
   `;
