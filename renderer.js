@@ -2336,49 +2336,88 @@ function processPayment(event) {
   event.preventDefault();
   
   const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
-  const name = document.getElementById('delivery-name')?.value;
-  const email = document.getElementById('delivery-email')?.value;
-  const phone = document.getElementById('delivery-phone')?.value;
-  const address = document.getElementById('delivery-address')?.value;
-  const city = document.getElementById('delivery-city')?.value;
+  const name = document.getElementById('delivery-name')?.value?.trim();
+  const email = document.getElementById('delivery-email')?.value?.trim();
+  const phone = document.getElementById('delivery-phone')?.value?.trim();
+  const address = document.getElementById('delivery-address')?.value?.trim();
+  const city = document.getElementById('delivery-city')?.value?.trim();
   const country = document.getElementById('checkout-country')?.value || 'BJ';
   
   // Validation
-  if (!name || !email || !phone || !address || !city) {
-    showNotification(currentLanguage === 'fr' ? 'Veuillez remplir tous les champs obligatoires!' : 'Please fill all required fields!');
+  if (!name || name.length < 2) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer votre nom complet!' : 'Please enter your full name!');
+    document.getElementById('delivery-name')?.focus();
     return;
+  }
+  
+  if (!email || !email.includes('@')) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer un email valide!' : 'Please enter a valid email!');
+    document.getElementById('delivery-email')?.focus();
+    return;
+  }
+  
+  if (!phone || phone.length < 8) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer un numéro de téléphone valide!' : 'Please enter a valid phone number!');
+    document.getElementById('delivery-phone')?.focus();
+    return;
+  }
+  
+  if (!address || address.length < 5) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer une adresse de livraison!' : 'Please enter a delivery address!');
+    document.getElementById('delivery-address')?.focus();
+    return;
+  }
+  
+  if (!city || city.length < 2) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer votre ville!' : 'Please enter your city!');
+    document.getElementById('delivery-city')?.focus();
+    return;
+  }
+  
+  // Show loading
+  const confirmBtn = document.querySelector('.confirm-order-btn');
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '⏳ ' + (currentLanguage === 'fr' ? 'Traitement en cours...' : 'Processing...');
   }
   
   // Generate order ID
   const orderId = 'ED-' + Date.now();
   
-  // In production, integrate with real payment processor:
-  // - Stripe (cards, PayPal, Apple Pay, Google Pay)
-  // - MTN/Moov API (mobile money Benin)
-  // - Flutterwave/Paystack (Nigeria)
-  // - Wave (Senegal)
-  // - Klarna/Giropay (Germany)
-  // - Bank transfer (SEPA/SWIFT)
-  
-  // Create order
-  const order = {
-    id: orderId,
-    date: new Date().toISOString(),
-    items: [...cart.items],
-    total: cart.total,
-    currency: cart.currency,
-    status: 'pending',
-    paymentMethod: paymentMethod,
-    delivery: { name, email, phone, address, city, country },
-    notes: document.getElementById('delivery-instructions')?.value || ''
-  };
-  
-  // Save order
-  orders.unshift(order);
-  saveOrdersToStorage();
-  
-  // Show confirmation
-  showPaymentConfirmation(orderId, paymentMethod, { name, email, phone, address, city, country });
+  // Simulate processing delay
+  setTimeout(() => {
+    // Create order
+    const order = {
+      id: orderId,
+      date: new Date().toISOString(),
+      items: [...cart.items],
+      total: cart.total,
+      currency: cart.currency,
+      status: 'confirmed',
+      paymentMethod: paymentMethod,
+      delivery: { name, email, phone, address, city, country },
+      notes: document.getElementById('delivery-instructions')?.value || ''
+    };
+    
+    // Save order
+    orders.unshift(order);
+    saveOrdersToStorage();
+    
+    // Clear cart after successful order
+    cart.items = [];
+    cart.total = 0;
+    saveCartToStorage();
+    updateCartBadge();
+    
+    // Show confirmation
+    showPaymentConfirmation(orderId, paymentMethod, { name, email, phone, address, city, country });
+    
+    // Reset button
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '✅ ' + (currentLanguage === 'fr' ? 'Confirmer la commande' : 'Confirm Order');
+    }
+  }, 1500);
 }
 
 // Orders state

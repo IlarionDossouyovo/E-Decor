@@ -651,6 +651,49 @@ body {
   transform: translateY(0);
 }
 
+/* Payment method selection - improved */
+.payment-option {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-option input[type="radio"] {
+  display: none;
+}
+
+.payment-option .payment-card {
+  padding: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.payment-option input[type="radio"]:checked + .payment-card {
+  border-color: var(--primary-color);
+  background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(26, 115, 232, 0.05));
+  box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
+}
+
+.payment-option:hover .payment-card {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+/* Checkout form improvements */
+.checkout-section .form-group input:focus,
+.checkout-section .form-group textarea:focus,
+.checkout-section .form-group select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+/* Country selector improvement */
+.country-selector select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
 /* Footer */
 .main-footer {
   background: var(--dark-bg);
