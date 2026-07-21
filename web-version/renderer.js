@@ -135,7 +135,7 @@ const builtInBlogPosts = [
 
 // Affiliés E-Décor
 const builtInAffiliates = [
-  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
+  { id: 'edecor-main', name: 'E-Décor by Electron', description: 'Entreprise principale - Meubles et decoration d\'intérieur de qualité', commission: '15%', logo: 'orca', website: '#', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
   { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['ambiance-salon', 'jardin-tendances'] },
   { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: ['luminaire-bureau', 'ergonomie-bureau'] },
   { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: ['jardin-tendances', 'salon-exterieur'] },
@@ -1776,7 +1776,7 @@ async function loadResellersPage(container) {
 // Helper function to get affiliate logo
 function getAffiliateLogo(type) {
   const logos = {
-    'orca': '<span class="logo-orca">🏠<br><small>ORCA</small></span>',
+    'orca': '<span class="logo-orca">🏠<br><small>E-Décor</small></span>',
     'maison': '<span class="logo-maison">🛋️<br><small>Maison</small></span>',
     'tech': '<span class="logo-tech">💡<br><small>TechHome</small></span>',
     'green': '<span class="logo-green">🌿<br><small>Green</small></span>',
