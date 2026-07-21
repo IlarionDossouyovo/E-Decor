@@ -1,6 +1,15 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  console.error('[ERROR] Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[ERROR] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 let mainWindow;
 
 // Données des catégories de produits AVEC SOUS-CATÉGORIES
@@ -719,6 +728,8 @@ Choisir durable, c'est penser à demain.`,
 ];
 
 function createWindow() {
+  console.log('[E-Décor] Création de la fenêtre...');
+  
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -730,10 +741,17 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, 'assets', 'icon.png'),
-    title: 'E-Décor - Meubles & Décoration'
+    title: 'E-Décor - Meubles & Décoration',
+    show: false
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    console.log('[E-Décor] Fenêtre affichée');
   });
 
   mainWindow.loadFile('index.html');
+  console.log('[E-Décor] Chargement de index.html...');
 
   // Créer le menu
   const menuTemplate = [
