@@ -2910,6 +2910,276 @@ body {
   font-weight: bold;
 }
 
+/* Enhanced Course Page */
+.course-badges {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.course-badge-new {
+  background: #ff9800;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.course-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.course-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.course-price-large {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.course-price-large .price {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.enroll-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.enroll-btn:hover {
+  background: #388e3c;
+  transform: scale(1.05);
+}
+
+.course-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: white;
+  color: #667eea;
+}
+
+.course-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+}
+
+.course-main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.course-section {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.course-section h2 {
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.learn-item {
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+}
+
+.requirements-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  padding-left: 25px;
+  position: relative;
+}
+
+.requirements-list li::before {
+  content: "📋";
+  position: absolute;
+  left: 0;
+}
+
+.syllabus-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.syllabus-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lesson-lock {
+  font-size: 0.9rem;
+}
+
+.certificate-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.certificate-features {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.certificate-features span {
+  background: var(--white);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.related-courses {
+  display: grid;
+  gap: 15px;
+}
+
+.related-course-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.related-course-card:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.related-course-info h4 {
+  margin-bottom: 10px;
+}
+
+.related-course-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.course-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-card {
+  background: var(--white);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.sidebar-card h3 {
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.includes-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.includes-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.enroll-btn-full {
+  width: 100%;
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.enroll-btn-full:hover {
+  background: #388e3c;
+}
+
+@media (max-width: 768px) {
+  .course-meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .course-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .learn-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .syllabus-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .syllabus-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 /* ============= RESELLERS PORTAL ============= */
 .resellers-page {
   max-width: 1400px;

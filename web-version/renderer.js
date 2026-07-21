@@ -1386,16 +1386,49 @@ async function loadCoursePage(container, courseId) {
     return;
   }
   
+  const lessonTitles = t ? [
+    'Introduction à la décoration',
+    'Les styles de décoration',
+    'Couleurs et psychologie',
+    'Disposition des meubles',
+    'Éclairage et ambiance',
+    'Accessoires et détails',
+    'Espace et proportion',
+    'Textures et matériaux',
+    'Créer une ambiance',
+    'Erreurs à éviter',
+    'Projet pratique',
+    'Certification'
+  ] : [
+    'Introduction to decoration',
+    'Decoration styles',
+    'Colors and psychology',
+    'Furniture arrangement',
+    'Lighting and atmosphere',
+    'Accessories and details',
+    'Space and proportion',
+    'Textures and materials',
+    'Creating ambiance',
+    'Mistakes to avoid',
+    'Practical project',
+    'Certification'
+  ];
+  
   container.innerHTML = `
     <div class="course-page">
       <button class="back-btn" onclick="loadPage('academy')">← ${t ? 'Retour aux formations' : 'Back to Courses'}</button>
       
+      <!-- Course Header -->
       <div class="course-header">
         <div class="course-header-content">
-          <span class="course-level-badge level-${course.level}">${course.level}</span>
+          <div class="course-badges">
+            <span class="course-level-badge level-${course.level}">${course.level}</span>
+            <span class="course-badge-new">${t ? 'Nouveau' : 'New'}</span>
+          </div>
           <h1>${t ? course.title : course.title_en}</h1>
           <p class="course-description">${t ? course.description : course.description_en}</p>
           
+          <!-- Course Stats -->
           <div class="course-meta-grid">
             <div class="meta-item">
               <span class="meta-icon">⏱️</span>
@@ -1410,15 +1443,21 @@ async function loadCoursePage(container, courseId) {
             <div class="meta-item">
               <span class="meta-icon">👥</span>
               <span class="meta-label">${t ? 'Étudiants' : 'Students'}</span>
-              <span class="meta-value">${course.students}</span>
+              <span class="meta-value">${course.students.toLocaleString()}</span>
             </div>
             <div class="meta-item">
               <span class="meta-icon">⭐</span>
               <span class="meta-label">${t ? 'Note' : 'Rating'}</span>
-              <span class="meta-value">${course.rating}</span>
+              <span class="meta-value">${course.rating}/5</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">📜</span>
+              <span class="meta-label">${t ? 'Certificat' : 'Certificate'}</span>
+              <span class="meta-value">${t ? 'Oui' : 'Yes'}</span>
             </div>
           </div>
           
+          <!-- Instructor -->
           <div class="course-instructor-card">
             <div class="instructor-avatar">👤</div>
             <div class="instructor-info">
@@ -1427,39 +1466,153 @@ async function loadCoursePage(container, courseId) {
             </div>
           </div>
           
-          <div class="course-price-large">
-            <span class="price">${course.price}${course.currency}</span>
-            <button class="enroll-btn">${t ? 'S\'inscrire maintenant' : 'Enroll Now'}</button>
+          <!-- Action Buttons -->
+          <div class="course-actions">
+            <div class="course-price-large">
+              <span class="price">${course.price}${course.currency}</span>
+              <button class="enroll-btn" onclick="enrollCourse('${course.id}')">${t ? 'S\'inscrire maintenant' : 'Enroll Now'}</button>
+            </div>
+            <div class="course-buttons">
+              <button class="btn-secondary" onclick="previewCourse('${course.id}')">👁️ ${t ? 'Aperçu gratuit' : 'Free Preview'}</button>
+              <button class="btn-secondary" onclick="addToWishlist('${course.id}')">❤️ ${t ? 'Favoris' : 'Wishlist'}</button>
+              <button class="btn-secondary" onclick="shareCourse('${course.id}')">📤 ${t ? 'Partager' : 'Share'}</button>
+            </div>
           </div>
         </div>
       </div>
       
+      <!-- Course Content -->
       <div class="course-content">
-        <div class="course-syllabus">
-          <h2>📋 ${t ? 'Programme de la formation' : 'Course Syllabus'}</h2>
-          <div class="syllabus-list">
-            ${[1,2,3,4,5,6,7].map(i => `
-              <div class="syllabus-item">
-                <span class="lesson-number">${i}</span>
-                <span class="lesson-title">${t ? 'Leçon ' + i : 'Lesson ' + i}</span>
-                <span class="lesson-duration">${15 + Math.floor(Math.random() * 30)} min</span>
+        <div class="course-main">
+          <!-- What you'll learn -->
+          <div class="course-section">
+            <h2>🎯 ${t ? 'Ce que vous allez apprendre' : 'What you will learn'}</h2>
+            <div class="learn-grid">
+              <div class="learn-item">✓ ${t ? 'Comprendre les fondamentaux de la décoration' : 'Understand decoration fundamentals'}</div>
+              <div class="learn-item">✓ ${t ? 'Choisir les bonnes couleurs' : 'Choose the right colors'}</div>
+              <div class="learn-item">✓ ${t ? 'Optimiser l\'espace disponible' : 'Optimize available space'}</div>
+              <div class="learn-item">✓ ${t ? 'Créer une ambiance cohérente' : 'Create a consistent atmosphere'}</div>
+              <div class="learn-item">✓ ${t ? 'Éviter les erreurs courantes' : 'Avoid common mistakes'}</div>
+              <div class="learn-item">✓ ${t ? 'Obtenir un certificat de formation' : 'Get a training certificate'}</div>
+            </div>
+          </div>
+          
+          <!-- Course Requirements -->
+          <div class="course-section">
+            <h2>📋 ${t ? 'Prérequis' : 'Requirements'}</h2>
+            <ul class="requirements-list">
+              <li>${t ? 'Aucun prérequis - Accessible à tous' : 'No prerequisites - Accessible to everyone'}</li>
+              <li>${t ? 'Ordinateur ou tablette avec accès internet' : 'Computer or tablet with internet access'}</li>
+              <li>${t ? 'Motivation à apprendre' : 'Motivation to learn'}</li>
+            </ul>
+          </div>
+          
+          <!-- Syllabus -->
+          <div class="course-section">
+            <h2>📚 ${t ? 'Programme complet de la formation' : 'Complete Course Syllabus'}</h2>
+            <div class="syllabus-list">
+              ${lessonTitles.map((title, i) => `
+                <div class="syllabus-item">
+                  <div class="syllabus-left">
+                    <span class="lesson-number">${i + 1}</span>
+                    <span class="lesson-title">${title}</span>
+                  </div>
+                  <div class="syllabus-right">
+                    <span class="lesson-lock">🔒</span>
+                    <span class="lesson-duration">${15 + Math.floor(Math.random() * 30)} min</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Certificate Info -->
+          <div class="course-section">
+            <h2>🏆 ${t ? 'Certification' : 'Certification'}</h2>
+            <div class="certificate-info">
+              <p>${t ? 'À la fin de cette formation, vous recevrez un certificat de completion reconnu.' : 'At the end of this training, you will receive a recognized completion certificate.'}</p>
+              <div class="certificate-features">
+                <span>📜 ${t ? 'Certificat PDF' : 'PDF Certificate'}</span>
+                <span>✅ ${t ? 'Vérifiable en ligne' : 'Online verifiable'}</span>
+                <span>🌐 ${t ? 'International' : 'International'}</span>
               </div>
-            `).join('')}
+            </div>
+          </div>
+          
+          <!-- Related Courses -->
+          <div class="course-section">
+            <h2>📖 ${t ? 'Formations similaires' : 'Related Courses'}</h2>
+            <div class="related-courses">
+              ${academyCourses.filter(c => c.id !== course.id).slice(0, 3).map(c => `
+                <div class="related-course-card" onclick="loadPage('course', {id: '${c.id}'})">
+                  <div class="related-course-info">
+                    <h4>${t ? c.title : c.title_en}</h4>
+                    <div class="related-course-meta">
+                      <span>⏱️ ${c.duration}</span>
+                      <span>⭐ ${c.rating}</span>
+                      <span>${c.price}${c.currency}</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
         
-        <div class="course-objectives">
-          <h2>🎯 ${t ? 'Objectifs' : 'Objectives'}</h2>
-          <ul class="objectives-list">
-            <li>${t ? 'Comprendre les fondamentaux' : 'Understand the fundamentals'}</li>
-            <li>${t ? 'Appliquer les techniques professionnelles' : 'Apply professional techniques'}</li>
-            <li>${t ? 'Créer des projets concrets' : 'Create concrete projects'}</li>
-            <li>${t ? 'Obtenir une certification' : 'Get certified'}</li>
-          </ul>
+        <!-- Sidebar -->
+        <div class="course-sidebar">
+          <div class="sidebar-card">
+            <h3>${t ? 'Cette formation inclut' : 'This course includes'}</h3>
+            <ul class="includes-list">
+              <li>📹 ${t ? 'Vidéo HD' : 'HD Video'}</li>
+              <li>📄 ${t ? 'Ressources PDF' : 'PDF Resources'}</li>
+              <li>🎓 ${t ? 'Certificat' : 'Certificate'}</li>
+              <li>♾️ ${t ? 'Accès à vie' : 'Lifetime access'}</li>
+              <li>📱 ${t ? 'Compatible mobile' : 'Mobile compatible'}</li>
+              <li>💬 ${t ? 'Support instructor' : 'Instructor support'}</li>
+            </ul>
+            <button class="enroll-btn-full" onclick="enrollCourse('${course.id}')">${t ? 'S\'inscrire maintenant' : 'Enroll Now'} - ${course.price}${course.currency}</button>
+          </div>
+          
+          <div class="sidebar-card">
+            <h3>${t ? 'Garantie' : 'Guarantee'}</h3>
+            <p>${t ? '30 jours satisfait ou remboursé' : '30-day money-back guarantee'}</p>
+          </div>
         </div>
       </div>
     </div>
   `;
+}
+
+// Course helper functions
+function enrollCourse(courseId) {
+  const course = academyCourses.find(c => c.id === courseId);
+  if (course) {
+    alert(currentLanguage === 'fr' ? 
+      `Inscription à: ${course.title}\nPrix: ${course.price}${course.currency}\n\nMerci de nous contacter pour finaliser l'inscription!` : 
+      `Enrollment in: ${course.title}\nPrice: ${course.price}${course.currency}\n\nContact us to complete enrollment!`);
+  }
+}
+
+function previewCourse(courseId) {
+  alert(currentLanguage === 'fr' ? 'Fonctionnalité d\'aperçu gratuit bientôt disponible!' : 'Free preview feature coming soon!');
+}
+
+function addToWishlist(courseId) {
+  alert(currentLanguage === 'fr' ? 'Ajouté aux favoris!' : 'Added to wishlist!');
+}
+
+function shareCourse(courseId) {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: 'E-Décor Academy',
+      text: currentLanguage === 'fr' ? 'Découvrez cette formation!' : 'Check out this course!',
+      url: url
+    });
+  } else {
+    alert(currentLanguage === 'fr' ? 'Lien copié!' : 'Link copied!');
+  }
 }
 
 // ============= RESELLERS PORTAL =============
