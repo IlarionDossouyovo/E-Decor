@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "electron": "^41.7.2",
-    "electron-builder": "^24.9.1",
-    "vercel": "^51.3.0"
+    "electron-builder": "^26.15.3",
+    "vercel": "^56.4.1"
   }
 }
