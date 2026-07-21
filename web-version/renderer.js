@@ -572,6 +572,10 @@ async function loadHomePage(container) {
     console.log('[E-Décor] Re-fetched container:', container);
   }
   
+  // Force container visibility
+  container.style.display = 'block';
+  container.style.minHeight = '500px';
+  
   container.innerHTML = `
     <!-- Hero Section -->
     <section class="hero-section">
@@ -710,6 +714,7 @@ async function loadHomePage(container) {
       </div>
     </section>
   `;
+  console.log('[E-Décor] Home page HTML injected, content length:', container.innerHTML.length);
 }
 
 // Get featured products
