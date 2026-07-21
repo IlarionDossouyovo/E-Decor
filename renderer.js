@@ -328,28 +328,6 @@ async function init() {
   categoriesData = builtInCategories;
   console.log('[E-Décor] Catégories intégrées:', categoriesData.length);
   
-  // Verify main-content exists
-  var mainContent = document.getElementById('main-content');
-  console.log('[E-Décor] main-content:', mainContent);
-  
-  if (mainContent) {
-    // Directly inject categories
-    var catHtml = '<section class="categories-section"><h2 class="page-title">Nos Catégories</h2><div class="categories-grid">';
-    categoriesData.forEach(function(cat) {
-      catHtml += '<div class="category-card" onclick="loadCategory(\'' + cat.id + '\')">' +
-        '<div class="category-image">' + (categoryIcons[cat.id] || '🪑') + '</div>' +
-        '<div class="category-info"><h3>' + cat.name + '</h3>' +
-        '<p>' + cat.description + '</p>' +
-        '<p class="product-count">' + cat.products.length + ' produits</p></div></div>';
-    });
-    catHtml += '</div></section>';
-    
-    mainContent.innerHTML = catHtml;
-    console.log('[E-Décor] Catégories injectées!');
-  } else {
-    console.error('[E-Décor] ERREUR: main-content est null!');
-  }
-  
   populateCategoriesMenu();
   setupEventListeners();
   setupIPCListeners();
@@ -357,6 +335,10 @@ async function init() {
   initFavorites();
   loadOrdersFromStorage();
   initAIChat(); // Initialize AI Chat Assistant
+  
+  // Load home page
+  await loadPage('home');
+  console.log('[E-Décor] Application initialisée!');
 }
 
 function t(key) {
@@ -494,7 +476,7 @@ function displaySearchResults(query, results) {
 }
 
 // Load a page
-async function loadPage(page) {
+async function loadPage(page, params = {}) {
   currentPage = page;
   updateActiveNavLink(page);
 
@@ -520,10 +502,10 @@ async function loadPage(page) {
       await loadResellersPage(mainContent);
       break;
     case 'course':
-      await loadCoursePage(mainContent, params.id);
+      await loadCoursePage(mainContent, params.id || 'c1');
       break;
     case 'blog-post':
-      await loadBlogPostPage(mainContent, params.id);
+      await loadBlogPost(mainContent, params.id || 'b1');
       break;
     case 'about':
       await loadAboutPage(mainContent);
@@ -550,7 +532,7 @@ async function loadPage(page) {
       await loadCartPage(mainContent);
       break;
     default:
-      mainContent.innerHTML = '<p>Page not found</p>';
+      await loadHomePage(mainContent);
   }
 }
 
