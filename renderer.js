@@ -513,6 +513,18 @@ async function loadPage(page) {
     case 'affiliates':
       await loadAffiliatesPage(mainContent);
       break;
+    case 'academy':
+      await loadAcademyPage(mainContent);
+      break;
+    case 'resellers':
+      await loadResellersPage(mainContent);
+      break;
+    case 'course':
+      await loadCoursePage(mainContent, params.id);
+      break;
+    case 'blog-post':
+      await loadBlogPostPage(mainContent, params.id);
+      break;
     case 'about':
       await loadAboutPage(mainContent);
       break;
@@ -1128,6 +1140,399 @@ async function loadAffiliatesPage(container) {
       <h2>${currentLanguage === 'fr' ? 'Devenir partenaire' : 'Become a Partner'}</h2>
       <p>${currentLanguage === 'fr' ? 'Rejoignez notre programme d\'affiliation et gagnez des commissions sur chaque vente' : 'Join our affiliate program and earn commissions on every sale'}</p>
       <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    </div>
+  `;
+}
+
+// ============= E-DÉCOR ACADEMY =============
+
+// Course categories data
+const academyCategories = [
+  { id: 'decoration-interieur', name: 'Décoration intérieure', name_en: 'Interior Decoration', icon: '🏠', count: 45 },
+  { id: 'decoration-exterieur', name: 'Décoration extérieure', name_en: 'Exterior Decoration', icon: '🌳', count: 23 },
+  { id: 'architecture', name: 'Architecture d\'intérieur', name_en: 'Interior Architecture', icon: '🏗️', count: 18 },
+  { id: 'home-staging', name: 'Home Staging', name_en: 'Home Staging', icon: '✨', count: 12 },
+  { id: 'mobilier', name: 'Mobilier', name_en: 'Furniture', icon: '🛋️', count: 32 },
+  { id: 'couleurs', name: 'Couleurs', name_en: 'Colors', icon: '🎨', count: 15 },
+  { id: 'eclairage', name: 'Éclairage', name_en: 'Lighting', icon: '💡', count: 20 },
+  { id: 'feng-shui', name: 'Feng Shui', name_en: 'Feng Shui', icon: '☯️', count: 10 },
+  { id: 'design-contemporain', name: 'Design contemporain', name_en: 'Contemporary Design', icon: '🔷', count: 25 },
+  { id: 'design-africain', name: 'Design africain', name_en: 'African Design', icon: '🌍', count: 18 },
+  { id: 'marketing', name: 'Marketing pour décorateurs', name_en: 'Marketing for Decorators', icon: '📈', count: 22 },
+  { id: 'dropshipping', name: 'Dropshipping décoration', name_en: 'Decoration Dropshipping', icon: '📦', count: 28 },
+  { id: 'ia-decorateurs', name: 'IA pour décorateurs', name_en: 'AI for Decorators', icon: '🤖', count: 35 }
+];
+
+// Sample courses
+const academyCourses = [
+  {
+    id: 'c1',
+    title: 'Décorer son salon comme un pro',
+    title_en: 'Decorate your living room like a pro',
+    category: 'decoration-interieur',
+    description: 'Apprenez les bases de la décoration intérieure pour transformer votre salon.',
+    description_en: 'Learn the basics of interior decoration to transform your living room.',
+    thumbnail: 'course-salon.jpg',
+    duration: '4h30',
+    level: 'beginner',
+    lessons: 12,
+    students: 1250,
+    rating: 4.8,
+    price: 49.99,
+    currency: '€',
+    instructor: { name: 'Marie Dubois', title: 'Architecte d\'intérieur' },
+    featured: true
+  },
+  {
+    id: 'c2',
+    title: 'Feng Shui complet pour la maison',
+    title_en: 'Complete Feng Shui for the home',
+    category: 'feng-shui',
+    description: 'Maîtrisez l\'art du Feng Shui pour harmoniser votre espace de vie.',
+    description_en: 'Master the art of Feng Shui to harmonize your living space.',
+    thumbnail: 'course-fengshui.jpg',
+    duration: '6h00',
+    level: 'intermediate',
+    lessons: 18,
+    students: 890,
+    rating: 4.9,
+    price: 79.99,
+    currency: '€',
+    instructor: { name: 'Li Wei', title: 'Maître Feng Shui' },
+    featured: true
+  },
+  {
+    id: 'c3',
+    title: 'Design africain moderne',
+    title_en: 'Modern African Design',
+    category: 'design-africain',
+    description: 'Intégrez les éléments traditionnels africains dans un design contemporain.',
+    description_en: 'Integrate traditional African elements into contemporary design.',
+    thumbnail: 'course-african.jpg',
+    duration: '5h00',
+    level: 'intermediate',
+    lessons: 15,
+    students: 720,
+    rating: 4.7,
+    price: 69.99,
+    currency: '€',
+    instructor: { name: 'Kofi Asante', title: 'Designer culturel' },
+    featured: true
+  },
+  {
+    id: 'c4',
+    title: 'Créer son business de dropshipping',
+    title_en: 'Create your dropshipping business',
+    category: 'dropshipping',
+    description: 'Guide complet pour lancer votre entreprise de dropshipping.',
+    description_en: 'Complete guide to launch your dropshipping business.',
+    thumbnail: 'course-dropshipping.jpg',
+    duration: '8h00',
+    level: 'advanced',
+    lessons: 24,
+    students: 2100,
+    rating: 4.6,
+    price: 149.99,
+    currency: '€',
+    instructor: { name: 'Jean-Marc Kouassi', title: 'Expert E-commerce' },
+    featured: true
+  },
+  {
+    id: 'c5',
+    title: 'L\'IA pour les décorateurs',
+    title_en: 'AI for Decorators',
+    category: 'ia-decorateurs',
+    description: 'Utilisez l\'IA pour accélérer vos projets de décoration.',
+    description_en: 'Use AI to speed up your decoration projects.',
+    thumbnail: 'course-ai.jpg',
+    duration: '3h30',
+    level: 'beginner',
+    lessons: 10,
+    students: 1850,
+    rating: 4.9,
+    price: 39.99,
+    currency: '€',
+    instructor: { name: 'Alexandre Martin', title: 'Expert IA & Design' },
+    featured: true
+  },
+  {
+    id: 'c6',
+    title: 'Home Staging professionnel',
+    title_en: 'Professional Home Staging',
+    category: 'home-staging',
+    description: 'Apprenez à valoriser les biens immobiliers pour des ventes plus rapides.',
+    description_en: 'Learn to valorize real estate for faster sales.',
+    thumbnail: 'course-staging.jpg',
+    duration: '5h30',
+    level: 'intermediate',
+    lessons: 16,
+    students: 680,
+    rating: 4.8,
+    price: 89.99,
+    currency: '€',
+    instructor: { name: 'Sophie Bernard', title: 'Home Stager certifiée' },
+    featured: false
+  }
+];
+
+async function loadAcademyPage(container) {
+  const t = currentLanguage === 'fr';
+  
+  container.innerHTML = `
+    <div class="academy-page">
+      <div class="academy-hero">
+        <div class="academy-hero-content">
+          <h1>🎓 ${t ? 'E-Décor Academy' : 'E-Décor Academy'}</h1>
+          <p>${t ? 'Maîtrisez l\'art de la décoration avec nos formations professionnelles' : 'Master the art of decoration with our professional courses'}</p>
+          <div class="academy-stats">
+            <div class="stat"><span class="stat-number">15+</span><span>${t ? 'Formations' : 'Courses'}</span></div>
+            <div class="stat"><span class="stat-number">5000+</span><span>${t ? 'Étudiants' : 'Students'}</span></div>
+            <div class="stat"><span class="stat-number">4.8</span><span>${t ? 'Note moyenne' : 'Average Rating'}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="academy-categories">
+        <h2>${t ? 'Catégories de formations' : 'Course Categories'}</h2>
+        <div class="categories-grid">
+          ${academyCategories.map(cat => `
+            <div class="category-card" onclick="filterAcademyByCategory('${cat.id}')">
+              <span class="category-icon">${cat.icon}</span>
+              <span class="category-name">${t ? cat.name : cat.name_en}</span>
+              <span class="category-count">${cat.count} ${t ? 'formations' : 'courses'}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-featured">
+        <h2>⭐ ${t ? 'Formations en vedette' : 'Featured Courses'}</h2>
+        <div class="courses-grid">
+          ${academyCourses.filter(c => c.featured).map(course => `
+            <div class="course-card" onclick="loadPage('course', {id: '${course.id}'})">
+              <div class="course-thumbnail">
+                <span class="course-level level-${course.level}">${course.level}</span>
+                <span class="course-duration">⏱️ ${course.duration}</span>
+              </div>
+              <div class="course-info">
+                <h3>${t ? course.title : course.title_en}</h3>
+                <p class="course-desc">${t ? course.description : course.description_en}</p>
+                <div class="course-meta">
+                  <span class="course-instructor">👤 ${course.instructor.name}</span>
+                  <span class="course-students">👥 ${course.students}</span>
+                  <span class="course-rating">⭐ ${course.rating}</span>
+                </div>
+                <div class="course-footer">
+                  <span class="course-price">${course.price}${course.currency}</span>
+                  <button class="course-btn">${t ? 'Voir le cours' : 'View Course'}</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-all">
+        <h2>📚 ${t ? 'Toutes nos formations' : 'All Courses'}</h2>
+        <div class="courses-grid">
+          ${academyCourses.map(course => `
+            <div class="course-card" onclick="loadPage('course', {id: '${course.id}'})">
+              <div class="course-thumbnail">
+                <span class="course-level level-${course.level}">${course.level}</span>
+                <span class="course-duration">⏱️ ${course.duration}</span>
+              </div>
+              <div class="course-info">
+                <h3>${t ? course.title : course.title_en}</h3>
+                <p class="course-desc">${t ? course.description : course.description_en}</p>
+                <div class="course-meta">
+                  <span class="course-instructor">👤 ${course.instructor.name}</span>
+                  <span class="course-students">👥 ${course.students}</span>
+                  <span class="course-rating">⭐ ${course.rating}</span>
+                </div>
+                <div class="course-footer">
+                  <span class="course-price">${course.price}${course.currency}</span>
+                  <button class="course-btn">${t ? 'Voir' : 'View'}</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-cta">
+        <h2>${t ? 'Vous êtes expert en décoration?' : 'Are you a decoration expert?'}</h2>
+        <p>${t ? 'Proposez vos formations et rejoignez notre communauté d\'experts' : 'Offer your courses and join our expert community'}</p>
+        <button class="cta-button" onclick="loadPage('contact')">${t ? 'Devenir formateur' : 'Become an Instructor'}</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadCoursePage(container, courseId) {
+  const t = currentLanguage === 'fr';
+  const course = academyCourses.find(c => c.id === courseId);
+  
+  if (!course) {
+    container.innerHTML = `<div class="not-found"><h2>${t ? 'Cours non trouvé' : 'Course not found'}</h2></div>`;
+    return;
+  }
+  
+  container.innerHTML = `
+    <div class="course-page">
+      <button class="back-btn" onclick="loadPage('academy')">← ${t ? 'Retour aux formations' : 'Back to Courses'}</button>
+      
+      <div class="course-header">
+        <div class="course-header-content">
+          <span class="course-level-badge level-${course.level}">${course.level}</span>
+          <h1>${t ? course.title : course.title_en}</h1>
+          <p class="course-description">${t ? course.description : course.description_en}</p>
+          
+          <div class="course-meta-grid">
+            <div class="meta-item">
+              <span class="meta-icon">⏱️</span>
+              <span class="meta-label">${t ? 'Durée' : 'Duration'}</span>
+              <span class="meta-value">${course.duration}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">📖</span>
+              <span class="meta-label">${t ? 'Leçons' : 'Lessons'}</span>
+              <span class="meta-value">${course.lessons}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">👥</span>
+              <span class="meta-label">${t ? 'Étudiants' : 'Students'}</span>
+              <span class="meta-value">${course.students}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">⭐</span>
+              <span class="meta-label">${t ? 'Note' : 'Rating'}</span>
+              <span class="meta-value">${course.rating}</span>
+            </div>
+          </div>
+          
+          <div class="course-instructor-card">
+            <div class="instructor-avatar">👤</div>
+            <div class="instructor-info">
+              <span class="instructor-name">${course.instructor.name}</span>
+              <span class="instructor-title">${course.instructor.title}</span>
+            </div>
+          </div>
+          
+          <div class="course-price-large">
+            <span class="price">${course.price}${course.currency}</span>
+            <button class="enroll-btn">${t ? 'S\'inscrire maintenant' : 'Enroll Now'}</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="course-content">
+        <div class="course-syllabus">
+          <h2>📋 ${t ? 'Programme de la formation' : 'Course Syllabus'}</h2>
+          <div class="syllabus-list">
+            ${[1,2,3,4,5,6,7].map(i => `
+              <div class="syllabus-item">
+                <span class="lesson-number">${i}</span>
+                <span class="lesson-title">${t ? 'Leçon ' + i : 'Lesson ' + i}</span>
+                <span class="lesson-duration">${15 + Math.floor(Math.random() * 30)} min</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div class="course-objectives">
+          <h2>🎯 ${t ? 'Objectifs' : 'Objectives'}</h2>
+          <ul class="objectives-list">
+            <li>${t ? 'Comprendre les fondamentaux' : 'Understand the fundamentals'}</li>
+            <li>${t ? 'Appliquer les techniques professionnelles' : 'Apply professional techniques'}</li>
+            <li>${t ? 'Créer des projets concrets' : 'Create concrete projects'}</li>
+            <li>${t ? 'Obtenir une certification' : 'Get certified'}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============= RESELLERS PORTAL =============
+
+const resellerTiers = [
+  { id: 'bronze', name: 'Bronze', discount: 15, minOrder: 500 },
+  { id: 'silver', name: 'Argent', discount: 25, minOrder: 2000 },
+  { id: 'gold', name: 'Or', discount: 35, minOrder: 5000 },
+  { id: 'platinum', name: 'Platine', discount: 45, minOrder: 15000 }
+];
+
+const resellerProducts = [
+  { id: 's1', name: 'Canapé modulable LINO', retailPrice: 1299, wholesalePrice: 844, stock: 25 },
+  { id: 's2', name: 'Fauteuil relax électrique', retailPrice: 649, wholesalePrice: 422, stock: 18 },
+  { id: 's3', name: 'Table basse carrée', retailPrice: 299, wholesalePrice: 194, stock: 45 },
+  { id: 's4', name: 'Meuble TV suspendu', retailPrice: 449, wholesalePrice: 292, stock: 32 },
+  { id: 's5', name: 'Bibliothèque modulable', retailPrice: 549, wholesalePrice: 357, stock: 20 }
+];
+
+async function loadResellersPage(container) {
+  const t = currentLanguage === 'fr';
+  
+  container.innerHTML = `
+    <div class="resellers-page">
+      <div class="resellers-hero">
+        <h1>🏪 ${t ? 'Portail Revendeurs' : 'Reseller Portal'}</h1>
+        <p>${t ? 'Devenez revendeur officiel E-Décor et bénéficier de prix préférentiels' : 'Become an official E-Décor reseller and benefit from preferential prices'}</p>
+      </div>
+
+      <div class="reseller-tiers">
+        <h2>${t ? 'Nos offres revendeur' : 'Our Reseller Plans'}</h2>
+        <div class="tiers-grid">
+          ${resellerTiers.map(tier => `
+            <div class="tier-card tier-${tier.id}">
+              <h3>${tier.name}</h3>
+              <div class="tier-discount">-${tier.discount}%</div>
+              <p class="tier-min">${t ? 'Commande min:' : 'Min order:'} ${tier.minOrder}€</p>
+              <ul class="tier-benefits">
+                <li>✓ ${t ? 'Prix réduit ' + tier.discount + '%' : tier.discount + '% reduced price'}</li>
+                <li>✓ ${t ? 'Support prioritaire' : 'Priority support'}</li>
+                <li>✓ ${t ? 'Catalogue exclusif' : 'Exclusive catalog'}</li>
+                <li>✓ ${t ? 'Livraison gratuite' : 'Free shipping'}</li>
+              </ul>
+              <button class="tier-btn">${t ? 'Devenir revendeur' : 'Become a Reseller'}</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="reseller-products">
+        <h2>${t ? 'Catalogue grossiste' : 'Wholesale Catalog'}</h2>
+        <div class="products-table">
+          <table>
+            <thead>
+              <tr>
+                <th>${t ? 'Produit' : 'Product'}</th>
+                <th>${t ? 'Prix détail' : 'Retail Price'}</th>
+                <th>${t ? 'Prix grossiste' : 'Wholesale Price'}</th>
+                <th>${t ? 'Stock' : 'Stock'}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${resellerProducts.map(prod => `
+                <tr>
+                  <td>${prod.name}</td>
+                  <td class="price-retail">${prod.retailPrice}€</td>
+                  <td class="price-wholesale"><strong>${prod.wholesalePrice}€</strong></td>
+                  <td>${prod.stock} ${t ? 'unités' : 'units'}</td>
+                  <td><button class="add-cart-btn">${t ? 'Ajouter' : 'Add'}</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="reseller-cta">
+        <h2>${t ? 'Intéressé?' : 'Interested?'}</h2>
+        <p>${t ? 'Contactez-nous pour devenir revendeur officiel' : 'Contact us to become an official reseller'}</p>
+        <button class="cta-button" onclick="loadPage('contact')">${t ? 'Contactez-nous' : 'Contact Us'}</button>
+      </div>
     </div>
   `;
 }
