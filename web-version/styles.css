@@ -2952,15 +2952,17 @@ body {
 }
 
 .enroll-btn {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 15px 40px;
+  background: #4caf50 !important;
+  color: white !important;
+  border: none !important;
+  padding: 15px 40px !important;
   border-radius: 10px;
   font-size: 1.1rem;
   font-weight: 600;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.3s;
+  position: relative !important;
+  z-index: 1000 !important;
 }
 
 .enroll-btn:hover {

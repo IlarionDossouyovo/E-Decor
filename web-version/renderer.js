@@ -1586,12 +1586,18 @@ async function loadCoursePage(container, courseId) {
 
 // Course helper functions
 function enrollCourse(courseId) {
+  console.log('[E-Décor] enrollCourse called with:', courseId);
   const course = academyCourses.find(c => c.id === courseId);
+  console.log('[E-Décor] Found course:', course);
   if (course) {
     const priceFormatted = course.price.toFixed(2).replace('.', ',');
-    alert(currentLanguage === 'fr' ? 
+    const message = currentLanguage === 'fr' ? 
       `Inscription à: ${course.title}\nPrix: ${priceFormatted}${course.currency}\n\nMerci de nous contacter pour finaliser l'inscription!` : 
-      `Enrollment in: ${course.title}\nPrice: ${priceFormatted}${course.currency}\n\nContact us to complete enrollment!`);
+      `Enrollment in: ${course.title}\nPrice: ${priceFormatted}${course.currency}\n\nContact us to complete enrollment!`;
+    console.log('[E-Décor] Showing alert for:', message);
+    alert(message);
+  } else {
+    console.error('[E-Décor] Course not found:', courseId);
   }
 }
 
