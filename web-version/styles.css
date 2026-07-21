@@ -246,6 +246,9 @@ body {
 #main-content {
   min-height: calc(100vh - 300px);
   padding: 40px;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Hero Section */
