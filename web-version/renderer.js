@@ -481,8 +481,19 @@ async function loadPage(page, params = {}) {
   updateActiveNavLink(page);
 
   const mainContent = document.getElementById('main-content');
+  
+  // Force visibility
+  if (mainContent) {
+    mainContent.style.display = 'block';
+    mainContent.style.visibility = 'visible';
+    mainContent.style.opacity = '1';
+    mainContent.style.minHeight = '500px';
+  }
 
   switch (page) {
+    case 'dashboard':
+      await loadDashboardPage(mainContent);
+      break;
     case 'home':
       await loadHomePage(mainContent);
       break;
@@ -559,6 +570,149 @@ function refreshCurrentPage() {
     loadPage(currentPage);
   }
   populateCategoriesMenu();
+}
+
+// ============= DASHBOARD PAGE =============
+async function loadDashboardPage(container) {
+  const t = currentLanguage === 'fr';
+  
+  // Calculate stats
+  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const totalOrders = orders.length;
+  const totalItems = orders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0), 0);
+  const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+  
+  // Get categories count
+  const categoriesCount = categoriesData.length;
+  
+  // Get blog posts count
+  const blogPostsCount = builtInBlogPosts.length;
+  
+  container.innerHTML = `
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <h1>🎯 ${t ? 'Tableau de Bord E-Décor' : 'E-Décor Dashboard'}</h1>
+      <p>${t ? 'Bienvenue dans votre espace de gestion' : 'Welcome to your management space'}</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="dashboard-stats">
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">📦</div>
+        <div class="dash-stat-value">${totalOrders}</div>
+        <div class="dash-stat-label">${t ? 'Commandes' : 'Orders'}</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">💰</div>
+        <div class="dash-stat-value">${totalRevenue}€</div>
+        <div class="dash-stat-label">${t ? 'Revenus' : 'Revenue'}</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">📦</div>
+        <div class="dash-stat-value">${totalItems}</div>
+        <div class="dash-stat-label">${t ? 'Articles vendus' : 'Items sold'}</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">⏳</div>
+        <div class="dash-stat-value">${pendingOrders}</div>
+        <div class="dash-stat-label">${t ? 'En attente' : 'Pending'}</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">✅</div>
+        <div class="dash-stat-value">${deliveredOrders}</div>
+        <div class="dash-stat-label">${t ? 'Livrées' : 'Delivered'}</div>
+      </div>
+      <div class="dash-stat-card">
+        <div class="dash-stat-icon">📊</div>
+        <div class="dash-stat-value">${avgOrderValue}€</div>
+        <div class="dash-stat-label">${t ? 'Panier moyen' : 'Avg Order'}</div>
+      </div>
+    </div>
+
+    <!-- Quick Access Sections -->
+    <div class="dashboard-sections">
+      <h2>${t ? 'Accéder aux Sections' : 'Access Sections'}</h2>
+      <div class="dash-grid">
+        <div class="dash-card" onclick="loadPage('home')">
+          <div class="dash-card-icon">🏠</div>
+          <h3>${t ? 'Accueil' : 'Home'}</h3>
+          <p>${t ? 'Page d\'accueil du site' : 'Website homepage'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('catalog')">
+          <div class="dash-card-icon">📋</div>
+          <h3>${t ? 'Catalogue' : 'Catalog'}</h3>
+          <p>${t ? 'Tous nos produits (' + categoriesCount + ' catégories)' : 'All our products (' + categoriesCount + ' categories)'}</p>
+        </div>
+        <div class="dash-card" onclick="document.querySelector('.dropdown').classList.add('show')">
+          <div class="dash-card-icon">📂</div>
+          <h3>${t ? 'Catégories' : 'Categories'}</h3>
+          <p>${t ? 'Parcourir par catégorie' : 'Browse by category'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('blog')">
+          <div class="dash-card-icon">📰</div>
+          <h3>${t ? 'Blog' : 'Blog'}</h3>
+          <p>${t ? 'Articles etactualités (' + blogPostsCount + ' articles)' : 'News and articles (' + blogPostsCount + ' posts)'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('academy')">
+          <div class="dash-card-icon">🎓</div>
+          <h3>${t ? 'Academy' : 'Academy'}</h3>
+          <p>${t ? 'Formations et cours' : 'Training and courses'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('affiliates')">
+          <div class="dash-card-icon">🤝</div>
+          <h3>${t ? 'Affiliés' : 'Affiliates'}</h3>
+          <p>${t ? 'Programme d\'affiliation' : 'Affiliate program'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('resellers')">
+          <div class="dash-card-icon">🏪</div>
+          <h3>${t ? 'Revendeurs' : 'Resellers'}</h3>
+          <p>${t ? 'Portail revendeurs' : 'Reseller portal'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('about')">
+          <div class="dash-card-icon">ℹ️</div>
+          <h3>${t ? 'À propos' : 'About'}</h3>
+          <p>${t ? 'À propos de E-Décor' : 'About E-Décor'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('faq')">
+          <div class="dash-card-icon">❓</div>
+          <h3>${t ? 'FAQ' : 'FAQ'}</h3>
+          <p>${t ? 'Questions fréquentes' : 'Frequently asked questions'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('contact')">
+          <div class="dash-card-icon">📧</div>
+          <h3>${t ? 'Contact' : 'Contact'}</h3>
+          <p>${t ? 'Contactez-nous' : 'Contact us'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('legal')">
+          <div class="dash-card-icon">📜</div>
+          <h3>${t ? 'Mentions légales' : 'Legal'}</h3>
+          <p>${t ? 'Informations légales' : 'Legal information'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('favorites')">
+          <div class="dash-card-icon">❤️</div>
+          <h3>${t ? 'Favoris' : 'Favorites'}</h3>
+          <p>${t ? 'Vos produits favoris' : 'Your favorite products'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('orders')">
+          <div class="dash-card-icon">📄</div>
+          <h3>${t ? 'Commandes' : 'Orders'}</h3>
+          <p>${t ? 'Historique des commandes' : 'Order history'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('admin')">
+          <div class="dash-card-icon">⚙️</div>
+          <h3>${t ? 'Admin' : 'Admin'}</h3>
+          <p>${t ? 'Panneau d\'administration' : 'Administration panel'}</p>
+        </div>
+        <div class="dash-card" onclick="loadPage('cart')">
+          <div class="dash-card-icon">🛒</div>
+          <h3>${t ? 'Panier' : 'Cart'}</h3>
+          <p>${t ? 'Votre panier' : 'Your cart'}</p>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // Load Home Page
