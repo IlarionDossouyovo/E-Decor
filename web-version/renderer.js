@@ -563,6 +563,7 @@ function refreshCurrentPage() {
 
 // Load Home Page
 async function loadHomePage(container) {
+  console.log('[E-Décor] loadHomePage DEBUT');
   try {
     console.log('[E-Décor] loadHomePage called, container:', container);
     const isFR = currentLanguage === 'fr';
@@ -574,12 +575,13 @@ async function loadHomePage(container) {
     }
     
     // Force container visibility
-    container.style.display = 'block';
+    container.style.display = 'block !important';
     container.style.minHeight = '500px';
-    container.style.visibility = 'visible';
-    container.style.opacity = '1';
+    container.style.visibility = 'visible !important';
+    container.style.opacity = '1 !important';
     
-    container.innerHTML = `
+    // Build HTML
+    const html = `
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
@@ -717,10 +719,14 @@ async function loadHomePage(container) {
       </div>
     </section>
   `;
-    console.log('[E-Décor] Home page HTML injected, content length:', container.innerHTML.length);
+    console.log('[E-Décor] HTML generated, length:', html.length);
+    
+    container.innerHTML = html;
+    console.log('[E-Décor] Home page injected, content length:', container.innerHTML.length);
     
   } catch (e) {
     console.error('[E-Décor] ERREUR dans loadHomePage:', e);
+    console.error('[E-Décor] Stack:', e.stack);
   }
 }
 
