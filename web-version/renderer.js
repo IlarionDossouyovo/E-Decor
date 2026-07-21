@@ -1,4 +1,6 @@
 // E-Décor - Renderer JavaScript
+console.log('[E-Décor] === Script renderer.js chargé ===');
+
 let currentLanguage = 'fr';
 let currentPage = 'home';
 let categoriesData = [];
@@ -6,18 +8,27 @@ let aiStatus = { available: false };
 let aiConversations = [];
 
 // Données intégrées pour la version web (sans Electron)
+// Catégories avec sous-catégories
 const builtInCategories = [
   {
     id: 'salons',
     name: 'Salons',
     name_en: 'Living Rooms',
     description: 'Meubles pour salons modernes et classiques',
+    icon: '🛋️',
+    subcategories: [
+      { id: 'canapes', name: 'Canapés', name_en: 'Sofas', description: 'Canapés, causeuses et divans' },
+      { id: 'fauteuils', name: 'Fauteuils', name_en: 'Armchairs', description: 'Fauteuils, relax et accoudoirs' },
+      { id: 'tables-basses', name: 'Tables basses', name_en: 'Coffee Tables', description: 'Tables basses et tables d\'appoint' },
+      { id: 'meubles-tv', name: 'Meubles TV', name_en: 'TV Units', description: 'Meubles TV et supports muraux' },
+      { id: 'bibliotheques', name: 'Bibliothèques', name_en: 'Bookshelves', description: 'Étagères et bibliothèques' }
+    ],
     products: [
-      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', description: 'Canapé 3 places modulable en tissu gris' },
-      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', description: 'Fauteuil relax avec relève-pieds électrique' },
-      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', description: 'Table basse en chêne massif 90x90cm' },
-      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', description: 'Meuble TV 160cm avec rangements' },
-      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', description: 'Étagère 5 modules ajustables' }
+      { id: 's1', name: 'Canapé modulable LINO', price: 1299, currency: '€', description: 'Canapé 3 places modulable en tissu gris', subcategory: 'canapes' },
+      { id: 's2', name: 'Fauteuil relax électrique', price: 649, currency: '€', description: 'Fauteuil relax avec relève-pieds électrique', subcategory: 'fauteuils' },
+      { id: 's3', name: 'Table basse carrée', price: 299, currency: '€', description: 'Table basse en chêne massif 90x90cm', subcategory: 'tables-basses' },
+      { id: 's4', name: 'Meuble TV suspendu', price: 449, currency: '€', description: 'Meuble TV 160cm avec rangements', subcategory: 'meubles-tv' },
+      { id: 's5', name: 'Bibliothèque modulable', price: 549, currency: '€', description: 'Étagère 5 modules ajustables', subcategory: 'bibliotheques' }
     ]
   },
   {
@@ -25,11 +36,18 @@ const builtInCategories = [
     name: 'Bureaux',
     name_en: 'Offices',
     description: 'Mobilier de bureau professionnel et domestique',
+    icon: '💼',
+    subcategories: [
+      { id: 'bureaux', name: 'Bureaux', name_en: 'Desks', description: 'Bureaux debout et classiques' },
+      { id: 'chaises', name: 'Chaises de bureau', name_en: 'Office Chairs', description: 'Fauteuils et chaises ergonomiques' },
+      { id: 'rangements', name: 'Rangements', name_en: 'Storage', description: 'Caissons, tiroirs et armoires' },
+      { id: 'luminaires', name: 'Luminaires', name_en: 'Lighting', description: 'Lampes de bureau et éclairage' }
+    ],
     products: [
-      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', description: 'Bureau 160cm en chêne avec tiroirs' },
-      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', description: 'Fauteuil ergonomique Mesh' },
-      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', description: 'Caisson sur roulettes mélaminé' },
-      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', description: 'Bureau debout électrique hauteur variable' }
+      { id: 'b1', name: 'Bureau exécutif oak', price: 799, currency: '€', description: 'Bureau 160cm en chêne avec tiroirs', subcategory: 'bureaux' },
+      { id: 'b2', name: 'Fauteuil de direction', price: 449, currency: '€', description: 'Fauteuil ergonomique Mesh', subcategory: 'chaises' },
+      { id: 'b3', name: 'Caisson mobile 3 tiroirs', price: 189, currency: '€', description: 'Caisson sur roulettes mélaminé', subcategory: 'rangements' },
+      { id: 'b4', name: 'Bureau standing électrique', price: 999, currency: '€', description: 'Bureau debout électrique hauteur variable', subcategory: 'bureaux' }
     ]
   },
   {
@@ -37,10 +55,17 @@ const builtInCategories = [
     name: 'Cuisines',
     name_en: 'Kitchens',
     description: 'Équipements et meubles de cuisine',
+    icon: '🍳',
+    subcategories: [
+      { id: 'ilot-central', name: 'Îlots centraux', name_en: 'Kitchen Islands', description: 'Îlots et plans de travail' },
+      { id: 'meubles-bas', name: 'Meubles bas', name_en: 'Base Cabinets', description: 'Meubles de rangement bas' },
+      { id: 'etagere-murale', name: 'Étagères murales', name_en: 'Wall Shelves', description: 'Étagères et rangements muraux' },
+      { id: 'tables-chaises', name: 'Tables & Chaises', name_en: 'Tables & Chairs', description: 'Tables et chaises de cuisine' }
+    ],
     products: [
-      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', description: 'Îlot 180cm avec plan de travail stratifié' },
-      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', description: 'Meuble 60cm avec porte et tiroir' },
-      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', description: 'Étagère 90cm polyvalente' }
+      { id: 'c1', name: 'Îlot central cuisine', price: 1499, currency: '€', description: 'Îlot 180cm avec plan de travail stratifié', subcategory: 'ilot-central' },
+      { id: 'c2', name: 'Meuble bas suspendu', price: 349, currency: '€', description: 'Meuble 60cm avec porte et tiroir', subcategory: 'meubles-bas' },
+      { id: 'c3', name: 'Étagère murale chromée', price: 129, currency: '€', description: 'Étagère 90cm polyvalente', subcategory: 'etagere-murale' }
     ]
   },
   {
@@ -48,11 +73,18 @@ const builtInCategories = [
     name: 'Jardins',
     name_en: 'Gardens',
     description: 'Mobilier d\'extérieur et de jardin',
+    icon: '🌳',
+    subcategories: [
+      { id: 'salon-exterieur', name: 'Salons d\'extérieur', name_en: 'Outdoor Living', description: 'Salons et ensembles de jardin' },
+      { id: 'transats', name: 'Transats & Bain de soleil', name_en: 'Loungers', description: 'Transats et chaises longues' },
+      { id: 'parasols', name: 'Parasols & Voiles', name_en: 'Umbrellas', description: 'Parasols et voiles d\'ombrage' },
+      { id: 'barbecue', name: 'Barbecue & Plancha', name_en: 'BBQ & Grill', description: 'Barbecues et planchas' }
+    ],
     products: [
-      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', description: 'Table + 4 fauteuilles + 2 bancs' },
-      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', description: 'Transat en bois d\'acacia avec toile' },
-      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', description: 'Parasol déporté avec socle' },
-      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', description: 'Barbecue à charbon 57cm' }
+      { id: 'j1', name: 'Salon de jardin 6 pièces', price: 899, currency: '€', description: 'Table + 4 fauteuilles + 2 bancs', subcategory: 'salon-exterieur' },
+      { id: 'j2', name: 'Transat pliant bois', price: 149, currency: '€', description: 'Transat en bois d\'acacia avec toile', subcategory: 'transats' },
+      { id: 'j3', name: 'Parasol déporté 3m', price: 249, currency: '€', description: 'Parasol déporté avec socle', subcategory: 'parasols' },
+      { id: 'j4', name: 'Barbecue Weber', price: 399, currency: '€', description: 'Barbecue à charbon 57cm', subcategory: 'barbecue' }
     ]
   },
   {
@@ -60,35 +92,93 @@ const builtInCategories = [
     name: 'Salle à manger',
     name_en: 'Dining Rooms',
     description: 'Tables, chaises et meubles de salle à manger',
+    icon: '🍽️',
+    subcategories: [
+      { id: 'tables', name: 'Tables', name_en: 'Tables', description: 'Tables fixes et extensibles' },
+      { id: 'chaises', name: 'Chaises', name_en: 'Chairs', description: 'Chaises et fauteuils de salle à manger' },
+      { id: 'buffets', name: 'Buffets & Vaisseliers', name_en: 'Sideboards', description: 'Buffets et vaisseliers' },
+      { id: 'vitrines', name: 'Vitrines', name_en: 'Display Cabinets', description: 'Vitrines et cabinets' }
+    ],
     products: [
-      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', description: 'Table 6-10 personnes extensible' },
-      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', description: 'Chaise upholstrée avec pieds bois' },
-      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', description: 'Buffet 180cm en bois massif' },
-      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', description: 'Vaisselier 2 tiroirs + niches' }
+      { id: 'sd1', name: 'Table extensible ALIZE', price: 899, currency: '€', description: 'Table 6-10 personnes extensible', subcategory: 'tables' },
+      { id: 'sd2', name: 'Chaise tissu CARA', price: 149, currency: '€', description: 'Chaise upholstrée avec pieds bois', subcategory: 'chaises' },
+      { id: 'sd3', name: 'Buffet 4 portes', price: 699, currency: '€', description: 'Buffet 180cm en bois massif', subcategory: 'buffets' },
+      { id: 'sd4', name: 'Vaisselier moderne', price: 549, currency: '€', description: 'Vaisselier 2 tiroirs + niches', subcategory: 'vitrines' }
     ]
   }
 ];
 
-// Blog posts intégrés
+// Articles de blog par catégorie et sous-catégorie
 const builtInBlogPosts = [
-  { id: 'tendances-2024', title: 'Tendances décoration 2024', title_en: 'Decor Trends 2024', excerpt: 'Découvrez les tendances de l\'année', author: 'Marie Dupont', date: '2024-01-10', content: 'Les tendances 2024...' },
-  { id: 'salon-design', title: 'Aménager son salon', title_en: 'Design your living room', excerpt: 'Conseils pour un salon parfait', author: 'Jean Martin', date: '2024-02-15', content: 'Un beau salon...' },
-  { id: 'bureau-productif', title: '10 conseils productivité', title_en: '10 productivity tips', excerpt: 'Optimisez votre espace de travail', author: 'Sophie Bernard', date: '2024-03-01', content: 'Productivité...' }
+  // Articles Salons
+  { id: 'tendances-salon-2024', title: 'Tendances décoration salon 2024', title_en: 'Living Room Trends 2024', excerpt: 'Découvrez les dernières tendances pour votre salon', category: 'salons', subcategory: null, author: 'Marie Dupont', date: '2024-01-10', image: 'salon', content: 'Les tendances 2024 pour les salons...' },
+  { id: 'choisir-canape', title: 'Comment choisir son canapé', title_en: 'How to choose your sofa', excerpt: 'Guide complet pour bien choisir votre canapé', category: 'salons', subcategory: 'canapes', author: 'Jean Martin', date: '2024-01-15', image: 'salon', content: 'Choisir un canapé...' },
+  { id: 'ambiance-salon', title: 'Créer une ambiance salon cosy', title_en: 'Create a cozy living room', excerpt: 'Astuces pour un salon chaleureux', category: 'salons', subcategory: 'fauteuils', author: 'Sophie Bernard', date: '2024-02-01', image: 'salon', content: 'Ambiance cosy...' },
+  
+  // Articles Bureaux
+  { id: 'bureau-productif', title: '10 conseils pour un bureau productif', title_en: '10 tips for a productive office', excerpt: 'Optimisez votre espace de travail', category: 'bureaux', subcategory: null, author: 'Pierre Durant', date: '2024-03-01', image: 'bureau', content: 'Productivité au bureau...' },
+  { id: 'ergonomie-bureau', title: 'L\'ergonomie au bureau', title_en: 'Office ergonomics', excerpt: 'Bien s\'asseoir pour mieux travailler', category: 'bureaux', subcategory: 'chaises', author: 'Marie Martin', date: '2024-03-10', image: 'bureau', content: 'Ergonomie...' },
+  { id: 'luminaire-bureau', title: 'L\'éclairage parfait pour votre bureau', title_en: 'Perfect lighting for your office', excerpt: 'Choisir le bon luminaire', category: 'bureaux', subcategory: 'luminaires', author: 'Lucas Petit', date: '2024-03-15', image: 'bureau', content: 'Éclairage...' },
+  
+  // Articles Cuisines
+  { id: 'cuisine-moderne', title: 'Concevoir une cuisine moderne', title_en: 'Design a modern kitchen', excerpt: 'Guide pour une cuisine contemporaine', category: 'cuisines', subcategory: null, author: 'Emma Wilson', date: '2024-04-01', image: 'cuisine', content: 'Cuisine moderne...' },
+  { id: 'ilot-cuisine', title: 'L\'îlot central star de la cuisine', title_en: 'The kitchen island', excerpt: 'Pourquoi choisir un îlot central', category: 'cuisines', subcategory: 'ilot-central', author: 'Marie Dubois', date: '2024-04-10', image: 'cuisine', content: 'Îlot central...' },
+  
+  // Articles Jardins
+  { id: 'jardin-tendances', title: 'Tendances jardin 2024', title_en: 'Garden trends 2024', excerpt: 'Les must-have pour votre extérieur', category: 'jardins', subcategory: null, author: 'Thomas Green', date: '2024-05-01', image: 'jardin', content: 'Tendances jardin...' },
+  { id: 'salon-exterieur', title: 'Choisir son salon d\'extérieur', title_en: 'Choose your outdoor furniture', excerpt: 'Comparatif des salons de jardin', category: 'jardins', subcategory: 'salon-exterieur', author: 'Sophie Brown', date: '2024-05-10', image: 'jardin', content: 'Salon extérieur...' },
+  
+  // Articles Salle à manger
+  { id: 'salle-manger-guide', title: 'Guide : Bien choisir sa salle à manger', title_en: 'Dining room guide', excerpt: 'Tout savoir sur les salles à manger', category: 'salle-a-manger', subcategory: null, author: 'Julie Adams', date: '2024-06-01', image: 'salle-manger', content: 'Salle à manger...' },
+  { id: 'table-extensible', title: 'Pourquoi choisir une table extensible', title_en: 'Why choose an extensible table', excerpt: 'Les avantages des tables extensibles', category: 'salle-a-manger', subcategory: 'tables', author: 'Marc Lefebvre', date: '2024-06-10', image: 'salle-manger', content: 'Table extensible...' }
+];
+
+// Affiliés E-Décor
+const builtInAffiliates = [
+  { id: 'orca-decor', name: 'ORCA-Décor', description: 'Partenaire officiel - Meubles et décoration d\'intérieur', commission: '15%', logo: 'orca', website: 'https://orca-decor.com', blogPosts: ['tendances-salon-2024', 'cuisine-moderne'] },
+  { id: 'maison-deco', name: 'Maison Déco', description: 'Accessoires et textiles pour la maison', commission: '12%', logo: 'maison', website: '#', blogPosts: ['ambiance-salon', 'jardin-tendances'] },
+  { id: 'tech-home', name: 'TechHome', description: 'Domotique et éclairage intelligent', commission: '10%', logo: 'tech', website: '#', blogPosts: ['luminaire-bureau', 'ergonomie-bureau'] },
+  { id: 'green-living', name: 'Green Living', description: 'Plantes et jardinage urbain', commission: '14%', logo: 'green', website: '#', blogPosts: ['jardin-tendances', 'salon-exterieur'] },
+  { id: 'artisanat-benin', name: 'Artisanat Bénin', description: 'Produits artisanaux béninois', commission: '20%', logo: 'artisanat', website: '#', blogPosts: ['salle-manger-guide', 'choisir-canape'] }
 ];
 
 // API simulée pour le web
 const webAPI = {
   getCategories: async () => builtInCategories,
-  getProducts: async (categoryId) => {
+  getCategory: async (categoryId) => builtInCategories.find(c => c.id === categoryId),
+  getSubcategories: async (categoryId) => {
     const cat = builtInCategories.find(c => c.id === categoryId);
-    return cat ? cat.products : [];
+    return cat ? cat.subcategories || [] : [];
+  },
+  getProducts: async (categoryId, subcategoryId = null) => {
+    const cat = builtInCategories.find(c => c.id === categoryId);
+    if (!cat) return [];
+    if (subcategoryId) {
+      return cat.products.filter(p => p.subcategory === subcategoryId);
+    }
+    return cat.products;
   },
   getProduct: async (categoryId, productId) => {
     const cat = builtInCategories.find(c => c.id === categoryId);
     return cat ? cat.products.find(p => p.id === productId) : null;
   },
   getGlobalBlog: async () => builtInBlogPosts,
+  getBlogArticles: async (categoryId, subcategoryId = null) => {
+    if (!categoryId) return builtInBlogPosts;
+    let posts = builtInBlogPosts.filter(p => p.category === categoryId);
+    if (subcategoryId) {
+      posts = posts.filter(p => p.subcategory === subcategoryId);
+    }
+    return posts;
+  },
   getBlogPost: async (postId) => builtInBlogPosts.find(p => p.id === postId),
+  getAffiliates: async () => builtInAffiliates,
+  getAffiliate: async (affiliateId) => builtInAffiliates.find(a => a.id === affiliateId),
+  getAffiliateBlogPosts: async (affiliateId) => {
+    const affiliate = builtInAffiliates.find(a => a.id === affiliateId);
+    if (!affiliate) return [];
+    return builtInBlogPosts.filter(p => affiliate.blogPosts.includes(p.id));
+  },
   searchProducts: async (query) => {
     const results = [];
     const lowerQuery = query.toLowerCase();
@@ -111,8 +201,14 @@ const webAPI = {
   }
 };
 
-// Vérifier si on est en mode Electron ou Web
-const api = typeof window !== 'undefined' && api ? api : webAPI;
+// API - Utiliser webAPI par défaut, ou window.api si disponible (Electron)
+var api = webAPI;
+if (typeof window !== 'undefined' && typeof window.api !== 'undefined') {
+  console.log('[E-Décor] Utilisation window.api (Electron)');
+  api = window.api;
+} else {
+  console.log('[E-Décor] Utilisation webAPI (intégré)');
+}
 
 // Vérifier le statut AI au chargement
 async function checkAIStatus() {
@@ -226,19 +322,23 @@ const categoryIcons = {
 
 // Initialize the app
 async function init() {
-  try {
-    categoriesData = await api.getCategories();
-    populateCategoriesMenu();
-    setupEventListeners();
-    setupIPCListeners();
-    initCart(); // Initialize cart with localStorage persistence
-    initFavorites(); // Initialize favorites
-    loadOrdersFromStorage(); // Initialize orders history
-    loadPage('home');
-  } catch (error) {
-    console.error('Initialization error:', error);
-    document.getElementById('main-content').innerHTML = '<p>Error loading application. Please restart.</p>';
-  }
+  console.log('[E-Décor] Initialisation...');
+  
+  // ALWAYS use built-in categories as primary source
+  categoriesData = builtInCategories;
+  console.log('[E-Décor] Catégories intégrées:', categoriesData.length);
+  
+  populateCategoriesMenu();
+  setupEventListeners();
+  setupIPCListeners();
+  initCart();
+  initFavorites();
+  loadOrdersFromStorage();
+  initAIChat(); // Initialize AI Chat Assistant
+  
+  // Load home page
+  await loadPage('home');
+  console.log('[E-Décor] Application initialisée!');
 }
 
 function t(key) {
@@ -376,7 +476,7 @@ function displaySearchResults(query, results) {
 }
 
 // Load a page
-async function loadPage(page) {
+async function loadPage(page, params = {}) {
   currentPage = page;
   updateActiveNavLink(page);
 
@@ -391,6 +491,21 @@ async function loadPage(page) {
       break;
     case 'blog':
       await loadBlogPage(mainContent);
+      break;
+    case 'affiliates':
+      await loadAffiliatesPage(mainContent);
+      break;
+    case 'academy':
+      await loadAcademyPage(mainContent);
+      break;
+    case 'resellers':
+      await loadResellersPage(mainContent);
+      break;
+    case 'course':
+      await loadCoursePage(mainContent, params.id || 'c1');
+      break;
+    case 'blog-post':
+      await loadBlogPost(mainContent, params.id || 'b1');
       break;
     case 'about':
       await loadAboutPage(mainContent);
@@ -417,7 +532,7 @@ async function loadPage(page) {
       await loadCartPage(mainContent);
       break;
     default:
-      mainContent.innerHTML = '<p>Page not found</p>';
+      await loadHomePage(mainContent);
   }
 }
 
@@ -448,36 +563,157 @@ function refreshCurrentPage() {
 
 // Load Home Page
 async function loadHomePage(container) {
+  const isFR = currentLanguage === 'fr';
+  
   container.innerHTML = `
+    <!-- Hero Section -->
     <section class="hero-section">
-      <h2>${t('home_title')}</h2>
-      <p>${t('home_subtitle')}</p>
-      <a href="#" class="cta-button" onclick="loadPage('catalog'); return false;">${t('home_cta')}</a>
+      <div class="hero-content">
+        <h2>${isFR ? 'Transformez Votre Intérieur' : 'Transform Your Interior'}</h2>
+        <p>${isFR ? 'Meubles & Décoration de qualité' : 'Quality Furniture & Decor'}</p>
+        <p class="hero-partner">${isFR ? 'Partenaire Officiel ORCA-Décor' : 'Official ORCA-Décor Partner'}</p>
+        <div class="hero-actions">
+          <a href="#" class="cta-button primary" onclick="loadPage('catalog'); return false;">
+            ${isFR ? 'Découvrir le Catalogue' : 'Discover Catalog'}
+          </a>
+          <a href="#" class="cta-button secondary" onclick="loadPage('contact'); return false;">
+            ${isFR ? 'Contactez-nous' : 'Contact Us'}
+          </a>
+        </div>
+      </div>
     </section>
 
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">${isFR ? 'Produits' : 'Products'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">${isFR ? 'Catégories' : 'Categories'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">12+</span>
+          <span class="stat-label">${isFR ? 'Articles Blog' : 'Blog Articles'}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">${isFR ? 'Support' : 'Support'}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
     <section class="categories-section">
-      <h2 class="page-title">${t('categories_title')}</h2>
+      <h2 class="section-heading">
+        <span class="heading-icon">🏠</span>
+        ${isFR ? 'Nos Catégories' : 'Our Categories'}
+      </h2>
       <div class="categories-grid">
         ${categoriesData.map(cat => `
           <div class="category-card" onclick="loadCategory('${cat.id}')">
-            <div class="category-image">${categoryIcons[cat.id] || '🪑'}</div>
+            <div class="category-icon">${cat.icon || '🪑'}</div>
             <div class="category-info">
-              <h3>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h3>
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
               <p>${cat.description}</p>
-              <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
+              <span class="category-count">${cat.products.length} ${isFR ? 'produits' : 'products'}</span>
+            </div>
+            <div class="category-arrow">→</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">⭐</span>
+        ${isFR ? 'Produits Vedettes' : 'Featured Products'}
+      </h2>
+      <div class="products-grid">
+        ${getFeaturedProducts().map(product => `
+          <div class="product-card" onclick="showProductDetails('${product.categoryId}', '${product.id}')">
+            <div class="product-image">${product.icon || '🛋️'}</div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <button class="product-button">${isFR ? 'Voir détails' : 'View Details'}</button>
             </div>
           </div>
         `).join('')}
       </div>
     </section>
 
+    <!-- Why Choose Us -->
+    <section class="why-us-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">💎</span>
+        ${isFR ? 'Pourquoi Choisir E-Décor' : 'Why Choose E-Décor'}
+      </h2>
+      <div class="why-us-grid">
+        <div class="why-us-card">
+          <span class="why-us-icon">🚚</span>
+          <h3>${isFR ? 'Livraison Rapide' : 'Fast Delivery'}</h3>
+          <p>${isFR ? 'Livraison partout à Cotonou et environs' : 'Delivery throughout Cotonou and surroundings'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">🛡️</span>
+          <h3>${isFR ? 'Garantie Qualité' : 'Quality Warranty'}</h3>
+          <p>${isFR ? 'Tous nos produits sont garantis 2 ans' : 'All our products are guaranteed 2 years'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">💬</span>
+          <h3>${isFR ? 'Support 24/7' : 'Support 24/7'}</h3>
+          <p>${isFR ? 'Notre équipe est disponible à tout moment' : 'Our team is available at all times'}</p>
+        </div>
+        <div class="why-us-card">
+          <span class="why-us-icon">🤝</span>
+          <h3>${isFR ? 'Partenaire ORCA' : 'ORCA Partner'}</h3>
+          <p>${isFR ? 'Collaboration avec ORCA-Décor leader' : 'Partnership with ORCA-Décor leader'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Section -->
     <section class="blog-section">
-      <h2 class="page-title">${t('blog_title')}</h2>
+      <h2 class="section-heading">
+        <span class="heading-icon">📰</span>
+        ${isFR ? 'Derniers Articles' : 'Latest Articles'}
+      </h2>
       <div class="blog-grid">
         ${await getRecentBlogPosts(4)}
       </div>
+      <div class="blog-cta">
+        <button class="cta-button" onclick="loadPage('blog')">${isFR ? 'Voir Tous les Articles' : 'View All Articles'}</button>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>${isFR ? 'Prêt à Transformer Votre Intérieur?' : 'Ready to Transform Your Interior?'}</h2>
+        <p>${isFR ? 'Contactez-nous pour un devis personnalisé' : 'Contact us for a personalized quote'}</p>
+        <div class="cta-buttons">
+          <button class="cta-button primary" onclick="loadPage('contact')">${isFR ? 'Contactez-nous' : 'Contact Us'}</button>
+          <button class="cta-button secondary" onclick="loadPage('catalog')">${isFR ? 'Voir le Catalogue' : 'View Catalog'}</button>
+        </div>
+      </div>
     </section>
   `;
+}
+
+// Get featured products
+function getFeaturedProducts() {
+  const products = [];
+  categoriesData.forEach(cat => {
+    cat.products.slice(0, 2).forEach(p => {
+      products.push({ ...p, categoryId: cat.id, categoryName: cat.name, icon: cat.icon });
+    });
+  });
+  return products.slice(0, 4);
 }
 
 // Get recent blog posts
@@ -497,59 +733,245 @@ async function getRecentBlogPosts(count) {
 
 // Load Catalog Page
 async function loadCatalogPage(container) {
+  const isFR = currentLanguage === 'fr';
+  
+  // Calculate total products
+  const totalProducts = categoriesData.reduce((sum, cat) => sum + cat.products.length, 0);
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t('catalog_title')}</h1>
-      <p>${t('catalog_subtitle')}</p>
-    </div>
-    <div class="categories-grid">
-      ${categoriesData.map(cat => `
-        <div class="category-card" onclick="loadCategory('${cat.id}')">
-          <div class="category-image">${categoryIcons[cat.id] || '🪑'}</div>
-          <div class="category-info">
-            <h3>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h3>
-            <p>${cat.description}</p>
-            <p class="product-count">${cat.products.length} ${cat.products.length === 1 ? 'produit' : 'produits'}</p>
-          </div>
+    <!-- Catalog Header -->
+    <div class="catalog-header">
+      <div class="catalog-header-content">
+        <h1>${isFR ? 'Notre Catalogue Complet' : 'Our Complete Catalog'}</h1>
+        <p>${isFR ? 'Découvrez tous nos produits de qualité' : 'Discover all our quality products'}</p>
+        <div class="catalog-stats">
+          <span class="catalog-stat">
+            <strong>${categoriesData.length}</strong> ${isFR ? 'Catégories' : 'Categories'}
+          </span>
+          <span class="catalog-stat">
+            <strong>${totalProducts}</strong> ${isFR ? 'Produits' : 'Products'}
+          </span>
         </div>
-      `).join('')}
+      </div>
     </div>
+
+    <!-- Categories Grid -->
+    <section class="catalog-section">
+      <div class="categories-grid">
+        ${categoriesData.map(cat => `
+          <div class="category-card-large" onclick="loadCategory('${cat.id}')">
+            <div class="category-card-icon">${cat.icon || '🪑'}</div>
+            <div class="category-card-content">
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
+              <p>${cat.description}</p>
+              <div class="category-card-meta">
+                <span class="product-count-badge">${cat.products.length} ${isFR ? 'produits' : 'products'}</span>
+                <span class="view-more">${isFR ? 'Voir produits' : 'View products'} →</span>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
   `;
 }
 
-// Load Category
+// Load Category with subcategories
 async function loadCategory(categoryId) {
   const category = categoriesData.find(c => c.id === categoryId);
   if (!category) return;
 
   const products = await api.getProducts(categoryId);
+  const subcategories = category.subcategories || [];
   const container = document.getElementById('main-content');
 
+  // Get blog posts for this category
+  const categoryPosts = await api.getBlogArticles(categoryId);
+
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${currentLanguage === 'fr' ? category.name : category.name_en}</h1>
-      <p>${category.description}</p>
+    <div class="page-title category-header">
+      <div class="category-header-content">
+        <span class="category-icon-large">${category.icon || '🪑'}</span>
+        <div>
+          <h1>${currentLanguage === 'fr' ? category.name : category.name_en}</h1>
+          <p>${category.description}</p>
+        </div>
+      </div>
     </div>
-    <div class="products-grid">
-      ${products.map(product => `
-        <div class="product-card">
-          <div class="product-image">${categoryIcons[categoryId] || '🪑'}</div>
-          <div class="product-info">
-            <h4>${product.name}</h4>
-            <p class="price">${formatPrice(product.price, product.currency)}</p>
-            <p class="description">${product.description}</p>
-            <div class="product-actions">
-              <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
-              <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+
+    <!-- Sous-catégories -->
+    ${subcategories.length > 0 ? `
+    <div class="subcategories-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos sous-catégories' : 'Our Subcategories'}</h2>
+      <div class="subcategories-grid">
+        ${subcategories.map(sub => `
+          <div class="subcategory-card" onclick="loadSubcategory('${categoryId}', '${sub.id}')">
+            <span class="subcategory-icon">${getSubcategoryIcon(sub.id)}</span>
+            <h3>${currentLanguage === 'fr' ? sub.name : sub.name_en}</h3>
+            <p>${sub.description}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Produits -->
+    <div class="products-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Nos produits' : 'Our Products'}</h2>
+      <div class="products-grid">
+        ${products.map(product => {
+          const productEmoji = getEmojiForProduct(product.id);
+          return `
+          <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
+            <div class="product-image">
+              <span class="product-emoji">${productEmoji}</span>
+            </div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
+                <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('')}
+        `}).join('')}
+      </div>
     </div>
+
+    <!-- Articles Blog liés -->
+    ${categoryPosts.length > 0 ? `
+    <div class="blog-related-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Articles blog liés' : 'Related Blog Articles'}</h2>
+      <div class="blog-mini-grid">
+        ${categoryPosts.slice(0, 3).map(post => `
+          <div class="blog-mini-card" onclick="loadBlogPost('${post.id}')">
+            <span class="blog-mini-icon">📄</span>
+            <h4>${currentLanguage === 'fr' ? post.title : post.title_en}</h4>
+            <p>${post.excerpt}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
   `;
 
   currentPage = 'category';
   updateActiveNavLink(null);
+}
+
+// Load Subcategory
+async function loadSubcategory(categoryId, subcategoryId) {
+  const category = categoriesData.find(c => c.id === categoryId);
+  const subcategory = category?.subcategories.find(s => s.id === subcategoryId);
+  if (!subcategory) return;
+
+  const products = await api.getProducts(categoryId, subcategoryId);
+  const subcategoryPosts = await api.getBlogArticles(categoryId, subcategoryId);
+  const container = document.getElementById('main-content');
+
+  container.innerHTML = `
+    <div class="page-title category-header">
+      <button class="back-button" onclick="loadCategory('${categoryId}')">← ${currentLanguage === 'fr' ? 'Retour' : 'Back'}</button>
+      <div class="category-header-content">
+        <span class="category-icon-large">${getSubcategoryIcon(subcategoryId)}</span>
+        <div>
+          <h1>${currentLanguage === 'fr' ? subcategory.name : subcategory.name_en}</h1>
+          <p>${subcategory.description}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Produits de la sous-catégorie -->
+    <div class="products-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Produits' : 'Products'}</h2>
+      <div class="products-grid">
+        ${products.map(product => {
+          const productEmoji = getEmojiForProduct(product.id);
+          return `
+          <div class="product-card" onclick="showProductDetails('${categoryId}', '${product.id}')">
+            <div class="product-image">
+              <span class="product-emoji">${productEmoji}</span>
+            </div>
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="price">${formatPrice(product.price, product.currency)}</p>
+              <p class="description">${product.description}</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <button class="product-button" onclick="showProductDetails('${categoryId}', '${product.id}')">${t('voir_details')}</button>
+                <button class="product-button favorite-btn" onclick="addToFavoritesFromCatalog('${categoryId}', '${product.id}')">❤️</button>
+              </div>
+            </div>
+          </div>
+        `}).join('')}
+      </div>
+    </div>
+
+    <!-- Articles Blog liés -->
+    ${subcategoryPosts.length > 0 ? `
+    <div class="blog-related-section">
+      <h2 class="section-title">${currentLanguage === 'fr' ? 'Articles blog' : 'Blog Articles'}</h2>
+      <div class="blog-mini-grid">
+        ${subcategoryPosts.map(post => `
+          <div class="blog-mini-card" onclick="loadBlogPost('${post.id}')">
+            <span class="blog-mini-icon">📄</span>
+            <h4>${currentLanguage === 'fr' ? post.title : post.title_en}</h4>
+            <p>${post.excerpt}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : ''}
+  `;
+}
+
+// Helper function to get subcategory icon
+function getSubcategoryIcon(subcategoryId) {
+  const icons = {
+    'canapes': '🛋️',
+    'fauteuils': '🪑',
+    'tables-basses': '🪵',
+    'meubles-tv': '📺',
+    'bibliotheques': '📚',
+    'bureaux': '💼',
+    'chaises': '🪑',
+    'rangements': '🗄️',
+    'luminaires': '💡',
+    'ilot-central': '🍳',
+    'idables': '🍽️',
+    'etagere-murale': '🪜',
+    'tables-chaises': '🪑',
+    'salon-exterieur': '🌳',
+    'transats': '🏖️',
+    'parasols': '☂️',
+    'barbecue': '🍖',
+    'tables': '🪵',
+    'buffets': '🗄️',
+    'vitrines': '🖼️'
+  };
+  return icons[subcategoryId] || '📦';
+}
+
+// Show product details in modal
+// Get product image URL - use emoji as fallback
+function getProductImageUrl(imageName, productId) {
+  // For now, use emoji icons since local images have path issues
+  // This can be updated when images are properly configured
+  const emoji = getEmojiForProduct(productId);
+  return emoji; // Return emoji directly, not as image
+}
+
+// Get emoji based on product
+function getEmojiForProduct(productId) {
+  const emojis = {
+    's1': '🛋️', 's2': '🪑', 's3': '🪵', 's4': '📺', 's5': '📚',
+    'b1': '💼', 'b2': '🪑', 'b3': '🗄️', 'b4': '📈',
+    'c1': '🍳', 'c2': '� cabinets', 'c3': '🪜',
+    'j1': '🌳', 'j2': '🏖️', 'j3': '☂️', 'j4': '🍖',
+    'sd1': '🪵', 'sd2': '🪑', 'sd3': '🗄️', 'sd4': '🖼️'
+  };
+  return emojis[productId] || '🪑';
 }
 
 // Show product details in modal
@@ -563,10 +985,14 @@ async function showProductDetails(categoryId, productId) {
   const favBtnText = isFavorite(productId) ? (currentLanguage === 'fr' ? '💔 Retirer' : '💔 Remove') : '❤️ Favoris';
   const favAction = isFavorite(productId) ? `removeFromFavorites('${productId}')` : `addToFavoritesFromCatalog('${categoryId}', '${productId}')`;
   
+  const productEmoji = getEmojiForProduct(productId);
+  
   modalBody.innerHTML = `
     <div class="product-detail-modal">
       <div class="product-gallery">
-        <div class="product-image-large">${categoryIcons[categoryId] || '🪑'}</div>
+        <div class="product-image-large">
+          <span class="product-emoji-large">${productEmoji}</span>
+        </div>
       </div>
       <div class="product-info-detail">
         <span class="category-tag">${categoryName}</span>
@@ -576,10 +1002,19 @@ async function showProductDetails(categoryId, productId) {
         <div class="product-specs">
           <h4>${currentLanguage === 'fr' ? 'Caractéristiques' : 'Specifications'}</h4>
           <ul>
-            <li>${currentLanguage === 'fr' ? 'Qualité premium' : 'Premium quality'}</li>
-            <li>${currentLanguage === 'fr' ? 'Garantie 2 ans' : '2 year warranty'}</li>
-            <li>${currentLanguage === 'fr' ? 'Livraison internationale' : 'International delivery'}</li>
+            <li>✅ ${currentLanguage === 'fr' ? 'Qualité premium' : 'Premium quality'}</li>
+            <li>🛡️ ${currentLanguage === 'fr' ? 'Garantie 2 ans' : '2 year warranty'}</li>
+            <li>🚚 ${currentLanguage === 'fr' ? 'Livraison internationale' : 'International delivery'}</li>
+            <li>💬 ${currentLanguage === 'fr' ? 'Support 24/7' : 'Support 24/7'}</li>
           </ul>
+        </div>
+        <div class="product-quantity">
+          <label>${currentLanguage === 'fr' ? 'Quantité' : 'Quantity'}:</label>
+          <div class="quantity-selector">
+            <button onclick="updateModalQuantity(-1)">-</button>
+            <input type="number" id="modal-product-qty" value="1" min="1" max="99">
+            <button onclick="updateModalQuantity(1)">+</button>
+          </div>
         </div>
         <div class="product-actions-detail">
           <button class="cta-button" onclick="addToCartFromModal('${categoryId}', '${product.id}')">${t('ajouter_panier')}</button>
@@ -590,6 +1025,15 @@ async function showProductDetails(categoryId, productId) {
   `;
 
   openModal();
+}
+
+// Update quantity in modal
+function updateModalQuantity(change) {
+  const input = document.getElementById('modal-product-qty');
+  if (input) {
+    const newValue = Math.max(1, Math.min(99, parseInt(input.value) + change));
+    input.value = newValue;
+  }
 }
 
 // Add to cart from modal
@@ -637,6 +1081,454 @@ async function loadBlogPage(container) {
       `).join('')}
     </div>
   `;
+}
+
+// Load Affiliates Page
+async function loadAffiliatesPage(container) {
+  const affiliates = await api.getAffiliates();
+  
+  container.innerHTML = `
+    <div class="affiliates-hero">
+      <h1>${currentLanguage === 'fr' ? 'Nos Partenaires Affiliés' : 'Our Affiliated Partners'}</h1>
+      <p>${currentLanguage === 'fr' ? 'Découvrez nos partenaires de confiance pour la décoration et l\'ameublement' : 'Discover our trusted partners for decoration and furniture'}</p>
+    </div>
+
+    <div class="affiliates-grid">
+      ${affiliates.map(affiliate => `
+        <div class="affiliate-card">
+          <div class="affiliate-logo">${getAffiliateLogo(affiliate.logo)}</div>
+          <div class="affiliate-info">
+            <h3>${affiliate.name}</h3>
+            <p class="affiliate-desc">${affiliate.description}</p>
+            <div class="affiliate-stats">
+              <span class="commission-badge">💰 Commission: ${affiliate.commission}</span>
+            </div>
+            <div class="affiliate-posts">
+              <h4>${currentLanguage === 'fr' ? 'Articles liés' : 'Related Articles'}</h4>
+              ${affiliate.blogPosts.slice(0, 2).map(postId => {
+                const post = builtInBlogPosts.find(p => p.id === postId);
+                return post ? `<span class="post-tag" onclick="loadBlogPost('${post.id}')">📄 ${currentLanguage === 'fr' ? post.title : post.title_en}</span>` : '';
+              }).join('')}
+            </div>
+            <a href="${affiliate.website}" class="affiliate-btn" target="_blank">
+              ${currentLanguage === 'fr' ? 'Visiter le site' : 'Visit Website'} →
+            </a>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="affiliates-cta">
+      <h2>${currentLanguage === 'fr' ? 'Devenir partenaire' : 'Become a Partner'}</h2>
+      <p>${currentLanguage === 'fr' ? 'Rejoignez notre programme d\'affiliation et gagnez des commissions sur chaque vente' : 'Join our affiliate program and earn commissions on every sale'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${currentLanguage === 'fr' ? 'Contactez-nous' : 'Contact Us'}</button>
+    </div>
+  `;
+}
+
+// ============= E-DÉCOR ACADEMY =============
+
+// Course categories data
+const academyCategories = [
+  { id: 'decoration-interieur', name: 'Décoration intérieure', name_en: 'Interior Decoration', icon: '🏠', count: 45 },
+  { id: 'decoration-exterieur', name: 'Décoration extérieure', name_en: 'Exterior Decoration', icon: '🌳', count: 23 },
+  { id: 'architecture', name: 'Architecture d\'intérieur', name_en: 'Interior Architecture', icon: '🏗️', count: 18 },
+  { id: 'home-staging', name: 'Home Staging', name_en: 'Home Staging', icon: '✨', count: 12 },
+  { id: 'mobilier', name: 'Mobilier', name_en: 'Furniture', icon: '🛋️', count: 32 },
+  { id: 'couleurs', name: 'Couleurs', name_en: 'Colors', icon: '🎨', count: 15 },
+  { id: 'eclairage', name: 'Éclairage', name_en: 'Lighting', icon: '💡', count: 20 },
+  { id: 'feng-shui', name: 'Feng Shui', name_en: 'Feng Shui', icon: '☯️', count: 10 },
+  { id: 'design-contemporain', name: 'Design contemporain', name_en: 'Contemporary Design', icon: '🔷', count: 25 },
+  { id: 'design-africain', name: 'Design africain', name_en: 'African Design', icon: '🌍', count: 18 },
+  { id: 'marketing', name: 'Marketing pour décorateurs', name_en: 'Marketing for Decorators', icon: '📈', count: 22 },
+  { id: 'dropshipping', name: 'Dropshipping décoration', name_en: 'Decoration Dropshipping', icon: '📦', count: 28 },
+  { id: 'ia-decorateurs', name: 'IA pour décorateurs', name_en: 'AI for Decorators', icon: '🤖', count: 35 }
+];
+
+// Sample courses
+const academyCourses = [
+  {
+    id: 'c1',
+    title: 'Décorer son salon comme un pro',
+    title_en: 'Decorate your living room like a pro',
+    category: 'decoration-interieur',
+    description: 'Apprenez les bases de la décoration intérieure pour transformer votre salon.',
+    description_en: 'Learn the basics of interior decoration to transform your living room.',
+    thumbnail: 'course-salon.jpg',
+    duration: '4h30',
+    level: 'beginner',
+    lessons: 12,
+    students: 1250,
+    rating: 4.8,
+    price: 49.99,
+    currency: '€',
+    instructor: { name: 'Marie Dubois', title: 'Architecte d\'intérieur' },
+    featured: true
+  },
+  {
+    id: 'c2',
+    title: 'Feng Shui complet pour la maison',
+    title_en: 'Complete Feng Shui for the home',
+    category: 'feng-shui',
+    description: 'Maîtrisez l\'art du Feng Shui pour harmoniser votre espace de vie.',
+    description_en: 'Master the art of Feng Shui to harmonize your living space.',
+    thumbnail: 'course-fengshui.jpg',
+    duration: '6h00',
+    level: 'intermediate',
+    lessons: 18,
+    students: 890,
+    rating: 4.9,
+    price: 79.99,
+    currency: '€',
+    instructor: { name: 'Li Wei', title: 'Maître Feng Shui' },
+    featured: true
+  },
+  {
+    id: 'c3',
+    title: 'Design africain moderne',
+    title_en: 'Modern African Design',
+    category: 'design-africain',
+    description: 'Intégrez les éléments traditionnels africains dans un design contemporain.',
+    description_en: 'Integrate traditional African elements into contemporary design.',
+    thumbnail: 'course-african.jpg',
+    duration: '5h00',
+    level: 'intermediate',
+    lessons: 15,
+    students: 720,
+    rating: 4.7,
+    price: 69.99,
+    currency: '€',
+    instructor: { name: 'Kofi Asante', title: 'Designer culturel' },
+    featured: true
+  },
+  {
+    id: 'c4',
+    title: 'Créer son business de dropshipping',
+    title_en: 'Create your dropshipping business',
+    category: 'dropshipping',
+    description: 'Guide complet pour lancer votre entreprise de dropshipping.',
+    description_en: 'Complete guide to launch your dropshipping business.',
+    thumbnail: 'course-dropshipping.jpg',
+    duration: '8h00',
+    level: 'advanced',
+    lessons: 24,
+    students: 2100,
+    rating: 4.6,
+    price: 149.99,
+    currency: '€',
+    instructor: { name: 'Jean-Marc Kouassi', title: 'Expert E-commerce' },
+    featured: true
+  },
+  {
+    id: 'c5',
+    title: 'L\'IA pour les décorateurs',
+    title_en: 'AI for Decorators',
+    category: 'ia-decorateurs',
+    description: 'Utilisez l\'IA pour accélérer vos projets de décoration.',
+    description_en: 'Use AI to speed up your decoration projects.',
+    thumbnail: 'course-ai.jpg',
+    duration: '3h30',
+    level: 'beginner',
+    lessons: 10,
+    students: 1850,
+    rating: 4.9,
+    price: 39.99,
+    currency: '€',
+    instructor: { name: 'Alexandre Martin', title: 'Expert IA & Design' },
+    featured: true
+  },
+  {
+    id: 'c6',
+    title: 'Home Staging professionnel',
+    title_en: 'Professional Home Staging',
+    category: 'home-staging',
+    description: 'Apprenez à valoriser les biens immobiliers pour des ventes plus rapides.',
+    description_en: 'Learn to valorize real estate for faster sales.',
+    thumbnail: 'course-staging.jpg',
+    duration: '5h30',
+    level: 'intermediate',
+    lessons: 16,
+    students: 680,
+    rating: 4.8,
+    price: 89.99,
+    currency: '€',
+    instructor: { name: 'Sophie Bernard', title: 'Home Stager certifiée' },
+    featured: false
+  }
+];
+
+async function loadAcademyPage(container) {
+  const t = currentLanguage === 'fr';
+  
+  container.innerHTML = `
+    <div class="academy-page">
+      <div class="academy-hero">
+        <div class="academy-hero-content">
+          <h1>🎓 ${t ? 'E-Décor Academy' : 'E-Décor Academy'}</h1>
+          <p>${t ? 'Maîtrisez l\'art de la décoration avec nos formations professionnelles' : 'Master the art of decoration with our professional courses'}</p>
+          <div class="academy-stats">
+            <div class="stat"><span class="stat-number">15+</span><span>${t ? 'Formations' : 'Courses'}</span></div>
+            <div class="stat"><span class="stat-number">5000+</span><span>${t ? 'Étudiants' : 'Students'}</span></div>
+            <div class="stat"><span class="stat-number">4.8</span><span>${t ? 'Note moyenne' : 'Average Rating'}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="academy-categories">
+        <h2>${t ? 'Catégories de formations' : 'Course Categories'}</h2>
+        <div class="categories-grid">
+          ${academyCategories.map(cat => `
+            <div class="category-card" onclick="filterAcademyByCategory('${cat.id}')">
+              <span class="category-icon">${cat.icon}</span>
+              <span class="category-name">${t ? cat.name : cat.name_en}</span>
+              <span class="category-count">${cat.count} ${t ? 'formations' : 'courses'}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-featured">
+        <h2>⭐ ${t ? 'Formations en vedette' : 'Featured Courses'}</h2>
+        <div class="courses-grid">
+          ${academyCourses.filter(c => c.featured).map(course => `
+            <div class="course-card" onclick="loadPage('course', {id: '${course.id}'})">
+              <div class="course-thumbnail">
+                <span class="course-level level-${course.level}">${course.level}</span>
+                <span class="course-duration">⏱️ ${course.duration}</span>
+              </div>
+              <div class="course-info">
+                <h3>${t ? course.title : course.title_en}</h3>
+                <p class="course-desc">${t ? course.description : course.description_en}</p>
+                <div class="course-meta">
+                  <span class="course-instructor">👤 ${course.instructor.name}</span>
+                  <span class="course-students">👥 ${course.students}</span>
+                  <span class="course-rating">⭐ ${course.rating}</span>
+                </div>
+                <div class="course-footer">
+                  <span class="course-price">${course.price}${course.currency}</span>
+                  <button class="course-btn">${t ? 'Voir le cours' : 'View Course'}</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-all">
+        <h2>📚 ${t ? 'Toutes nos formations' : 'All Courses'}</h2>
+        <div class="courses-grid">
+          ${academyCourses.map(course => `
+            <div class="course-card" onclick="loadPage('course', {id: '${course.id}'})">
+              <div class="course-thumbnail">
+                <span class="course-level level-${course.level}">${course.level}</span>
+                <span class="course-duration">⏱️ ${course.duration}</span>
+              </div>
+              <div class="course-info">
+                <h3>${t ? course.title : course.title_en}</h3>
+                <p class="course-desc">${t ? course.description : course.description_en}</p>
+                <div class="course-meta">
+                  <span class="course-instructor">👤 ${course.instructor.name}</span>
+                  <span class="course-students">👥 ${course.students}</span>
+                  <span class="course-rating">⭐ ${course.rating}</span>
+                </div>
+                <div class="course-footer">
+                  <span class="course-price">${course.price}${course.currency}</span>
+                  <button class="course-btn">${t ? 'Voir' : 'View'}</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="academy-cta">
+        <h2>${t ? 'Vous êtes expert en décoration?' : 'Are you a decoration expert?'}</h2>
+        <p>${t ? 'Proposez vos formations et rejoignez notre communauté d\'experts' : 'Offer your courses and join our expert community'}</p>
+        <button class="cta-button" onclick="loadPage('contact')">${t ? 'Devenir formateur' : 'Become an Instructor'}</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadCoursePage(container, courseId) {
+  const t = currentLanguage === 'fr';
+  const course = academyCourses.find(c => c.id === courseId);
+  
+  if (!course) {
+    container.innerHTML = `<div class="not-found"><h2>${t ? 'Cours non trouvé' : 'Course not found'}</h2></div>`;
+    return;
+  }
+  
+  container.innerHTML = `
+    <div class="course-page">
+      <button class="back-btn" onclick="loadPage('academy')">← ${t ? 'Retour aux formations' : 'Back to Courses'}</button>
+      
+      <div class="course-header">
+        <div class="course-header-content">
+          <span class="course-level-badge level-${course.level}">${course.level}</span>
+          <h1>${t ? course.title : course.title_en}</h1>
+          <p class="course-description">${t ? course.description : course.description_en}</p>
+          
+          <div class="course-meta-grid">
+            <div class="meta-item">
+              <span class="meta-icon">⏱️</span>
+              <span class="meta-label">${t ? 'Durée' : 'Duration'}</span>
+              <span class="meta-value">${course.duration}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">📖</span>
+              <span class="meta-label">${t ? 'Leçons' : 'Lessons'}</span>
+              <span class="meta-value">${course.lessons}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">👥</span>
+              <span class="meta-label">${t ? 'Étudiants' : 'Students'}</span>
+              <span class="meta-value">${course.students}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon">⭐</span>
+              <span class="meta-label">${t ? 'Note' : 'Rating'}</span>
+              <span class="meta-value">${course.rating}</span>
+            </div>
+          </div>
+          
+          <div class="course-instructor-card">
+            <div class="instructor-avatar">👤</div>
+            <div class="instructor-info">
+              <span class="instructor-name">${course.instructor.name}</span>
+              <span class="instructor-title">${course.instructor.title}</span>
+            </div>
+          </div>
+          
+          <div class="course-price-large">
+            <span class="price">${course.price}${course.currency}</span>
+            <button class="enroll-btn">${t ? 'S\'inscrire maintenant' : 'Enroll Now'}</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="course-content">
+        <div class="course-syllabus">
+          <h2>📋 ${t ? 'Programme de la formation' : 'Course Syllabus'}</h2>
+          <div class="syllabus-list">
+            ${[1,2,3,4,5,6,7].map(i => `
+              <div class="syllabus-item">
+                <span class="lesson-number">${i}</span>
+                <span class="lesson-title">${t ? 'Leçon ' + i : 'Lesson ' + i}</span>
+                <span class="lesson-duration">${15 + Math.floor(Math.random() * 30)} min</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div class="course-objectives">
+          <h2>🎯 ${t ? 'Objectifs' : 'Objectives'}</h2>
+          <ul class="objectives-list">
+            <li>${t ? 'Comprendre les fondamentaux' : 'Understand the fundamentals'}</li>
+            <li>${t ? 'Appliquer les techniques professionnelles' : 'Apply professional techniques'}</li>
+            <li>${t ? 'Créer des projets concrets' : 'Create concrete projects'}</li>
+            <li>${t ? 'Obtenir une certification' : 'Get certified'}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============= RESELLERS PORTAL =============
+
+const resellerTiers = [
+  { id: 'bronze', name: 'Bronze', discount: 15, minOrder: 500 },
+  { id: 'silver', name: 'Argent', discount: 25, minOrder: 2000 },
+  { id: 'gold', name: 'Or', discount: 35, minOrder: 5000 },
+  { id: 'platinum', name: 'Platine', discount: 45, minOrder: 15000 }
+];
+
+const resellerProducts = [
+  { id: 's1', name: 'Canapé modulable LINO', retailPrice: 1299, wholesalePrice: 844, stock: 25 },
+  { id: 's2', name: 'Fauteuil relax électrique', retailPrice: 649, wholesalePrice: 422, stock: 18 },
+  { id: 's3', name: 'Table basse carrée', retailPrice: 299, wholesalePrice: 194, stock: 45 },
+  { id: 's4', name: 'Meuble TV suspendu', retailPrice: 449, wholesalePrice: 292, stock: 32 },
+  { id: 's5', name: 'Bibliothèque modulable', retailPrice: 549, wholesalePrice: 357, stock: 20 }
+];
+
+async function loadResellersPage(container) {
+  const t = currentLanguage === 'fr';
+  
+  container.innerHTML = `
+    <div class="resellers-page">
+      <div class="resellers-hero">
+        <h1>🏪 ${t ? 'Portail Revendeurs' : 'Reseller Portal'}</h1>
+        <p>${t ? 'Devenez revendeur officiel E-Décor et bénéficier de prix préférentiels' : 'Become an official E-Décor reseller and benefit from preferential prices'}</p>
+      </div>
+
+      <div class="reseller-tiers">
+        <h2>${t ? 'Nos offres revendeur' : 'Our Reseller Plans'}</h2>
+        <div class="tiers-grid">
+          ${resellerTiers.map(tier => `
+            <div class="tier-card tier-${tier.id}">
+              <h3>${tier.name}</h3>
+              <div class="tier-discount">-${tier.discount}%</div>
+              <p class="tier-min">${t ? 'Commande min:' : 'Min order:'} ${tier.minOrder}€</p>
+              <ul class="tier-benefits">
+                <li>✓ ${t ? 'Prix réduit ' + tier.discount + '%' : tier.discount + '% reduced price'}</li>
+                <li>✓ ${t ? 'Support prioritaire' : 'Priority support'}</li>
+                <li>✓ ${t ? 'Catalogue exclusif' : 'Exclusive catalog'}</li>
+                <li>✓ ${t ? 'Livraison gratuite' : 'Free shipping'}</li>
+              </ul>
+              <button class="tier-btn">${t ? 'Devenir revendeur' : 'Become a Reseller'}</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="reseller-products">
+        <h2>${t ? 'Catalogue grossiste' : 'Wholesale Catalog'}</h2>
+        <div class="products-table">
+          <table>
+            <thead>
+              <tr>
+                <th>${t ? 'Produit' : 'Product'}</th>
+                <th>${t ? 'Prix détail' : 'Retail Price'}</th>
+                <th>${t ? 'Prix grossiste' : 'Wholesale Price'}</th>
+                <th>${t ? 'Stock' : 'Stock'}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${resellerProducts.map(prod => `
+                <tr>
+                  <td>${prod.name}</td>
+                  <td class="price-retail">${prod.retailPrice}€</td>
+                  <td class="price-wholesale"><strong>${prod.wholesalePrice}€</strong></td>
+                  <td>${prod.stock} ${t ? 'unités' : 'units'}</td>
+                  <td><button class="add-cart-btn">${t ? 'Ajouter' : 'Add'}</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="reseller-cta">
+        <h2>${t ? 'Intéressé?' : 'Interested?'}</h2>
+        <p>${t ? 'Contactez-nous pour devenir revendeur officiel' : 'Contact us to become an official reseller'}</p>
+        <button class="cta-button" onclick="loadPage('contact')">${t ? 'Contactez-nous' : 'Contact Us'}</button>
+      </div>
+    </div>
+  `;
+}
+
+// Helper function to get affiliate logo
+function getAffiliateLogo(type) {
+  const logos = {
+    'orca': '<span class="logo-orca">🏠<br><small>ORCA</small></span>',
+    'maison': '<span class="logo-maison">🛋️<br><small>Maison</small></span>',
+    'tech': '<span class="logo-tech">💡<br><small>TechHome</small></span>',
+    'green': '<span class="logo-green">🌿<br><small>Green</small></span>',
+    'artisanat': '<span class="logo-artisanat">🎨<br><small>Artisanat</small></span>'
+  };
+  return logos[type] || '<span class="logo-default">🤝<br><small>Partner</small></span>';
 }
 
 // Load blog posts by category
@@ -704,32 +1596,110 @@ function formatBlogContent(content) {
 
 // Load About Page
 async function loadAboutPage(container) {
+  const isFR = currentLanguage === 'fr';
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t('about_title')}</h1>
-      <p>${t('about_subtitle')}</p>
+    <!-- About Header -->
+    <div class="about-header">
+      <div class="about-header-content">
+        <h1>${isFR ? 'À Propos de E-Décor' : 'About E-Décor'}</h1>
+        <p>${isFR ? 'Votre partenaire de confiance pour l\'ameublement et la décoration' : 'Your trusted partner for furniture and decor'}</p>
+      </div>
     </div>
 
+    <!-- Story Section -->
     <section class="about-section">
-      <h2>Notre Histoire</h2>
-      <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec ORCA-Décor, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
-      <br>
-      <h2>Nos Catégories</h2>
-      <ul>
-        <li><strong>Salons</strong> : Canapés, fauteuils, tables basses, meubles TV</li>
-        <li><strong>Bureaux</strong> : Bureaux exécutifs, fauteuils de direction, rangements</li>
-        <li><strong>Cuisines</strong> : Îlots centraux, meubles bas, étageres</li>
-        <li><strong>Jardins</strong> : Salons d'extérieur, transats, barbecues</li>
-        <li><strong>Salles à manger</strong> : Tables, chaises, buffets, vaisseliers</li>
-      </ul>
-      <br>
-      <h2>Notre Mission</h2>
-      <p>Proposer des mobilier de qualité à des prix compétitifs,avec un service client irréprochable. Nous expédions nos produits dans le monde entier.</p>
+      <div class="about-card">
+        <div class="about-icon">🏠</div>
+        <h2>${isFR ? 'Notre Histoire' : 'Our Story'}</h2>
+        <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec <strong>ORCA-Décor</strong>, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
+        <p>${isFR ? 'Basés à Cotonou, au Bénin, nous servons des clients partout en Afrique de l\'Ouest et au-delà.' : 'Based in Cotonou, Benin, we serve customers across West Africa and beyond.'}</p>
+      </div>
     </section>
 
+    <!-- Categories Section -->
+    <section class="about-categories">
+      <h2 class="section-heading">
+        <span class="heading-icon">📦</span>
+        ${isFR ? 'Nos Catégories' : 'Our Categories'}
+      </h2>
+      <div class="about-categories-grid">
+        ${categoriesData.map(cat => `
+          <div class="about-category-item">
+            <span class="about-cat-icon">${cat.icon || '🪑'}</span>
+            <div>
+              <h3>${isFR ? cat.name : cat.name_en}</h3>
+              <p>${isFR ? cat.description : cat.description}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="mission-vision">
+      <div class="mission-card">
+        <div class="mission-icon">🎯</div>
+        <h2>${isFR ? 'Notre Mission' : 'Our Mission'}</h2>
+        <p>${isFR ? 'Proposer des mobilier de qualité à des prix compétitifs, avec un service client irréprochable. Nous expédions nos produits dans le monde entier.' : 'Provide quality furniture at competitive prices, with impeccable customer service. We ship our products worldwide.'}</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">🔭</div>
+        <h2>${isFR ? 'Notre Vision' : 'Our Vision'}</h2>
+        <p>${isFR ? 'Devenir le leader de l\'e-commerce mobilier en Afrique de l\'Ouest, en offrant des produits de qualité et un service exceptionnel.' : 'Become the leader in furniture e-commerce in West Africa, offering quality products and exceptional service.'}</p>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+      <h2 class="section-heading">
+        <span class="heading-icon">💎</span>
+        ${isFR ? 'Nos Valeurs' : 'Our Values'}
+      </h2>
+      <div class="values-grid">
+        <div class="value-item">
+          <span class="value-icon">✅</span>
+          <h3>${isFR ? 'Qualité' : 'Quality'}</h3>
+          <p>${isFR ? 'Produits rigoureuxelectionnés' : 'Carefully selected products'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h3>${isFR ? 'Confiance' : 'Trust'}</h3>
+          <p>${isFR ? 'Relation client durable' : 'Long-term customer relationship'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">⚡</span>
+          <h3>${isFR ? 'Rapidité' : 'Speed'}</h3>
+          <p>${isFR ? 'Livraison rapide' : 'Fast delivery'}</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">💬</span>
+          <h3>${isFR ? 'Écoute' : 'Listening'}</h3>
+          <p>${isFR ? 'Support réactif 24/7' : 'Responsive support 24/7'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners -->
     <section class="partners-section">
-      <h2>Nos Partenaires</h2>
-      <p><strong>ORCA-Décor</strong> : Notre partenaire exclusif pour la decoration et l'ameublement.</p>
+      <h2 class="section-heading">
+        <span class="heading-icon">🤝</span>
+        ${isFR ? 'Nos Partenaires' : 'Our Partners'}
+      </h2>
+      <div class="partners-grid">
+        <div class="partner-card">
+          <span class="partner-logo">🏠</span>
+          <h3>ORCA-Décor</h3>
+          <p>${isFR ? 'Partenaire exclusif pour la decoration et l\'ameublement' : 'Exclusive partner for decoration and furniture'}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+      <h2>${isFR ? 'Contactez-nous' : 'Contact Us'}</h2>
+      <p>${isFR ? 'Vous avez des questions? Notre équipe est là pour vous aider!' : 'Have questions? Our team is here to help!'}</p>
+      <button class="cta-button" onclick="loadPage('contact')">${isFR ? 'Envoyer un message' : 'Send a Message'}</button>
     </section>
   `;
 }
@@ -745,7 +1715,7 @@ const faqData = [
   {
     question: 'Quelle est la politique de retour?',
     question_en: 'What is the return policy?',
-    answer: 'Vous disposez de 30 jours pour retourner un produit non utilisé dans son emballage d\'origine. Les frais de retour sont à votre charge sauf en cas de produit défectueux.',
+    answer: 'Vous disposez de 30 jours pour retourner un produit non utilisé dans son embalagem d\'origine. Les frais de retour sont à votre charge sauf en cas de produit défectueux.',
     answer_en: 'You have 30 days to return an unused product in its original packaging. Return costs are at your expense unless the product is defective.'
   },
   {
@@ -788,6 +1758,7 @@ const faqData = [
 
 // Load FAQ Page
 async function loadFAQPage(container) {
+  console.log('[E-Décor] Loading FAQ page...');
   container.innerHTML = `
     <div class="faq-hero">
       <h1>${t('faq_title') || 'Questions Fréquentes'}</h1>
@@ -816,33 +1787,6 @@ async function loadFAQPage(container) {
   `;
   currentPage = 'faq';
   updateActiveNavLink('faq');
-}
-
-// Toggle FAQ accordion
-function toggleFAQ(index) {
-  const answer = document.getElementById('faq-answer-' + index);
-  const item = answer.parentElement;
-  const icon = item.querySelector('.faq-icon');
-  
-  document.querySelectorAll('.faq-answer').forEach((el, i) => {
-    if (i !== index) {
-      el.style.maxHeight = null;
-      el.style.padding = '0 20px';
-    }
-  });
-  document.querySelectorAll('.faq-icon').forEach((el, i) => {
-    if (i !== index) el.textContent = '+';
-  });
-  
-  if (answer.style.maxHeight) {
-    answer.style.maxHeight = null;
-    answer.style.padding = '0 20px';
-    icon.textContent = '+';
-  } else {
-    answer.style.maxHeight = answer.scrollHeight + 'px';
-    answer.style.padding = '15px 20px';
-    icon.textContent = '−';
-  }
 }
 
 // Load Legal/Mentions légales Page
@@ -901,6 +1845,35 @@ async function loadLegalPage(container) {
   `;
   currentPage = 'legal';
   updateActiveNavLink('legal');
+}
+
+// Toggle FAQ accordion
+function toggleFAQ(index) {
+  const answer = document.getElementById(`faq-answer-${index}`);
+  const item = answer.parentElement;
+  const icon = item.querySelector('.faq-icon');
+  
+  // Close all other answers
+  document.querySelectorAll('.faq-answer').forEach((el, i) => {
+    if (i !== index) {
+      el.style.maxHeight = null;
+      el.style.padding = '0 20px';
+    }
+  });
+  document.querySelectorAll('.faq-icon').forEach((el, i) => {
+    if (i !== index) el.textContent = '+';
+  });
+  
+  // Toggle current
+  if (answer.style.maxHeight) {
+    answer.style.maxHeight = null;
+    answer.style.padding = '0 20px';
+    icon.textContent = '+';
+  } else {
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+    answer.style.padding = '15px 20px';
+    icon.textContent = '−';
+  }
 }
 
 // Load Contact Page
@@ -1263,58 +2236,222 @@ async function loadAdminPage() {
   const totalOrders = orders.length;
   const totalItems = orders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0), 0);
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+  
+  // Calculate average order value
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+  
+  // Top products
+  const productCounts = {};
+  orders.forEach(order => {
+    order.items.forEach(item => {
+      productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+    });
+  });
+  const topProducts = Object.entries(productCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  
+  // Orders by status
+  const ordersByStatus = {
+    pending: orders.filter(o => o.status === 'pending').length,
+    delivered: orders.filter(o => o.status === 'delivered').length,
+    cancelled: orders.filter(o => o.status === 'cancelled').length
+  };
   
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t ? 'Administration' : 'Admin Dashboard'}</h1>
+    <!-- Admin Header -->
+    <div class="admin-header">
+      <div class="admin-header-content">
+        <h1>📊 ${t ? 'Tableau de Bord' : 'Dashboard'}</h1>
+        <p>${t ? 'Gestion complète de votre entreprise E-Décor' : 'Complete management of your E-Décor business'}</p>
+        <div class="admin-actions-header">
+          <button class="admin-btn primary" onclick="window.open('ai-agents/admin-panel.html', '_blank')">
+            🤖 ${t ? 'Panel AI Agents' : 'AI Agents Panel'}
+          </button>
+          <button class="admin-btn" onclick="exportData()">
+            📥 ${t ? 'Exporter données' : 'Export Data'}
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="admin-stats">
-      <div class="stat-card">
-        <div class="stat-icon">📦</div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">📦</span>
+          <span class="stat-trend positive">+12%</span>
+        </div>
         <div class="stat-value">${totalOrders}</div>
-        <div class="stat-label">${t ? 'Total commandes' : 'Total Orders'}</div>
+        <div class="stat-label">${t ? 'Total Commandes' : 'Total Orders'}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="width: ${totalOrders > 0 ? (deliveredOrders / totalOrders * 100) : 0}%"></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-value">${pendingOrders}</div>
-        <div class="stat-label">${t ? 'En attente' : 'Pending'}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🛍️</div>
-        <div class="stat-value">${totalItems}</div>
-        <div class="stat-label">${t ? 'Articles vendus' : 'Items Sold'}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">💰</div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">💰</span>
+          <span class="stat-trend positive">+8%</span>
+        </div>
         <div class="stat-value">${totalRevenue} €</div>
-        <div class="stat-label">${t ? 'Revenu total' : 'Total Revenue'}</div>
+        <div class="stat-label">${t ? 'Revenu Total' : 'Total Revenue'}</div>
+      </div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">⏳</span>
+          <span class="stat-trend warning">${pendingOrders}</span>
+        </div>
+        <div class="stat-value">${pendingOrders}</div>
+        <div class="stat-label">${t ? 'Commandes en Attente' : 'Pending Orders'}</div>
+      </div>
+      
+      <div class="stat-card-large">
+        <div class="stat-card-header">
+          <span class="stat-icon">📈</span>
+        </div>
+        <div class="stat-value">${avgOrderValue} €</div>
+        <div class="stat-label">${t ? 'Panier Moyen' : 'Average Order'}</div>
       </div>
     </div>
-    
-    <h2 class="page-title" style="margin-top: 40px;">${t ? 'Gestion des commandes' : 'Order Management'}</h2>
-    <div class="orders-list">
-      ${orders.map(order => `
-        <div class="order-card">
-          <div class="order-header">
-            <span class="order-id">${order.id}</span>
-            <span class="order-status ${order.status}">${t ? order.status === 'pending' ? 'En attente' : 'Livré' : order.status}</span>
+
+    <!-- Charts Section -->
+    <div class="admin-charts-grid">
+      <!-- Orders by Status -->
+      <div class="admin-chart-card">
+        <h3>📊 ${t ? 'Statut des Commandes' : 'Order Status'}</h3>
+        <div class="chart-pie">
+          <div class="pie-segment pending" style="--p: ${totalOrders > 0 ? (ordersByStatus.pending / totalOrders * 100) : 0}">
+            <span class="pie-label">${t ? 'En attente' : 'Pending'}</span>
+            <span class="pie-value">${ordersByStatus.pending}</span>
           </div>
-          <div class="order-date">${new Date(order.date).toLocaleDateString()}</div>
-          <div class="order-items">
-            ${order.items.map(item => `
-              <p>${item.name} × ${item.quantity}</p>
-            `).join('')}
-          </div>
-          <div class="order-total">
-            <strong>${order.total} ${order.currency}</strong>
-          </div>
-          <div class="admin-actions">
-            <button class="product-button" onclick="updateOrderStatus('${order.id}', 'delivered')">${t ? 'Marquer livré' : 'Mark Delivered'}</button>
+          <div class="pie-segment delivered" style="--p: ${totalOrders > 0 ? (ordersByStatus.delivered / totalOrders * 100) : 0}">
+            <span class="pie-label">${t ? 'Livrées' : 'Delivered'}</span>
+            <span class="pie-value">${ordersByStatus.delivered}</span>
           </div>
         </div>
-      `).join('')}
+      </div>
+
+      <!-- Top Products -->
+      <div class="admin-chart-card">
+        <h3>🏆 ${t ? 'Produits les Vendus' : 'Top Products'}</h3>
+        <div class="top-products-list">
+          ${topProducts.length > 0 ? topProducts.map((product, index) => `
+            <div class="top-product-item">
+              <span class="top-rank">#${index + 1}</span>
+              <span class="top-name">${product[0]}</span>
+              <span class="top-qty">${product[1]} ${t ? 'ventes' : 'sold'}</span>
+            </div>
+          `).join('') : `<p class="no-data">${t ? 'Aucune vente encore' : 'No sales yet'}</p>`}
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-quick-actions">
+      <h3>⚡ ${t ? 'Actions Rapides' : 'Quick Actions'}</h3>
+      <div class="quick-actions-grid">
+        <button class="quick-action-btn" onclick="loadPage('catalog')">
+          <span>📦</span>
+          ${t ? 'Gérer Produits' : 'Manage Products'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('orders')">
+          <span>📋</span>
+          ${t ? 'Voir Commandes' : 'View Orders'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('blog')">
+          <span>📝</span>
+          ${t ? 'Gérer Blog' : 'Manage Blog'}
+        </button>
+        <button class="quick-action-btn" onclick="loadPage('affiliates')">
+          <span>🤝</span>
+          ${t ? 'Gérer Affiliés' : 'Manage Affiliates'}
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="admin-orders-section">
+      <h3>📦 ${t ? 'Dernières Commandes' : 'Recent Orders'}</h3>
+      <div class="orders-table">
+        <div class="table-header">
+          <span>ID</span>
+          <span>${t ? 'Client' : 'Customer'}</span>
+          <span>${t ? 'Articles' : 'Items'}</span>
+          <span>${t ? 'Total' : 'Total'}</span>
+          <span>${t ? 'Statut' : 'Status'}</span>
+          <span>${t ? 'Actions' : 'Actions'}</span>
+        </div>
+        ${orders.length > 0 ? orders.slice(0, 10).map(order => `
+          <div class="table-row">
+            <span class="order-id-cell">${order.id}</span>
+            <span>${order.delivery?.name || 'N/A'}</span>
+            <span>${order.items.reduce((s, i) => s + i.quantity, 0)}</span>
+            <span class="price-cell">${order.total} €</span>
+            <span class="status-badge ${order.status}">${t ? (order.status === 'pending' ? 'En attente' : order.status === 'delivered' ? 'Livré' : 'Annulé') : order.status}</span>
+            <span class="actions-cell">
+              <button class="action-btn view" onclick="viewOrder('${order.id}')" title="${t ? 'Voir' : 'View'}">👁️</button>
+              ${order.status === 'pending' ? `<button class="action-btn deliver" onclick="updateOrderStatus('${order.id}', 'delivered')" title="${t ? 'Livrer' : 'Deliver'}">✅</button>` : ''}
+              <button class="action-btn delete" onclick="cancelOrder('${order.id}')" title="${t ? 'Annuler' : 'Cancel'}">❌</button>
+            </span>
+          </div>
+        `).join('') : `<div class="no-orders">${t ? 'Aucune commande pour le moment' : 'No orders yet'}</div>`}
+      </div>
+    </div>
+
+    <!-- Products Overview -->
+    <div class="admin-products-section">
+      <h3>🛋️ ${t ? 'Aperçu des Produits' : 'Products Overview'}</h3>
+      <div class="products-overview-grid">
+        ${categoriesData.map(cat => `
+          <div class="product-category-card">
+            <div class="cat-icon">${cat.icon || '🪑'}</div>
+            <div class="cat-info">
+              <h4>${currentLanguage === 'fr' ? cat.name : cat.name_en}</h4>
+              <p>${cat.products.length} ${t ? 'produits' : 'products'}</p>
+            </div>
+            <button class="cat-btn" onclick="loadCategory('${cat.id}')">→</button>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
+}
+
+// View order details
+function viewOrder(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+  
+  const t = currentLanguage === 'fr';
+  alert(`${t ? 'Détails de la commande' : 'Order Details'}\n\nID: ${order.id}\n${t ? 'Client' : 'Customer'}: ${order.delivery?.name || 'N/A'}\n${t ? 'Email' : 'Email'}: ${order.delivery?.email || 'N/A'}\n${t ? 'Téléphone' : 'Phone'}: ${order.delivery?.phone || 'N/A'}\n${t ? 'Adresse' : 'Address'}: ${order.delivery?.address || 'N/A'}\n${t ? 'Mode paiement' : 'Payment'}: ${order.paymentMethod}\n${t ? 'Total' : 'Total'}: ${order.total} €`);
+}
+
+// Cancel order
+function cancelOrder(orderId) {
+  if (confirm(currentLanguage === 'fr' ? 'Êtes-vous sûr de vouloir annuler cette commande?' : 'Are you sure you want to cancel this order?')) {
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+      order.status = 'cancelled';
+      saveOrdersToStorage();
+      loadAdminPage();
+      showNotification(currentLanguage === 'fr' ? 'Commande annulée!' : 'Order cancelled!');
+    }
+  }
+}
+
+// Export data
+function exportData() {
+  const data = {
+    orders: orders,
+    exportDate: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `e-decor-orders-${Date.now()}.json`;
+  a.click();
 }
 
 // Update order status
@@ -1328,141 +2465,346 @@ function updateOrderStatus(orderId, status) {
   }
 }
 
+// Payment methods by region/country
+const paymentMethodsByRegion = {
+  // West Africa
+  'BJ': [  // Benin
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' },
+    { id: 'cash', name: 'Paiement à la livraison', icon: '💵', desc: 'Espèces' }
+  ],
+  'TG': [  // Togo
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  'SN': [  // Senegal
+    { id: 'orange', name: 'Orange Money', icon: '🟠', desc: 'Paiement mobile' },
+    { id: 'wave', name: 'Wave', icon: '🌊', desc: 'Sans frais' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  'CI': [  // Côte d'Ivoire
+    { id: 'mtn', name: 'MTN Mobile Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'moov', name: 'Moov Money', icon: '📱', desc: 'Paiement mobile' },
+    { id: 'orange', name: 'Orange Money', icon: '🟠', desc: 'Paiement mobile' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' }
+  ],
+  'NG': [  // Nigeria
+    { id: 'flutterwave', name: 'Flutterwave', icon: '💙', desc: 'Leader Nigeria' },
+    { id: 'paystack', name: 'Paystack', icon: '💜', desc: 'Stripe partner' },
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'bank', name: 'Virement Bancaire', icon: '🏦', desc: 'Direct' }
+  ],
+  // Europe
+  'FR': [  // France
+    { id: 'card', name: 'Carte Bancaire', icon: '💳', desc: 'CB, Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'Compte PayPal' },
+    { id: 'bank', name: 'Virement SEPA', icon: '🏦', desc: 'Gratuit EU' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'iPhone, Mac' },
+    { id: 'google', name: 'Google Pay', icon: '🔴', desc: 'Android' }
+  ],
+  'DE': [  // Germany
+    { id: 'card', name: 'Kreditkarte', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal Konto' },
+    { id: 'klarna', name: 'Klarna', icon: '🛒', desc: 'Payer en 3x' },
+    { id: 'bank', name: 'Überweisung', icon: '🏦', desc: 'SEPA' },
+    { id: 'giropay', name: 'Giropay', icon: '🔵', desc: 'Direct banking' }
+  ],
+  'GB': [  // United Kingdom
+    { id: 'card', name: 'Debit/Credit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal Account' },
+    { id: 'bank', name: 'Bank Transfer', icon: '🏦', desc: 'BACS' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'iPhone, Mac' }
+  ],
+  // Americas
+  'US': [  // United States
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard, Amex' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'Apple Pay' },
+    { id: 'google', name: 'Google Pay', icon: '🔴', desc: 'Google Pay' },
+    { id: 'cashapp', name: 'Cash App', icon: '💵', desc: 'Cash App Pay' }
+  ],
+  'CA': [  // Canada
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'interac', name: 'Interac', icon: '🔴', desc: 'Canada only' },
+    { id: 'apple', name: 'Apple Pay', icon: '🍎', desc: 'Apple Pay' }
+  ],
+  // Default (all other countries)
+  'OTHER': [
+    { id: 'card', name: 'Credit/Debit Card', icon: '💳', desc: 'Visa, Mastercard' },
+    { id: 'paypal', name: 'PayPal', icon: '🅿️', desc: 'PayPal' },
+    { id: 'bank', name: 'Bank Transfer', icon: '🏦', desc: 'SWIFT/IBAN' },
+    { id: 'western', name: 'Western Union', icon: '🌍', desc: 'Cash pickup' }
+  ]
+};
+
+// All countries list
+const countriesList = [
+  { code: 'BJ', name: 'Bénin', name_en: 'Benin', region: 'AF' },
+  { code: 'TG', name: 'Togo', name_en: 'Togo', region: 'AF' },
+  { code: 'SN', name: 'Sénégal', name_en: 'Senegal', region: 'AF' },
+  { code: 'CI', name: 'Côte d\'Ivoire', name_en: 'Ivory Coast', region: 'AF' },
+  { code: 'NG', name: 'Nigéria', name_en: 'Nigeria', region: 'AF' },
+  { code: 'GH', name: 'Ghana', name_en: 'Ghana', region: 'AF' },
+  { code: 'CM', name: 'Cameroun', name_en: 'Cameroon', region: 'AF' },
+  { code: 'FR', name: 'France', name_en: 'France', region: 'EU' },
+  { code: 'DE', name: 'Allemagne', name_en: 'Germany', region: 'EU' },
+  { code: 'GB', name: 'Royaume-Uni', name_en: 'United Kingdom', region: 'EU' },
+  { code: 'ES', name: 'Espagne', name_en: 'Spain', region: 'EU' },
+  { code: 'IT', name: 'Italie', name_en: 'Italy', region: 'EU' },
+  { code: 'BE', name: 'Belgique', name_en: 'Belgium', region: 'EU' },
+  { code: 'NL', name: 'Pays-Bas', name_en: 'Netherlands', region: 'EU' },
+  { code: 'US', name: 'États-Unis', name_en: 'United States', region: 'AM' },
+  { code: 'CA', name: 'Canada', name_en: 'Canada', region: 'AM' },
+  { code: 'BR', name: 'Brésil', name_en: 'Brazil', region: 'AM' },
+  { code: 'MX', name: 'Mexique', name_en: 'Mexico', region: 'AM' },
+  { code: 'CN', name: 'Chine', name_en: 'China', region: 'AS' },
+  { code: 'JP', name: 'Japon', name_en: 'Japan', region: 'AS' },
+  { code: 'KR', name: 'Corée du Sud', name_en: 'South Korea', region: 'AS' },
+  { code: 'AE', name: 'Émirats Arabes Unis', name_en: 'UAE', region: 'AS' },
+  { code: 'OTHER', name: 'Autre pays', name_en: 'Other country', region: 'OT' }
+];
+
 // Checkout page with payment methods
 async function loadCheckoutPage() {
   const container = document.getElementById('main-content');
   const t = currentLanguage === 'fr';
   
+  // Default payment methods for Benin
+  const defaultPayments = paymentMethodsByRegion['BJ'];
+  
   container.innerHTML = `
-    <div class="page-title">
-      <h1>${t ? 'Paiement' : 'Payment'}</h1>
-    </div>
-    <div class="checkout-container">
-      <div class="payment-methods">
-        <h3>${t ? 'Mode de paiement' : 'Payment Method'}</h3>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="card" checked>
-          <div class="payment-card">
-            <span class="pm-icon">💳</span>
-            <span class="pm-name">${t ? 'Carte bancaire' : 'Credit/Debit Card'}</span>
-            <span class="pm-desc">Visa, Mastercard, Verve</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="mtn">
-          <div class="payment-card">
-            <span class="pm-icon">📱</span>
-            <span class="pm-name">MTN Mobile Money</span>
-            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="moov">
-          <div class="payment-card">
-            <span class="pm-icon">📱</span>
-            <span class="pm-name">Moov Money</span>
-            <span class="pm-desc">${t ? 'Paiement mobile Benin' : 'Benin mobile payment'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="paypal">
-          <div class="payment-card">
-            <span class="pm-icon">🅿️</span>
-            <span class="pm-name">PayPal</span>
-            <span class="pm-desc">${t ? 'International' : 'International'}</span>
-          </div>
-        </label>
-        
-        <label class="payment-option">
-          <input type="radio" name="payment" value="bank">
-          <div class="payment-card">
-            <span class="pm-icon">🏦</span>
-            <span class="pm-name">${t ? 'Virement bancaire' : 'Bank Transfer'}</span>
-            <span class="pm-desc">${t ? 'Europe/International' : 'Europe/International'}</span>
-          </div>
-        </label>
+    <div class="checkout-page">
+      <div class="checkout-header">
+        <h1>🛒 ${t ? 'Finaliser votre commande' : 'Complete Your Order'}</h1>
+        <p>${t ? 'Choisissez votre pays et mode de paiement' : 'Choose your country and payment method'}</p>
       </div>
       
-      <div class="checkout-form">
-        <h3>${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
-        <form onsubmit="processPayment(event)">
-          <div class="form-group">
-            <label>${t ? 'Nom complet' : 'Full Name'}</label>
-            <input type="text" id="delivery-name" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Email' : 'Email'}</label>
-            <input type="email" id="delivery-email" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Téléphone' : 'Phone'}</label>
-            <input type="tel" id="delivery-phone" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Adresse de livraison' : 'Delivery Address'}</label>
-            <textarea id="delivery-address" required></textarea>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Ville' : 'City'}</label>
-            <input type="text" id="delivery-city" required>
-          </div>
-          <div class="form-group">
-            <label>${t ? 'Pays' : 'Country'}</label>
-            <select id="delivery-country" required>
-              <option value="BJ">Benin</option>
-              <option value="FR">France</option>
-              <option value="US">United States</option>
-              <option value="DE">Germany</option>
-              <option value="GB">United Kingdom</option>
-              <option value="CA">Canada</option>
-              <option value="SN">Senegal</option>
-              <option value="CI">Cote d'Ivoire</option>
-              <option value="TG">Togo</option>
-              <option value="NG">Nigeria</option>
-              <option value="OTHER">${t ? 'Autre' : 'Other'}</option>
+      <div class="checkout-grid">
+        <!-- Payment Methods -->
+        <div class="checkout-section payment-section">
+          <h3>💳 ${t ? 'Mode de paiement' : 'Payment Method'}</h3>
+          <p class="section-hint">${t ? 'Sélectionnez votre pays pour voir les méthodes disponibles' : 'Select your country to see available methods'}</p>
+          
+          <div class="country-selector">
+            <label>🌍 ${t ? 'Votre pays' : 'Your Country'}</label>
+            <select id="checkout-country" onchange="updatePaymentMethods()">
+              ${countriesList.map(c => `<option value="${c.code}">${t ? c.name : c.name_en}</option>`).join('')}
             </select>
           </div>
           
-          <div class="order-summary">
-            <h4>${t ? 'Commande' : 'Order'}</h4>
-            <p>${cart.items.length} ${t ? 'articles' : 'items'}</p>
-            <p class="order-total">${t ? 'Total' : 'Total'}: <strong>${cart.total} ${cart.currency}</strong></p>
+          <div id="payment-methods-list" class="payment-methods-grid">
+            ${defaultPayments.map(pm => `
+              <label class="payment-option">
+                <input type="radio" name="payment" value="${pm.id}" ${pm.id === 'card' ? 'checked' : ''}>
+                <div class="payment-card">
+                  <span class="pm-icon">${pm.icon}</span>
+                  <span class="pm-name">${pm.name}</span>
+                  <span class="pm-desc">${pm.desc}</span>
+                </div>
+              </label>
+            `).join('')}
           </div>
-          
-          <button type="submit" class="submit-button">${t ? 'Confirmer le paiement' : 'Confirm Payment'}</button>
-        </form>
+        </div>
+        
+        <!-- Delivery Info -->
+        <div class="checkout-section delivery-section">
+          <h3>🚚 ${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
+          <form id="checkout-form" onsubmit="processPayment(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Nom complet' : 'Full Name'} *</label>
+                <input type="text" id="delivery-name" required>
+              </div>
+              <div class="form-group">
+                <label>${t ? 'Email' : 'Email'} *</label>
+                <input type="email" id="delivery-email" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Téléphone' : 'Phone'} *</label>
+                <input type="tel" id="delivery-phone" required placeholder="+229 XX XXX XX">
+              </div>
+              <div class="form-group">
+                <label>${t ? 'WhatsApp' : 'WhatsApp'}</label>
+                <input type="tel" id="delivery-whatsapp" placeholder="+229 XX XXX XX">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>${t ? 'Adresse de livraison' : 'Delivery Address'} *</label>
+              <textarea id="delivery-address" rows="2" required></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>${t ? 'Ville' : 'City'} *</label>
+                <input type="text" id="delivery-city" required>
+              </div>
+              <div class="form-group">
+                <label>${t ? 'Code postal' : 'Postal Code'}</label>
+                <input type="text" id="delivery-postal">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>${t ? 'Instructions spéciales' : 'Special Instructions'}</label>
+              <textarea id="delivery-instructions" rows="2" placeholder="${t ? 'Instructions pour la livraison...' : 'Delivery instructions...'}"></textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Order Summary -->
+      <div class="order-summary-section">
+        <h3>📋 ${t ? 'Récapitulatif de commande' : 'Order Summary'}</h3>
+        <div class="order-items">
+          ${cart.items.map(item => `
+            <div class="order-item">
+              <span class="item-name">${item.name}</span>
+              <span class="item-qty">×${item.quantity}</span>
+              <span class="item-price">${item.price * item.quantity} €</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-totals">
+          <div class="total-row">
+            <span>${t ? 'Sous-total' : 'Subtotal'}:</span>
+            <span>${cart.total} €</span>
+          </div>
+          <div class="total-row">
+            <span>${t ? 'Livraison' : 'Delivery'}:</span>
+            <span>${t ? 'Calculée après' : 'Calculated after'}</span>
+          </div>
+          <div class="total-row final">
+            <span>${t ? 'Total' : 'Total'}:</span>
+            <strong>${cart.total} €</strong>
+          </div>
+        </div>
+        <button type="submit" form="checkout-form" class="submit-button confirm-order-btn">
+          ✅ ${t ? 'Confirmer la commande' : 'Confirm Order'}
+        </button>
+        <p class="secure-notice">🔒 ${t ? 'Paiement sécurisé - SSL 256-bit' : 'Secure payment - SSL 256-bit'}</p>
       </div>
     </div>
   `;
+}
+
+// Update payment methods based on country
+function updatePaymentMethods() {
+  const country = document.getElementById('checkout-country')?.value || 'BJ';
+  const methods = paymentMethodsByRegion[country] || paymentMethodsByRegion['OTHER'];
+  const t = currentLanguage === 'fr';
+  
+  const container = document.getElementById('payment-methods-list');
+  if (container) {
+    container.innerHTML = methods.map(pm => `
+      <label class="payment-option">
+        <input type="radio" name="payment" value="${pm.id}" ${pm.id === methods[0].id ? 'checked' : ''}>
+        <div class="payment-card">
+          <span class="pm-icon">${pm.icon}</span>
+          <span class="pm-name">${pm.name}</span>
+          <span class="pm-desc">${pm.desc}</span>
+        </div>
+      </label>
+    `).join('');
+  }
 }
 
 // Process payment (demo - requires real integration)
 function processPayment(event) {
   event.preventDefault();
   
-  const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-  const name = document.getElementById('delivery-name').value;
-  const email = document.getElementById('delivery-email').value;
-  const phone = document.getElementById('delivery-phone').value;
-  const address = document.getElementById('delivery-address').value;
-  const city = document.getElementById('delivery-city').value;
-  const country = document.getElementById('delivery-country').value;
+  const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
+  const name = document.getElementById('delivery-name')?.value?.trim();
+  const email = document.getElementById('delivery-email')?.value?.trim();
+  const phone = document.getElementById('delivery-phone')?.value?.trim();
+  const address = document.getElementById('delivery-address')?.value?.trim();
+  const city = document.getElementById('delivery-city')?.value?.trim();
+  const country = document.getElementById('checkout-country')?.value || 'BJ';
+  
+  // Validation
+  if (!name || name.length < 2) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer votre nom complet!' : 'Please enter your full name!');
+    document.getElementById('delivery-name')?.focus();
+    return;
+  }
+  
+  if (!email || !email.includes('@')) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer un email valide!' : 'Please enter a valid email!');
+    document.getElementById('delivery-email')?.focus();
+    return;
+  }
+  
+  if (!phone || phone.length < 8) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer un numéro de téléphone valide!' : 'Please enter a valid phone number!');
+    document.getElementById('delivery-phone')?.focus();
+    return;
+  }
+  
+  if (!address || address.length < 5) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer une adresse de livraison!' : 'Please enter a delivery address!');
+    document.getElementById('delivery-address')?.focus();
+    return;
+  }
+  
+  if (!city || city.length < 2) {
+    showNotification(currentLanguage === 'fr' ? 'Veuillez entrer votre ville!' : 'Please enter your city!');
+    document.getElementById('delivery-city')?.focus();
+    return;
+  }
+  
+  // Show loading
+  const confirmBtn = document.querySelector('.confirm-order-btn');
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '⏳ ' + (currentLanguage === 'fr' ? 'Traitement en cours...' : 'Processing...');
+  }
   
   // Generate order ID
   const orderId = 'ED-' + Date.now();
   
-  // In production, integrate with real payment processor:
-  // - Stripe (cards, PayPal)
-  // - MTN/Moov API (mobile money Benin)
-  // - Bank transfer (SEPA/SWIFT)
-  
-  showPaymentConfirmation(orderId, paymentMethod, {
-    name, email, phone, address, city, country
-  });
+  // Simulate processing delay
+  setTimeout(() => {
+    // Create order
+    const order = {
+      id: orderId,
+      date: new Date().toISOString(),
+      items: [...cart.items],
+      total: cart.total,
+      currency: cart.currency,
+      status: 'confirmed',
+      paymentMethod: paymentMethod,
+      delivery: { name, email, phone, address, city, country },
+      notes: document.getElementById('delivery-instructions')?.value || ''
+    };
+    
+    // Save order
+    orders.unshift(order);
+    saveOrdersToStorage();
+    
+    // Clear cart after successful order
+    cart.items = [];
+    cart.total = 0;
+    saveCartToStorage();
+    updateCartBadge();
+    
+    // Show confirmation
+    showPaymentConfirmation(orderId, paymentMethod, { name, email, phone, address, city, country });
+    
+    // Reset button
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '✅ ' + (currentLanguage === 'fr' ? 'Confirmer la commande' : 'Confirm Order');
+    }
+  }, 1500);
 }
 
 // Orders state
@@ -1582,6 +2924,205 @@ function showNotification(message) {
   setTimeout(() => notification.remove(), 3000);
 }
 
+// ============= AI ASSISTANT CHAT =============
+
+// AI Chat State
+let aiChatOpen = false;
+let aiChatMessages = [];
+
+// Initialize AI Chat
+function initAIChat() {
+  // Create chat button and container if not exists
+  if (!document.getElementById('ai-chat-container')) {
+    const chatHTML = `
+      <div id="ai-chat-container" class="ai-chat-container">
+        <button id="ai-chat-toggle" class="ai-chat-toggle" onclick="toggleAIChat()">
+          <span class="chat-icon">💬</span>
+          <span class="chat-text">AI Assistant</span>
+        </button>
+        <div id="ai-chat-window" class="ai-chat-window">
+          <div class="chat-header">
+            <span>🤖 Assistant E-Décor</span>
+            <button class="chat-close" onclick="toggleAIChat()">×</button>
+          </div>
+          <div id="ai-chat-messages" class="chat-messages"></div>
+          <div class="chat-input-area">
+            <input type="text" id="ai-chat-input" placeholder="Posez votre question..." onkeypress="handleAIChatKeypress(event)">
+            <button onclick="sendAIChatMessage()">Envoyer</button>
+          </div>
+          <div class="chat-quick-actions">
+            <button onclick="sendQuickMessage('Conseils décoration')">🎨 Conseils</button>
+            <button onclick="sendQuickMessage('Produits salon')">🛋️ Salons</button>
+            <button onclick="sendQuickMessage('Prix livraison')">🚚 Livraison</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', chatHTML);
+  }
+}
+
+// Toggle AI Chat
+function toggleAIChat() {
+  aiChatOpen = !aiChatOpen;
+  const window = document.getElementById('ai-chat-window');
+  const toggle = document.getElementById('ai-chat-toggle');
+  
+  if (aiChatOpen) {
+    window.classList.add('open');
+    toggle.classList.add('hidden');
+    // Focus input
+    setTimeout(() => document.getElementById('ai-chat-input').focus(), 100);
+    // Show welcome message if empty
+    if (aiChatMessages.length === 0) {
+      addAIChatMessage('assistant', currentLanguage === 'fr' 
+        ? 'Bonjour! Je suis votre assistant E-Décor. Comment puis-je vous aider aujourd\'hui?' 
+        : 'Hello! I\'m your E-Décor assistant. How can I help you today?');
+    }
+  } else {
+    window.classList.remove('open');
+    toggle.classList.remove('hidden');
+  }
+}
+
+// Handle Enter key
+function handleAIChatKeypress(event) {
+  if (event.key === 'Enter') {
+    sendAIChatMessage();
+  }
+}
+
+// Send quick message
+function sendQuickMessage(message) {
+  if (!aiChatOpen) toggleAIChat();
+  document.getElementById('ai-chat-input').value = message;
+  sendAIChatMessage();
+}
+
+// Send AI Chat Message
+async function sendAIChatMessage() {
+  const input = document.getElementById('ai-chat-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Add user message
+  addAIChatMessage('user', message);
+  input.value = '';
+  
+  // Show typing indicator
+  showTypingIndicator();
+  
+  // Get AI response
+  try {
+    const response = await sendAIMessage(message, { context: 'chat' });
+    hideTypingIndicator();
+    
+    if (response.error) {
+      // Show helpful response even without AI
+      const helpfulResponses = getHelpfulResponse(message);
+      addAIChatMessage('assistant', helpfulResponses);
+    } else {
+      addAIChatMessage('assistant', response.message || response.response || JSON.stringify(response));
+    }
+  } catch (e) {
+    hideTypingIndicator();
+    const helpfulResponses = getHelpfulResponse(message);
+    addAIChatMessage('assistant', helpfulResponses);
+  }
+}
+
+// Get helpful responses without AI
+function getHelpfulResponse(message) {
+  const msg = message.toLowerCase();
+  const t = currentLanguage === 'fr';
+  
+  // Prix et produits
+  if (msg.includes('prix') || msg.includes('price') || msg.includes('cost')) {
+    return t 
+      ? 'Nos prix varient selon les produits:\n• Canapés: 649€ - 1299€\n• Bureaux: 799€ - 999€\n• Tables: 299€ - 899€\n\nContactez-nous pour un devis personnalisé!'
+      : 'Our prices vary by product:\n• Sofas: €649 - €1299\n• Desks: €799 - €999\n• Tables: €299 - €899\n\nContact us for a personalized quote!';
+  }
+  
+  // Livraison
+  if (msg.includes('livraison') || msg.includes('delivery') || msg.includes('shipping')) {
+    return t
+      ? '🚚 Modes de livraison disponibles:\n• Standard: 5-10 jours ouvrés\n• Express: 2-5 jours\n• Retrait en magasin: Gratuit\n\nZone: Cotonou et environs.'
+      : '🚚 Delivery options:\n• Standard: 5-10 business days\n• Express: 2-5 days\n• In-store pickup: Free\n\nArea: Cotonou and surroundings.';
+  }
+  
+  // Catégorie
+  if (msg.includes('salon') || msg.includes('living')) {
+    return t
+      ? '🛋️ Catégorie Salons:\n• Canapés: LINO, modulables\n• Fauteuils: relax, électriques\n• Tables basses: chêne, carrées\n• Meubles TV: suspendus\n\nPrix: 299€ - 1299€'
+      : '🛋️ Living Room Category:\n• Sofas: LINO, modular\n• Armchairs: electric, relax\n• Coffee tables: oak, square\n• TV units: wall-mounted\n\nPrice: €299 - €1299';
+  }
+  
+  if (msg.includes('bureau') || msg.includes('office')) {
+    return t
+      ? '💼 Catégorie Bureaux:\n• Bureaux: exécutifs, debout\n• Chaines: ergonomiques, mesh\n• Rangements: caissons, tiroirs\n\nPrix: 189€ - 999€'
+      : '💼 Office Category:\n• Desks: executive, standing\n• Chairs: ergonomic, mesh\n• Storage: drawers, cabinets\n\nPrice: €189 - €999';
+  }
+  
+  // Contact
+  if (msg.includes('contact') || msg.includes('téléphone') || msg.includes('phone')) {
+    return t
+      ? '📞 Coordonnées:\n• Email: electronbusiness07@gmail.com\n• Tél: +229 01 977 003 47\n• Tél: +229 01 411 663 14\n• Adresse: Cotonou, Benin'
+      : '📞 Contact:\n• Email: electronbusiness07@gmail.com\n• Phone: +229 01 977 003 47\n• Phone: +229 01 411 663 14\n• Address: Cotonou, Benin';
+  }
+  
+  // Commande
+  if (msg.includes('commande') || msg.includes('order') || msg.includes('achat')) {
+    return t
+      ? '🛒 Pour passer une commande:\n1. Parcourez nos catégories\n2. Ajoutez vos produits au panier\n3. Validez votre panier\n4. Choisissez le mode de livraison\n\nOu contactez-nous directement!'
+      : '🛒 To place an order:\n1. Browse our categories\n2. Add products to cart\n3. Validate your cart\n4. Choose delivery method\n\nOr contact us directly!';
+  }
+  
+  // Conseil décoration
+  if (msg.includes('conseil') || msg.includes('tip') || msg.includes('advice') || msg.includes('décoration')) {
+    return t
+      ? '🎨 Conseils-decoration:\n• Jouez avec les couleurs neutres\n• Mixez les textures (bois, tissu)\n• Ajoutez des plantes vertes\n• Optez pour un éclairage tamisé\n\nDécouvrez nos articles blog pour plus d\'astuces!'
+      : '🎨 Decorating tips:\n• Play with neutral colors\n• Mix textures (wood, fabric)\n• Add green plants\n• Opt for soft lighting\n\nCheck our blog articles for more tips!';
+  }
+  
+  // Default response
+  return t
+    ? 'Merci pour votre message! Je peux vous aider avec:\n• Nos produits et prix\n• La livraison\n• Les commandes\n• Les conseils-decoration\n\nQue souhaitez-vous savoir?'
+    : 'Thank you for your message! I can help you with:\n• Our products and prices\n• Delivery\n• Orders\n• Decorating tips\n\nWhat would you like to know?';
+}
+
+// Add message to chat
+function addAIChatMessage(role, content) {
+  const messagesContainer = document.getElementById('ai-chat-messages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `chat-message ${role}`;
+  messageDiv.innerHTML = `<div class="message-content">${content.replace(/\n/g, '<br>')}</div>`;
+  messagesContainer.appendChild(messageDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // Store in history
+  aiChatMessages.push({ role, content });
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+  const messagesContainer = document.getElementById('ai-chat-messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'chat-message assistant typing';
+  typingDiv.id = 'ai-typing';
+  typingDiv.innerHTML = '<div class="message-content">...</div>';
+  messagesContainer.appendChild(typingDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+  const typing = document.getElementById('ai-typing');
+  if (typing) typing.remove();
+}
+
+// ============= END AI ASSISTANT =============
+
 // ============= END PAYMENT SYSTEM =============
 
 // Submit contact form
@@ -1604,3 +3145,11 @@ function closeModal() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+// ALSO try immediately in case DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(init, 100);
+}
+
+// And try even more directly
+init();
