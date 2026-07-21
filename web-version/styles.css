@@ -3454,14 +3454,18 @@ body {
   padding: 8px 0;
 }
 
-.tier-btn {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 12px 30px;
+.tier-btn, .reseller-cta .cta-button, .add-cart-btn {
+  background: var(--primary-color) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 30px !important;
   border-radius: 8px;
-  cursor: pointer;
+  cursor: pointer !important;
   font-size: 1rem;
+  position: relative !important;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  display: inline-block !important;
 }
 
 .tier-bronze { border-top: 4px solid #cd7f32; }
