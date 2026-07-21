@@ -563,7 +563,14 @@ function refreshCurrentPage() {
 
 // Load Home Page
 async function loadHomePage(container) {
+  console.log('[E-Décor] loadHomePage called, container:', container);
   const isFR = currentLanguage === 'fr';
+  
+  if (!container) {
+    console.error('[E-Décor] ERREUR: container est null!');
+    container = document.getElementById('main-content');
+    console.log('[E-Décor] Re-fetched container:', container);
+  }
   
   container.innerHTML = `
     <!-- Hero Section -->
