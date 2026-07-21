@@ -1422,7 +1422,7 @@ async function loadCoursePage(container, courseId) {
       <div class="course-header">
         <div class="course-header-content">
           <div class="course-badges">
-            <span class="course-level-badge level-${course.level}">${course.level}</span>
+            <span class="course-level-badge level-${course.level}">${t ? (course.level === 'beginner' ? 'Débutant' : course.level === 'intermediate' ? 'Intermédiaire' : 'Avancé') : course.level}</span>
             <span class="course-badge-new">${t ? 'Nouveau' : 'New'}</span>
           </div>
           <h1>${t ? course.title : course.title_en}</h1>
@@ -1469,7 +1469,7 @@ async function loadCoursePage(container, courseId) {
           <!-- Action Buttons -->
           <div class="course-actions">
             <div class="course-price-large">
-              <span class="price">${course.price}${course.currency}</span>
+              <span class="price">${course.price.toFixed(2).replace('.', ',')}${course.currency}</span>
               <button class="enroll-btn" onclick="enrollCourse('${course.id}')">${t ? 'S\'inscrire maintenant' : 'Enroll Now'}</button>
             </div>
             <div class="course-buttons">
@@ -1550,7 +1550,7 @@ async function loadCoursePage(container, courseId) {
                     <div class="related-course-meta">
                       <span>⏱️ ${c.duration}</span>
                       <span>⭐ ${c.rating}</span>
-                      <span>${c.price}${c.currency}</span>
+                      <span>${c.price.toFixed(2).replace('.', ',')}${c.currency}</span>
                     </div>
                   </div>
                 </div>
@@ -1571,7 +1571,7 @@ async function loadCoursePage(container, courseId) {
               <li>📱 ${t ? 'Compatible mobile' : 'Mobile compatible'}</li>
               <li>💬 ${t ? 'Support instructor' : 'Instructor support'}</li>
             </ul>
-            <button class="enroll-btn-full" onclick="enrollCourse('${course.id}')">${t ? 'S\'inscrire maintenant' : 'Enroll Now'} - ${course.price}${course.currency}</button>
+            <button class="enroll-btn-full" onclick="enrollCourse('${course.id}')">${t ? 'S\'inscrire maintenant' : 'Enroll Now'} - ${course.price.toFixed(2).replace('.', ',')}${course.currency}</button>
           </div>
           
           <div class="sidebar-card">
@@ -1588,9 +1588,10 @@ async function loadCoursePage(container, courseId) {
 function enrollCourse(courseId) {
   const course = academyCourses.find(c => c.id === courseId);
   if (course) {
+    const priceFormatted = course.price.toFixed(2).replace('.', ',');
     alert(currentLanguage === 'fr' ? 
-      `Inscription à: ${course.title}\nPrix: ${course.price}${course.currency}\n\nMerci de nous contacter pour finaliser l'inscription!` : 
-      `Enrollment in: ${course.title}\nPrice: ${course.price}${course.currency}\n\nContact us to complete enrollment!`);
+      `Inscription à: ${course.title}\nPrix: ${priceFormatted}${course.currency}\n\nMerci de nous contacter pour finaliser l'inscription!` : 
+      `Enrollment in: ${course.title}\nPrice: ${priceFormatted}${course.currency}\n\nContact us to complete enrollment!`);
   }
 }
 
