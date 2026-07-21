@@ -2,10 +2,33 @@
 
 Ce guide vous explique comment mettre à jour votre projet E-Décor local avec toutes les corrections et améliorations.
 
-## ✅ Corrections déjà appliquées
+---
 
-1. **Dossier assets créé** - Structure prête pour les images
-2. **Données blog corrigées** - Caractères mal encodés corrigés
+## 🔧 Configuration Requise (AVANT de lancer)
+
+### 1. Vérifier Ollama (déjà fait sur votre machine)
+```powershell
+# Dans PowerShell - Vérifier les modèles installés
+ollama list
+```
+
+**Vous avez ces modèles:**
+- llama3.2:latest (2.0 Go)
+- llama3.1:8b (4.9 Go)
+- qwen2.5-coder:7b (4.7 Go)
+- phi3:mini (2.2 Go)
+
+### 2. Lancer Ollama AVANT l'application
+```powershell
+# Dans un terminal PowerShell - Garder ce terminal ouvert
+ollama serve
+```
+
+### 3. Vérifier qu'Ollama fonctionne
+```powershell
+# Dans un AUTRE terminal
+curl http://localhost:11434/api/tags
+```
 
 ---
 
@@ -13,9 +36,12 @@ Ce guide vous explique comment mettre à jour votre projet E-Décor local avec t
 
 ### Option 1 : Via Git (Recommandé)
 
-```bash
-# 1. Naviguer vers votre dossier E-Decor
-cd E-Decor
+```powershell
+# 1. Ouvrir PowerShell et naviguer vers le dossier E-Decor
+# Trouvez votre dossier - exemple:
+cd C:\Users\AUGUSTIN\Documents\E-Decor
+# OU si vous l'avez cloné ailleurs:
+# cd D:\Chemin\vers\E-Decor
 
 # 2. Récupérer les dernières modifications
 git pull origin main
@@ -29,7 +55,7 @@ npm install
 Si vous préférez télécharger manuellement :
 
 1. Allez sur : https://github.com/IlarionDossouyovo/E-Decor
-2. Téléchargez leZIP du projet
+2. Téléchargez le ZIP du projet
 3. Remplacez les fichiers modifiés
 
 ---
@@ -82,22 +108,31 @@ E-Decor/
 
 ---
 
-### 2. Installer Node.js (si pas encore fait)
+---
 
-```bash
-# Vérifier si Node.js est installé
-node --version
+### 2. Lancer Ollama (IMPORTANT!)
 
-# Si pas installé, téléchargez depuis :
-# https://nodejs.org (version LTS 20+)
+Ollama doit être lancé AVANT l'application E-Décor pour activer les fonctionnalités AI:
+
+```powershell
+# Terminal 1 - Lancer Ollama (garder ce terminal ouvert)
+ollama serve
+```
+
+Vérifier dans un autre terminal:
+```powershell
+curl http://localhost:11434/api/tags
 ```
 
 ---
 
-### 3. Lancer l'application
+### 3. Lancer l'application E-Décor
 
-```bash
-# Installer les dépendances
+```powershell
+# Terminal 2 - Dans le dossier E-Decor
+cd C:\Users\AUGUSTIN\Documents\E-Decor  # ADAPTER le chemin!
+
+# Installer les dépendances (une fois)
 npm install
 
 # Lancer l'application
@@ -106,29 +141,28 @@ npm start
 
 ---
 
-### 4. (Optionnel) Lancer les agents AI
+### 4. Lancer les serveurs AI (Optionnel)
 
-Pour le système d'agents 360°, vous avez besoin d'Ollama :
+Pour utiliser les agents AI 360°, lancez ces serveurs:
 
-```bash
-# Installer Ollama
-# Windows : winget install Ollama.Ollama
-# OU téléchargez depuis https://ollama.com
+```powershell
+# Terminal 3 - Server API (port 3002)
+node ai-integration\api-server.js
 
-# Dans un terminal séparé, lancer :
-ollama serve
-
-# Dans un autre terminal, lancer le serveur agents :
-node ai-agents/api-server.js
+# Terminal 4 - Server Agents (port 3003)
+node ai-agents\api-server.js
 ```
 
 ---
 
 ## 🔧 Commandes utiles
 
-```bash
-# Lancer l'application
+```powershell
+# Lancer l'application principale
 npm start
+
+# Mode développement (avec logs)
+npm run dev
 
 # Builder pour Windows (.exe)
 npm run build

@@ -125,12 +125,20 @@ Ollama (LLM local)
 
 ### Configuration
 
-Dans `main.js` :
+Dans `ai-integration/ollama-client.js` et `ai-agents/agents-config.js` :
 ```javascript
-const OLLAMA_HOST = 'localhost';  // ou votre IP
+const OLLAMA_HOST = 'localhost';  // ou votre IP locale
 const OLLAMA_PORT = '11434';
-const OLLAMA_MODEL = 'llama3.2';  // ou autre modèle
+const OLLAMA_MODEL = 'llama3.2';  // Modèle par défaut
 ```
+
+**Modèles disponibles sur votre machine:**
+- `llama3.2` - Modèle principal (2 Go) - RECOMMANDÉ
+- `llama3.1:8b` - Plus détaillé (4.9 Go)
+- `qwen2.5-coder:7b` - Spécialisé code (4.7 Go)
+- `phi3:mini` - Léger et rapide (2.2 Go)
+
+Pour changer de modèle, modifiez la variable `OLLAMA_MODEL` dans les fichiers.
 
 ### Tester l'AI
 

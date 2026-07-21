@@ -2228,7 +2228,7 @@ async function loadCheckoutPage() {
         <!-- Delivery Info -->
         <div class="checkout-section delivery-section">
           <h3>🚚 ${t ? 'Informations de livraison' : 'Delivery Information'}</h3>
-          <form onsubmit="processPayment(event)">
+          <form id="checkout-form" onsubmit="processPayment(event)">
             <div class="form-row">
               <div class="form-group">
                 <label>${t ? 'Nom complet' : 'Full Name'} *</label>
@@ -2301,7 +2301,7 @@ async function loadCheckoutPage() {
             <strong>${cart.total} €</strong>
           </div>
         </div>
-        <button type="submit" form="checkout-form" class="submit-button" onclick="document.querySelector('#checkout-form').dispatchEvent(new Event('submit'))">
+        <button type="submit" form="checkout-form" class="submit-button confirm-order-btn">
           ✅ ${t ? 'Confirmer la commande' : 'Confirm Order'}
         </button>
         <p class="secure-notice">🔒 ${t ? 'Paiement sécurisé - SSL 256-bit' : 'Secure payment - SSL 256-bit'}</p>
