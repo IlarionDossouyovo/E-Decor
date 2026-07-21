@@ -580,6 +580,8 @@ async function loadHomePage(container) {
     container.style.visibility = 'visible !important';
     container.style.opacity = '1 !important';
     
+    console.log('[E-Décor] About to build HTML...');
+    
     // Build HTML
     const html = `
     <!-- Hero Section -->
