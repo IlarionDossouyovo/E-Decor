@@ -263,14 +263,14 @@ async function listAIModels() {
 const translations = {
   fr: {
     home_title: 'Bienvenue chez E-Décor',
-    home_subtitle: 'Votre partenaire ORCA-Décor pour l\'aménagement intérieur',
+    home_subtitle: 'Votre partenaire pour l\'aménagement intérieur de qualité',
     home_cta: 'Découvrir le catalogue',
     catalog_title: 'Notre Catalogue',
     catalog_subtitle: 'Parcourez toutes nos catégories de produits',
     blog_title: 'Blog Deco',
     blog_subtitle: 'Conseils et inspirations pour votre intérieur',
     about_title: 'À propos d\'E-Décor',
-    about_subtitle: 'En partenariat avec ORCA-Décor',
+    about_subtitle: 'Votre expert decoration et ameublement',
     contact_title: 'Contactez-nous',
     contact_subtitle: 'Nous sommes à votre écoute',
     search_placeholder: 'Rechercher un produit...',
@@ -289,14 +289,14 @@ const translations = {
   },
   en: {
     home_title: 'Welcome to E-Décor',
-    home_subtitle: 'Your ORCA-Décor partner for interior design',
+    home_subtitle: 'Your partner for quality interior design',
     home_cta: 'Discover the catalog',
     catalog_title: 'Our Catalog',
     catalog_subtitle: 'Browse all our product categories',
     blog_title: 'Decoration Blog',
     blog_subtitle: 'Tips and inspirations for your home',
     about_title: 'About E-Décor',
-    about_subtitle: 'In partnership with ORCA-Décor',
+    about_subtitle: 'Your decoration and furnishing expert',
     contact_title: 'Contact Us',
     contact_subtitle: 'We are here to listen',
     search_placeholder: 'Search for a product...',
@@ -589,7 +589,7 @@ async function loadHomePage(container) {
       <div class="hero-content">
         <h2>${isFR ? 'Transformez Votre Intérieur' : 'Transform Your Interior'}</h2>
         <p>${isFR ? 'Meubles & Décoration de qualité' : 'Quality Furniture & Decor'}</p>
-        <p class="hero-partner">${isFR ? 'Partenaire Officiel ORCA-Décor' : 'Official ORCA-Décor Partner'}</p>
+        <p class="hero-partner">${isFR ? 'Expert en Décoration & Ameublement' : 'Decoration & Furnishing Expert'}</p>
         <div class="hero-actions">
           <a href="#" class="cta-button primary" onclick="loadPage('catalog'); return false;">
             ${isFR ? 'Découvrir le Catalogue' : 'Discover Catalog'}
@@ -688,9 +688,9 @@ async function loadHomePage(container) {
           <p>${isFR ? 'Notre équipe est disponible à tout moment' : 'Our team is available at all times'}</p>
         </div>
         <div class="why-us-card">
-          <span class="why-us-icon">🤝</span>
-          <h3>${isFR ? 'Partenaire ORCA' : 'ORCA Partner'}</h3>
-          <p>${isFR ? 'Collaboration avec ORCA-Décor leader' : 'Partnership with ORCA-Décor leader'}</p>
+          <span class="why-us-icon">🏠</span>
+          <h3>${isFR ? 'E-Décor by Electron' : 'E-Décor by Electron'}</h3>
+          <p>${isFR ? 'Expert en decoration et ameublement' : 'Decoration and furnishing expert'}</p>
         </div>
       </div>
     </section>
@@ -1679,10 +1679,10 @@ function shareCourse(courseId) {
 // ============= RESELLERS PORTAL =============
 
 const resellerTiers = [
-  { id: 'bronze', name: 'Bronze', discount: 15, minOrder: 500 },
-  { id: 'silver', name: 'Argent', discount: 25, minOrder: 2000 },
-  { id: 'gold', name: 'Or', discount: 35, minOrder: 5000 },
-  { id: 'platinum', name: 'Platine', discount: 45, minOrder: 15000 }
+  { id: 'bronze', name_fr: 'Bronze', name_en: 'Bronze', discount: 15, minOrder: 500 },
+  { id: 'silver', name_fr: 'Argent', name_en: 'Silver', discount: 25, minOrder: 2000 },
+  { id: 'gold', name_fr: 'Or', name_en: 'Gold', discount: 35, minOrder: 5000 },
+  { id: 'platinum', name_fr: 'Platine', name_en: 'Platinum', discount: 45, minOrder: 15000 }
 ];
 
 const resellerProducts = [
@@ -1721,7 +1721,7 @@ async function loadResellersPage(container) {
         <div class="tiers-grid">
           ${resellerTiers.map(tier => `
             <div class="tier-card tier-${tier.id}">
-              <h3>${tier.name}</h3>
+              <h3>${t ? tier.name_fr : tier.name_en}</h3>
               <div class="tier-discount">-${tier.discount}%</div>
               <p class="tier-min">${t ? 'Commande min:' : 'Min order:'} ${tier.minOrder}€</p>
               <ul class="tier-benefits">
@@ -1866,7 +1866,7 @@ async function loadAboutPage(container) {
       <div class="about-card">
         <div class="about-icon">🏠</div>
         <h2>${isFR ? 'Notre Histoire' : 'Our Story'}</h2>
-        <p>E-Décor est une entreprise e-commerce dropshipping spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. En partenariat avec <strong>ORCA-Décor</strong>, nous proposons une large gamme de meubles pour tout type d'aménagement.</p>
+        <p>E-Décor by Electron est votre entreprise de confiance spécialisée dans la décoration d'intérieur, l'ameublement et les articles de maison. Nous proposons une large gamme de meubles de qualité pour tout type d'aménagement.</p>
         <p>${isFR ? 'Basés à Cotonou, au Bénin, nous servons des clients partout en Afrique de l\'Ouest et au-delà.' : 'Based in Cotonou, Benin, we serve customers across West Africa and beyond.'}</p>
       </div>
     </section>
@@ -1943,8 +1943,8 @@ async function loadAboutPage(container) {
       <div class="partners-grid">
         <div class="partner-card">
           <span class="partner-logo">🏠</span>
-          <h3>ORCA-Décor</h3>
-          <p>${isFR ? 'Partenaire exclusif pour la decoration et l\'ameublement' : 'Exclusive partner for decoration and furniture'}</p>
+          <h3>E-Décor by Electron</h3>
+          <p>${isFR ? 'Expert en decoration et ameublement de qualité' : 'Quality decoration and furnishing expert'}</p>
         </div>
       </div>
     </section>

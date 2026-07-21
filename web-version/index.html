@@ -116,22 +116,10 @@
       <p class="map-label">Cotonou, Benin</p>
     </div>
     <div class="footer-bottom">
-      <p>© 2024 E-Décor by Electron. Tous droits réservés. Partenaire ORCA-Décor.</p>
+      <p>© 2024 E-Décor by Electron. Tous droits réservés.</p>
     </div>
   </footer>
 
   <script src="renderer.js"></script>
-  <script>
-    console.log('Testing JS...');
-    setTimeout(function() {
-      if (typeof loadPage === 'function') {
-        console.log('loadPage exists, loading home...');
-        loadPage('home');
-      } else {
-        console.error('loadPage not found!');
-        document.getElementById('main-content').innerHTML = '<h1>Erreur: JavaScript non chargé</h1>';
-      }
-    }, 500);
-  </script>
 </body>
 </html>
