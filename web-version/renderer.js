@@ -563,20 +563,23 @@ function refreshCurrentPage() {
 
 // Load Home Page
 async function loadHomePage(container) {
-  console.log('[E-Décor] loadHomePage called, container:', container);
-  const isFR = currentLanguage === 'fr';
-  
-  if (!container) {
-    console.error('[E-Décor] ERREUR: container est null!');
-    container = document.getElementById('main-content');
-    console.log('[E-Décor] Re-fetched container:', container);
-  }
-  
-  // Force container visibility
-  container.style.display = 'block';
-  container.style.minHeight = '500px';
-  
-  container.innerHTML = `
+  try {
+    console.log('[E-Décor] loadHomePage called, container:', container);
+    const isFR = currentLanguage === 'fr';
+    
+    if (!container) {
+      console.error('[E-Décor] ERREUR: container est null!');
+      container = document.getElementById('main-content');
+      console.log('[E-Décor] Re-fetched container:', container);
+    }
+    
+    // Force container visibility
+    container.style.display = 'block';
+    container.style.minHeight = '500px';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
+    
+    container.innerHTML = `
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
@@ -714,7 +717,11 @@ async function loadHomePage(container) {
       </div>
     </section>
   `;
-  console.log('[E-Décor] Home page HTML injected, content length:', container.innerHTML.length);
+    console.log('[E-Décor] Home page HTML injected, content length:', container.innerHTML.length);
+    
+  } catch (e) {
+    console.error('[E-Décor] ERREUR dans loadHomePage:', e);
+  }
 }
 
 // Get featured products
