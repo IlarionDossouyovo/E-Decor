@@ -187,12 +187,15 @@ body {
 .main-nav {
   background: var(--primary-color);
   padding: 0 40px;
+  position: relative;
+  z-index: 999;
 }
 
 .nav-menu {
   display: flex;
   list-style: none;
   gap: 0;
+  overflow: visible;
 }
 
 .nav-link {
@@ -202,6 +205,8 @@ body {
   text-decoration: none;
   transition: background 0.3s;
   cursor: pointer;
+  position: relative;
+  z-index: 1000;
 }
 
 .nav-link:hover,
@@ -212,6 +217,8 @@ body {
 /* Dropdown */
 .dropdown {
   position: relative;
+  display: inline-block;
+  z-index: 1000;
 }
 
 .dropdown-menu {
@@ -223,9 +230,12 @@ body {
   list-style: none;
   min-width: 200px;
   box-shadow: var(--shadow);
+  z-index: 1001;
 }
 
-.dropdown:hover .dropdown-menu {
+.dropdown:hover .dropdown-menu,
+.dropdown:active .dropdown-menu,
+.dropdown:focus-within .dropdown-menu {
   display: block;
 }
 
